@@ -1,6 +1,5 @@
-import React from 'react';
 import { RegionCode, codeStandards } from '@/types/codes';
-import { Button } from './ui/Button';
+import { Button } from './ui/button';
 import { Check, Globe } from 'lucide-react';
 
 interface CodeSelectorProps {

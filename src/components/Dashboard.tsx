@@ -5,7 +5,7 @@ import { PlanViewer } from './PlanViewer';
 import { Plan } from '../types';
 import { Building2, FileSearch, LogOut } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
-import { Button } from './ui/Button';
+import { Button } from './ui/button';
 import { CodeSelector } from './CodeSelector';
 import { RegionCode } from '@/types/codes';
 
