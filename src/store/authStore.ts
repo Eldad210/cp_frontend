@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-import { jwtDecode } from 'jwt-decode';
 import { AuthState, User } from '../types/auth';
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -7,7 +6,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   token: null,
   isAuthenticated: false,
 
-  login: async (email: string, password: string) => {
+  login: async (email: string, _password: string) => {
     try {
       // TODO: Replace with actual API call
       const mockToken = 'mock.jwt.token';

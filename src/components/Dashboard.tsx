@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { FileUpload } from './FileUpload';
 import { AnalysisResults } from './AnalysisResults';
 import { PlanViewer } from './PlanViewer';
@@ -40,7 +40,7 @@ export function Dashboard() {
         return [
           {
             id: '1',
-            severity: 'error',
+            severity: 'error' as const,
             code: 'ADA-2010-404.2.3',
             description: 'Door clearance does not meet minimum requirements for wheelchair accessibility',
             location: 'Floor 1 - Main Entrance',
@@ -48,7 +48,7 @@ export function Dashboard() {
           },
           {
             id: '2',
-            severity: 'warning',
+            severity: 'warning' as const,
             code: 'IBC-2021-1011.2',
             description: 'Stairway width appears to be below minimum requirements',
             location: 'Floor 2 - Emergency Stairwell',
@@ -59,7 +59,7 @@ export function Dashboard() {
         return [
           {
             id: '1',
-            severity: 'error',
+            severity: 'error' as const,
             code: 'SI-5281-4.1.3',
             description: 'Insufficient thermal insulation in external walls',
             location: 'External Walls - All Floors',
@@ -70,7 +70,7 @@ export function Dashboard() {
         return [
           {
             id: '1',
-            severity: 'warning',
+            severity: 'warning' as const,
             code: 'EN-1990-A1.4.2',
             description: 'Structural load calculations require verification',
             location: 'Primary Structure',
