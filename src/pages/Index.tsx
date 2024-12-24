@@ -31,7 +31,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-4xl font-bold text-gray-900 mb-8">PDF Analysis Tool</h1>
+        <h1 className="text-4xl font-bold text-gray-900 mb-8">PDF Analysis Tools</h1>
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <div className="space-y-6">
