@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { FileUpload } from './FileUpload';
 import { AnalysisResults } from './AnalysisResults';
@@ -24,90 +23,37 @@ export function Dashboard() {
 
     setSelectedFile(file);
 
-    // Determine file type
-    const isIFCFile = file.name.toLowerCase().endsWith('.ifc');
-    const fileType = isIFCFile ? 'IFC Model' : 'Plan Drawing';
-
-    // Simulate analysis process with region-specific results
+    // Simulate analysis process with region-specific results for IFC files
     const newPlan: Plan = {
       id: Math.random().toString(36).substr(2, 9),
       name: file.name,
       uploadDate: new Date(),
       status: 'completed',
-      results: getRegionSpecificResults(selectedRegion, isIFCFile)
+      results: getRegionSpecificResults(selectedRegion)
     };
     setActivePlan(newPlan);
   };
 
-  const getRegionSpecificResults = (region: RegionCode, isIFCFile: boolean) => {
-    // Define some IFC-specific issues for when IFC files are uploaded
-    if (isIFCFile) {
-      switch (region) {
-        case 'USA':
-          return [
-            {
-              id: '1',
-              severity: 'error' as const,
-              code: 'IBC-2021-1006.2',
-              description: '3D model shows insufficient egress path width',
-              location: 'Floor 1 - Corridor A',
-              recommendation: 'Increase corridor width to minimum 44 inches'
-            },
-            {
-              id: '2',
-              severity: 'warning' as const,
-              code: 'NFPA-101-7.2.2',
-              description: 'Stairway dimensions in 3D model appear to be below minimum requirements',
-              location: 'Stairwell B',
-              recommendation: 'Verify stair riser and tread dimensions per NFPA 101'
-            }
-          ];
-        case 'ISRAEL':
-          return [
-            {
-              id: '1',
-              severity: 'error' as const,
-              code: 'SI-5281-4.1.3',
-              description: '3D model shows insufficient thermal insulation in exterior walls',
-              location: 'Building Envelope - South Façade',
-              recommendation: 'Increase wall insulation to meet minimum R-value requirements'
-            }
-          ];
-        case 'EUROPE':
-          return [
-            {
-              id: '1',
-              severity: 'warning' as const,
-              code: 'EN-1990-A1.4.2',
-              description: '3D model structural elements require load verification',
-              location: 'Primary Load-Bearing Elements',
-              recommendation: 'Review structural elements according to Eurocode specifications'
-            }
-          ];
-        default:
-          return [];
-      }
-    }
-    
-    // Use the original results for non-IFC files
+  const getRegionSpecificResults = (region: RegionCode) => {
+    // Define IFC-specific issues
     switch (region) {
       case 'USA':
         return [
           {
             id: '1',
             severity: 'error' as const,
-            code: 'ADA-2010-404.2.3',
-            description: 'Door clearance does not meet minimum requirements for wheelchair accessibility',
-            location: 'Floor 1 - Main Entrance',
-            recommendation: 'Increase door clearance to minimum 32 inches when opened 90 degrees'
+            code: 'IBC-2021-1006.2',
+            description: '3D model shows insufficient egress path width',
+            location: 'Floor 1 - Corridor A',
+            recommendation: 'Increase corridor width to minimum 44 inches'
           },
           {
             id: '2',
             severity: 'warning' as const,
-            code: 'IBC-2021-1011.2',
-            description: 'Stairway width appears to be below minimum requirements',
-            location: 'Floor 2 - Emergency Stairwell',
-            recommendation: 'Verify stairway width meets minimum 44 inches for occupant load > 50'
+            code: 'NFPA-101-7.2.2',
+            description: 'Stairway dimensions in 3D model appear to be below minimum requirements',
+            location: 'Stairwell B',
+            recommendation: 'Verify stair riser and tread dimensions per NFPA 101'
           }
         ];
       case 'ISRAEL':
@@ -116,8 +62,8 @@ export function Dashboard() {
             id: '1',
             severity: 'error' as const,
             code: 'SI-5281-4.1.3',
-            description: 'Insufficient thermal insulation in external walls',
-            location: 'External Walls - All Floors',
+            description: '3D model shows insufficient thermal insulation in exterior walls',
+            location: 'Building Envelope - South Façade',
             recommendation: 'Increase wall insulation to meet minimum R-value requirements'
           }
         ];
@@ -127,9 +73,9 @@ export function Dashboard() {
             id: '1',
             severity: 'warning' as const,
             code: 'EN-1990-A1.4.2',
-            description: 'Structural load calculations require verification',
-            location: 'Primary Structure',
-            recommendation: 'Review load combinations according to Eurocode specifications'
+            description: '3D model structural elements require load verification',
+            location: 'Primary Load-Bearing Elements',
+            recommendation: 'Review structural elements according to Eurocode specifications'
           }
         ];
       default:

@@ -18,8 +18,6 @@ export function FileUpload({ onFileSelect }: FileUploadProps) {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
-      'application/pdf': ['.pdf'],
-      'image/*': ['.png', '.jpg', '.jpeg'],
       'application/octet-stream': ['.ifc'],
     },
     maxFiles: 1,
@@ -32,13 +30,13 @@ export function FileUpload({ onFileSelect }: FileUploadProps) {
     >
       <input {...getInputProps()} />
       <Upload className="mx-auto h-12 w-12 text-gray-400" />
-      <h3 className="mt-4 text-lg font-medium text-gray-900">Upload Construction Plans</h3>
+      <h3 className="mt-4 text-lg font-medium text-gray-900">Upload IFC Model</h3>
       <p className="mt-2 text-sm text-gray-500">
         {isDragActive
-          ? "Drop the files here..."
-          : "Drag 'n' drop your plans here, or click to select files"}
+          ? "Drop the file here..."
+          : "Drag 'n' drop your IFC model here, or click to select file"}
       </p>
-      <p className="mt-1 text-xs text-gray-500">PDF, PNG, JPG, or IFC (max. 50MB)</p>
+      <p className="mt-1 text-xs text-gray-500">IFC format only (max. 50MB)</p>
       <Button variant="outline" size="sm" className="mt-4">
         Select File
       </Button>

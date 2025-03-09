@@ -1,7 +1,7 @@
 
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 interface IFCViewerProps {
   file: File;
@@ -113,7 +113,7 @@ export function IFCViewer({ file }: IFCViewerProps) {
       className="w-full h-[600px] bg-gray-100 rounded-lg"
     >
       <div className="absolute top-4 left-4 bg-white/80 p-2 rounded z-10">
-        <p className="text-sm">IFC Viewer (Preview Mode)</p>
+        <p className="text-sm">IFC Viewer</p>
         <p className="text-xs text-gray-500">File: {file.name}</p>
       </div>
     </div>
