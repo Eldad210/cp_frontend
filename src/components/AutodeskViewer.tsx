@@ -19,13 +19,13 @@ export function AutodeskViewer({ file }: AutodeskViewerProps) {
     const script1 = document.createElement('script');
     script1.src = 'https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/viewer3D.min.js';
     script1.onload = loadViewer;
-    
-    const script2 = document.createElement('script');
-    script2.src = 'https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/style.min.css';
-    script2.rel = 'stylesheet';
-    
     document.head.appendChild(script1);
-    document.head.appendChild(script2);
+    
+    // Load the CSS file properly using a link element instead of a script
+    const link = document.createElement('link');
+    link.href = 'https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/style.min.css';
+    link.rel = 'stylesheet';
+    document.head.appendChild(link);
     
     let viewer: any = null;
     
@@ -123,7 +123,7 @@ export function AutodeskViewer({ file }: AutodeskViewerProps) {
         viewer.finish();
       }
       document.head.removeChild(script1);
-      document.head.removeChild(script2);
+      document.head.removeChild(link);
     };
   }, [file]);
   
