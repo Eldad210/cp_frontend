@@ -1,5 +1,7 @@
+
 import { useRef, useEffect, useState } from 'react';
 import { AnalysisResult } from '@/types';
+import { IFCViewer } from './IFCViewer';
 
 interface PlanViewerProps {
   file: File;
@@ -10,8 +12,11 @@ export function PlanViewer({ file, results }: PlanViewerProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [image, setImage] = useState<HTMLImageElement | null>(null);
   const [scale, setScale] = useState(1);
+  const isIFCFile = file.name.toLowerCase().endsWith('.ifc');
 
   useEffect(() => {
+    if (isIFCFile) return; // Skip for IFC files
+    
     const img = new Image();
     const url = URL.createObjectURL(file);
     
@@ -25,10 +30,10 @@ export function PlanViewer({ file, results }: PlanViewerProps) {
     return () => {
       URL.revokeObjectURL(url);
     };
-  }, [file]);
+  }, [file, isIFCFile]);
 
   useEffect(() => {
-    if (!canvasRef.current || !image) return;
+    if (isIFCFile || !canvasRef.current || !image) return;
 
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
@@ -67,11 +72,15 @@ export function PlanViewer({ file, results }: PlanViewerProps) {
       ctx.textBaseline = 'middle';
       ctx.fillText((index + 1).toString(), x, y);
     });
-  }, [image, results]);
+  }, [image, results, isIFCFile]);
 
   const handleZoom = (delta: number) => {
     setScale(prev => Math.max(0.5, Math.min(3, prev + delta * 0.1)));
   };
+
+  if (isIFCFile) {
+    return <IFCViewer file={file} />;
+  }
 
   return (
     <div className="relative bg-gray-100 rounded-lg overflow-hidden">

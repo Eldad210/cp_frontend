@@ -1,3 +1,4 @@
+
 import { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Upload } from 'lucide-react';
@@ -19,6 +20,7 @@ export function FileUpload({ onFileSelect }: FileUploadProps) {
     accept: {
       'application/pdf': ['.pdf'],
       'image/*': ['.png', '.jpg', '.jpeg'],
+      'application/octet-stream': ['.ifc'],
     },
     maxFiles: 1,
   });
@@ -36,7 +38,7 @@ export function FileUpload({ onFileSelect }: FileUploadProps) {
           ? "Drop the files here..."
           : "Drag 'n' drop your plans here, or click to select files"}
       </p>
-      <p className="mt-1 text-xs text-gray-500">PDF, PNG, or JPG (max. 50MB)</p>
+      <p className="mt-1 text-xs text-gray-500">PDF, PNG, JPG, or IFC (max. 50MB)</p>
       <Button variant="outline" size="sm" className="mt-4">
         Select File
       </Button>
