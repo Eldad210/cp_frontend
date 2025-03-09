@@ -1,7 +1,8 @@
 
 import { RegionCode, codeStandards } from '@/types/codes';
-import { Button } from './ui/button';
-import { Check, Globe } from 'lucide-react';
+import { Check, ChevronDown, Globe } from 'lucide-react';
+import { useState } from 'react';
+import { cn } from '@/utils/cn';
 
 interface CodeSelectorProps {
   selectedRegion: RegionCode | null;
@@ -10,6 +11,13 @@ interface CodeSelectorProps {
 
 export function CodeSelector({ selectedRegion, onRegionSelect }: CodeSelectorProps) {
   const countries: RegionCode[] = ['USA', 'ISRAEL', 'EUROPE'];
+  const [isOpen, setIsOpen] = useState(false);
+
+  const toggleDropdown = () => setIsOpen(!isOpen);
+  const handleSelect = (country: RegionCode) => {
+    onRegionSelect(country);
+    setIsOpen(false);
+  };
 
   return (
     <div className="space-y-4">
@@ -18,20 +26,41 @@ export function CodeSelector({ selectedRegion, onRegionSelect }: CodeSelectorPro
         <h3 className="text-lg font-medium text-gray-900">Select Country</h3>
       </div>
       
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        {countries.map((country) => (
-          <Button
-            key={country}
-            variant={selectedRegion === country ? 'primary' : 'outline'}
-            className="justify-between"
-            onClick={() => onRegionSelect(country)}
-          >
-            {country}
-            {selectedRegion === country && (
-              <Check className="h-4 w-4 ml-2" />
-            )}
-          </Button>
-        ))}
+      <div className="relative">
+        <button
+          type="button"
+          className={cn(
+            "w-full flex items-center justify-between px-4 py-2 rounded-md border",
+            selectedRegion ? "bg-blue-600 text-white border-blue-700" : "bg-white text-gray-900 border-gray-300"
+          )}
+          onClick={toggleDropdown}
+        >
+          <span>{selectedRegion || "Choose country"}</span>
+          <ChevronDown className="h-4 w-4 ml-2" />
+        </button>
+        
+        {isOpen && (
+          <div className="absolute z-10 mt-1 w-full bg-white rounded-md shadow-lg border border-gray-200">
+            <ul className="py-1 max-h-60 overflow-auto">
+              {countries.map((country) => (
+                <li 
+                  key={country}
+                  className={cn(
+                    "px-4 py-2 cursor-pointer flex items-center justify-between",
+                    "hover:bg-gray-100",
+                    selectedRegion === country ? "bg-blue-50" : ""
+                  )}
+                  onClick={() => handleSelect(country)}
+                >
+                  <span>{country}</span>
+                  {selectedRegion === country && (
+                    <Check className="h-4 w-4 text-blue-600" />
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
 
       {selectedRegion && (
