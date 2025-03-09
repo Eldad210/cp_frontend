@@ -1,6 +1,6 @@
 
 import { RegionCode, codeStandards } from '@/types/codes';
-import { Check, ChevronDown, Globe } from 'lucide-react';
+import { Check, ChevronDown, ChevronUp, Globe } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/utils/cn';
 
@@ -12,11 +12,19 @@ interface CodeSelectorProps {
 export function CodeSelector({ selectedRegion, onRegionSelect }: CodeSelectorProps) {
   const countries: RegionCode[] = ['USA', 'ISRAEL'];
   const [isOpen, setIsOpen] = useState(false);
+  const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
 
   const toggleDropdown = () => setIsOpen(!isOpen);
   const handleSelect = (country: RegionCode) => {
     onRegionSelect(country);
     setIsOpen(false);
+  };
+
+  const toggleCategory = (category: string) => {
+    setExpandedCategories(prev => ({
+      ...prev,
+      [category]: !prev[category]
+    }));
   };
 
   // Group standards by category
@@ -88,21 +96,33 @@ export function CodeSelector({ selectedRegion, onRegionSelect }: CodeSelectorPro
           
           <div className="space-y-4">
             {Object.entries(groupedStandards).map(([category, standards]) => (
-              <div key={category} className="bg-gray-50 rounded-lg overflow-hidden">
-                <div className="bg-blue-100 px-3 py-2 flex justify-between items-center">
+              <div key={category} className="bg-blue-50 rounded-lg overflow-hidden">
+                <div 
+                  className="bg-blue-100 px-3 py-2 flex justify-between items-center cursor-pointer"
+                  onClick={() => toggleCategory(category)}
+                >
                   <h5 className="font-medium text-blue-800">{category}</h5>
-                  <span className="text-xs bg-blue-200 text-blue-800 px-2 py-1 rounded">
-                    {standards.length} standard{standards.length !== 1 ? 's' : ''}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs bg-blue-200 text-blue-800 px-2 py-1 rounded">
+                      {standards.length} standard{standards.length !== 1 ? 's' : ''}
+                    </span>
+                    {expandedCategories[category] ? (
+                      <ChevronUp className="h-4 w-4 text-blue-600" />
+                    ) : (
+                      <ChevronDown className="h-4 w-4 text-blue-600" />
+                    )}
+                  </div>
                 </div>
-                <div className="p-3 space-y-2">
-                  {standards.map(standard => (
-                    <div key={standard.id} className="pl-2 border-l-2 border-blue-200">
-                      <h6 className="text-sm font-medium text-gray-900">{standard.name}</h6>
-                      <p className="text-sm text-gray-500">{standard.description}</p>
-                    </div>
-                  ))}
-                </div>
+                {expandedCategories[category] && (
+                  <div className="p-3 space-y-2">
+                    {standards.map(standard => (
+                      <div key={standard.id} className="pl-2 border-l-2 border-blue-200">
+                        <h6 className="text-sm font-medium text-gray-900">{standard.name}</h6>
+                        <p className="text-sm text-gray-500">{standard.description}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             ))}
           </div>
