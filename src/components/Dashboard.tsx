@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { FileUpload } from './FileUpload';
 import { AnalysisResults } from './AnalysisResults';
@@ -12,7 +11,7 @@ import { RegionCode } from '@/types/codes';
 
 export function Dashboard() {
   const [activePlan, setActivePlan] = useState<Plan | null>(null);
-  const [selectedRegion, setSelectedRegion] = useState<RegionCode | null>(null);
+  const [selectedRegion, setSelectedRegion] = useState<RegionCode>('ISRAEL');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
   const { user, logout } = useAuthStore();
@@ -86,7 +85,6 @@ export function Dashboard() {
     }
   };
 
-  // Group results by category
   const getGroupedResults = (results: AnalysisResult[]) => {
     return results.reduce((groups, result) => {
       const category = result.category;

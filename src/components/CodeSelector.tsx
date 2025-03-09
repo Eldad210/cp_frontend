@@ -1,7 +1,7 @@
 
 import { RegionCode, codeStandards } from '@/types/codes';
 import { Check, ChevronDown, ChevronUp, Globe } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { cn } from '@/utils/cn';
 
 interface CodeSelectorProps {
@@ -13,6 +13,21 @@ export function CodeSelector({ selectedRegion, onRegionSelect }: CodeSelectorPro
   const countries: RegionCode[] = ['USA', 'ISRAEL'];
   const [isOpen, setIsOpen] = useState(false);
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
+
+  // Initialize categories as collapsed by default when selectedRegion changes
+  useEffect(() => {
+    if (selectedRegion) {
+      const groupedStandards = getGroupedStandards();
+      const initialExpandedState = Object.keys(groupedStandards).reduce(
+        (acc, category) => {
+          acc[category] = false;
+          return acc;
+        },
+        {} as Record<string, boolean>
+      );
+      setExpandedCategories(initialExpandedState);
+    }
+  }, [selectedRegion]);
 
   const toggleDropdown = () => setIsOpen(!isOpen);
   const handleSelect = (country: RegionCode) => {
