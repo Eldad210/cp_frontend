@@ -15,15 +15,16 @@ export function Dashboard() {
   const { user, logout } = useAuthStore();
 
   const handleFileSelect = (file: File) => {
-    if (!selectedRegion) {
-      alert('Please select a country first');
+    setSelectedFile(file);
+  };
+
+  const handleRunAnalysis = () => {
+    if (!selectedFile || !selectedRegion) {
       return;
     }
 
-    setSelectedFile(file);
-
     // Simulate analysis process with region-specific results
-    const newPlan = createAnalyzedPlan(file, selectedRegion);
+    const newPlan = createAnalyzedPlan(selectedFile, selectedRegion);
     setActivePlan(newPlan);
   };
 
@@ -38,6 +39,8 @@ export function Dashboard() {
               selectedRegion={selectedRegion}
               onRegionSelect={setSelectedRegion}
               onFileSelect={handleFileSelect}
+              onRunAnalysis={handleRunAnalysis}
+              selectedFile={selectedFile}
             />
 
             <div className="lg:col-span-2">
