@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { FileUpload } from './FileUpload';
 import { AnalysisResults } from './AnalysisResults';
@@ -78,27 +77,6 @@ export function Dashboard() {
             location: 'Main Support Structure',
             recommendation: 'Review structural calculations for seismic zone compliance',
             category: 'structural' as const
-          }
-        ];
-      case 'EUROPE':
-        return [
-          {
-            id: '1',
-            severity: 'warning' as const,
-            code: 'EN-1990-A1.4.2',
-            description: '3D model structural elements require load verification',
-            location: 'Primary Load-Bearing Elements',
-            recommendation: 'Review structural elements according to Eurocode specifications',
-            category: 'structural' as const
-          },
-          {
-            id: '2',
-            severity: 'error' as const,
-            code: 'EU-2016-1628',
-            description: 'Fire safety measures insufficient in mechanical rooms',
-            location: 'Mechanical Room B',
-            recommendation: 'Add additional fire suppression systems and barriers',
-            category: 'safety' as const
           }
         ];
       default:

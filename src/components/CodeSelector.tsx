@@ -1,4 +1,3 @@
-
 import { RegionCode, codeStandards } from '@/types/codes';
 import { Check, ChevronDown, Globe } from 'lucide-react';
 import { useState } from 'react';
@@ -10,7 +9,7 @@ interface CodeSelectorProps {
 }
 
 export function CodeSelector({ selectedRegion, onRegionSelect }: CodeSelectorProps) {
-  const countries: RegionCode[] = ['USA', 'ISRAEL', 'EUROPE'];
+  const countries: RegionCode[] = ['USA', 'ISRAEL'];
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleDropdown = () => setIsOpen(!isOpen);

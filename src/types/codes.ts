@@ -1,4 +1,5 @@
-export type RegionCode = 'USA' | 'ISRAEL' | 'EUROPE';
+
+export type RegionCode = 'USA' | 'ISRAEL';
 
 export interface CodeStandard {
   id: string;
@@ -29,12 +30,5 @@ export const codeStandards: CodeStandard[] = [
     name: 'SI 5281',
     description: 'Israeli Sustainable Building Standard',
     category: 'Sustainability'
-  },
-  {
-    id: 'en-1990',
-    region: 'EUROPE',
-    name: 'Eurocode 0',
-    description: 'European Structural Design Standards',
-    category: 'Structural'
   }
 ];
