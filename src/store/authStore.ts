@@ -7,14 +7,19 @@ export const useAuthStore = create<AuthState>((set) => ({
   token: null,
   isAuthenticated: false,
 
-  login: async (email: string, _password: string) => {
+  login: async (email: string, password: string) => {
     try {
       // Check if the email is authorized
       if (email !== 'boris@civilplanner.co') {
         throw new Error('Unauthorized email');
       }
       
-      // Proceed with login for authorized email
+      // Check if password matches
+      if (password !== 'q1w2e3r4!!') {
+        throw new Error('Invalid password');
+      }
+      
+      // Proceed with login for authorized email and password
       const mockToken = 'mock.jwt.token';
       const mockUser: User = {
         id: '1',
