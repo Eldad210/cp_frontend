@@ -1,6 +1,6 @@
 
 import { AnalysisResult } from '@/types';
-import { AlertTriangle, CheckCircle, Construction, Eye, Fire, HardHat, Info, Shield, XCircle } from 'lucide-react';
+import { AlertTriangle, CheckCircle, Construction, Eye, Flame, HardHat, Info, Shield, XCircle } from 'lucide-react';
 
 interface AnalysisResultsProps {
   results: AnalysisResult[];
@@ -27,7 +27,7 @@ export function AnalysisResults({ results }: AnalysisResultsProps) {
       case 'structural':
         return <Construction className="h-5 w-5 text-blue-600" />;
       case 'energy':
-        return <Fire className="h-5 w-5 text-yellow-600" />;
+        return <Flame className="h-5 w-5 text-yellow-600" />;
       case 'general':
       default:
         return <Shield className="h-5 w-5 text-gray-500" />;
