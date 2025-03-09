@@ -1,3 +1,4 @@
+
 export interface AnalysisResult {
   id: string;
   severity: 'error' | 'warning' | 'info';
@@ -14,4 +15,11 @@ export interface Plan {
   uploadDate: Date;
   status: 'analyzing' | 'completed' | 'error';
   results: AnalysisResult[];
+}
+
+// Add a type definition for the Autodesk Viewer
+declare global {
+  interface Window {
+    Autodesk?: any;
+  }
 }

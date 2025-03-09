@@ -1,12 +1,12 @@
 
 import { AnalysisResult } from '@/types';
-import { IFCViewer } from './IFCViewer';
+import { AutodeskViewer } from './AutodeskViewer';
 
 interface PlanViewerProps {
   file: File;
   results?: AnalysisResult[];
 }
 
-export function PlanViewer({ file }: PlanViewerProps) {
-  return <IFCViewer file={file} />;
+export function PlanViewer({ file, results }: PlanViewerProps) {
+  return <AutodeskViewer file={file} results={results} />;
 }
