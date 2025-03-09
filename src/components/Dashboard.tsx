@@ -4,7 +4,7 @@ import { FileUpload } from './FileUpload';
 import { AnalysisResults } from './AnalysisResults';
 import { PlanViewer } from './PlanViewer';
 import { AnalysisResult, Plan } from '../types';
-import { Building2, FileSearch, LogOut } from 'lucide-react';
+import { Building2, ChevronDown, ChevronUp, FileSearch, LogOut } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { Button } from './ui/button';
 import { CodeSelector } from './CodeSelector';
@@ -14,6 +14,7 @@ export function Dashboard() {
   const [activePlan, setActivePlan] = useState<Plan | null>(null);
   const [selectedRegion, setSelectedRegion] = useState<RegionCode | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
   const { user, logout } = useAuthStore();
 
   const handleFileSelect = (file: File) => {
@@ -97,6 +98,13 @@ export function Dashboard() {
     }, {} as Record<string, AnalysisResult[]>);
   };
 
+  const toggleCategory = (category: string) => {
+    setExpandedCategories(prev => ({
+      ...prev,
+      [category]: !prev[category]
+    }));
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white shadow">
@@ -157,50 +165,62 @@ export function Dashboard() {
                   <div className="space-y-6">
                     <PlanViewer file={selectedFile} results={activePlan.results} />
                     
-                    {/* Custom grouped display of results */}
+                    {/* Custom grouped display of results with collapse/expand */}
                     <div className="space-y-4">
                       {Object.entries(getGroupedResults(activePlan.results)).map(([category, results]) => (
                         <div key={category} className="rounded-lg border border-gray-200 overflow-hidden">
-                          <div className="bg-blue-50 px-4 py-3 border-b border-gray-200 flex justify-between items-center">
+                          <div 
+                            className="bg-blue-50 px-4 py-3 border-b border-gray-200 flex justify-between items-center cursor-pointer"
+                            onClick={() => toggleCategory(category)}
+                          >
                             <h3 className="font-medium text-blue-800 capitalize">{category}</h3>
-                            <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
-                              {results.length} issue{results.length !== 1 ? 's' : ''}
-                            </span>
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+                                {results.length} issue{results.length !== 1 ? 's' : ''}
+                              </span>
+                              {expandedCategories[category] ? (
+                                <ChevronUp className="h-4 w-4 text-blue-600" />
+                              ) : (
+                                <ChevronDown className="h-4 w-4 text-blue-600" />
+                              )}
+                            </div>
                           </div>
-                          <div className="divide-y divide-gray-100">
-                            {results.map(result => (
-                              <div key={result.id} className="p-4">
-                                <div className="flex items-start gap-3">
-                                  <div className={`w-2 h-2 mt-1.5 rounded-full ${
-                                    result.severity === 'error' 
-                                      ? 'bg-red-500' 
-                                      : result.severity === 'warning' 
-                                        ? 'bg-amber-500' 
-                                        : 'bg-blue-500'
-                                  }`} />
-                                  <div className="flex-1">
-                                    <div className="flex justify-between">
-                                      <span className="text-sm font-medium text-gray-900">{result.code}</span>
-                                      <span className={`text-xs px-2 py-1 rounded ${
-                                        result.severity === 'error' 
-                                          ? 'bg-red-100 text-red-800' 
-                                          : result.severity === 'warning' 
-                                            ? 'bg-amber-100 text-amber-800' 
-                                            : 'bg-blue-100 text-blue-800'
-                                      }`}>
-                                        {result.severity}
-                                      </span>
-                                    </div>
-                                    <p className="mt-1 text-sm text-gray-700">{result.description}</p>
-                                    <div className="mt-2 text-xs text-gray-500">
-                                      <p><span className="font-medium">Location:</span> {result.location}</p>
-                                      <p className="mt-1"><span className="font-medium">Recommendation:</span> {result.recommendation}</p>
+                          {expandedCategories[category] && (
+                            <div className="divide-y divide-gray-100">
+                              {results.map(result => (
+                                <div key={result.id} className="p-4">
+                                  <div className="flex items-start gap-3">
+                                    <div className={`w-2 h-2 mt-1.5 rounded-full ${
+                                      result.severity === 'error' 
+                                        ? 'bg-red-500' 
+                                        : result.severity === 'warning' 
+                                          ? 'bg-amber-500' 
+                                          : 'bg-blue-500'
+                                    }`} />
+                                    <div className="flex-1">
+                                      <div className="flex justify-between">
+                                        <span className="text-sm font-medium text-gray-900">{result.code}</span>
+                                        <span className={`text-xs px-2 py-1 rounded ${
+                                          result.severity === 'error' 
+                                            ? 'bg-red-100 text-red-800' 
+                                            : result.severity === 'warning' 
+                                              ? 'bg-amber-100 text-amber-800' 
+                                              : 'bg-blue-100 text-blue-800'
+                                        }`}>
+                                          {result.severity}
+                                        </span>
+                                      </div>
+                                      <p className="mt-1 text-sm text-gray-700">{result.description}</p>
+                                      <div className="mt-2 text-xs text-gray-500">
+                                        <p><span className="font-medium">Location:</span> {result.location}</p>
+                                        <p className="mt-1"><span className="font-medium">Recommendation:</span> {result.recommendation}</p>
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
-                              </div>
-                            ))}
-                          </div>
+                              ))}
+                            </div>
+                          )}
                         </div>
                       ))}
                     </div>
