@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
@@ -19,7 +20,11 @@ export function LoginForm() {
       await login(email, password);
       navigate('/dashboard');
     } catch (err) {
-      setError('Invalid credentials');
+      if (err instanceof Error && err.message === 'Unauthorized email') {
+        setError('Access restricted to boris@civilplanner.co only');
+      } else {
+        setError('Invalid credentials');
+      }
     }
   };
 
@@ -33,6 +38,9 @@ export function LoginForm() {
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
             Sign in to your account
           </h2>
+          <p className="mt-2 text-center text-sm text-gray-600">
+            Access restricted to authorized personnel only
+          </p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {error && (

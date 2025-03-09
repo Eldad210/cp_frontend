@@ -1,3 +1,4 @@
+
 import { create } from 'zustand';
 import { AuthState, User } from '../types/auth';
 
@@ -8,12 +9,17 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   login: async (email: string, _password: string) => {
     try {
-      // TODO: Replace with actual API call
+      // Check if the email is authorized
+      if (email !== 'boris@civilplanner.co') {
+        throw new Error('Unauthorized email');
+      }
+      
+      // Proceed with login for authorized email
       const mockToken = 'mock.jwt.token';
       const mockUser: User = {
         id: '1',
         email,
-        name: 'John Doe',
+        name: 'Boris',
         role: 'engineer'
       };
 
