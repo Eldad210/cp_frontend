@@ -5,6 +5,7 @@ export interface AnalysisResult {
   description: string;
   location: string;
   recommendation: string;
+  category: 'safety' | 'accessibility' | 'structural' | 'energy' | 'general';
 }
 
 export interface Plan {

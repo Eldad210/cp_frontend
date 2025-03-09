@@ -4,9 +4,9 @@ import { IFCViewer } from './IFCViewer';
 
 interface PlanViewerProps {
   file: File;
-  results: AnalysisResult[];
+  results?: AnalysisResult[];
 }
 
-export function PlanViewer({ file, results }: PlanViewerProps) {
+export function PlanViewer({ file }: PlanViewerProps) {
   return <IFCViewer file={file} />;
 }

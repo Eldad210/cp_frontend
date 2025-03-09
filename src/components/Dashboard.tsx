@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { FileUpload } from './FileUpload';
 import { AnalysisResults } from './AnalysisResults';
@@ -45,7 +46,8 @@ export function Dashboard() {
             code: 'IBC-2021-1006.2',
             description: '3D model shows insufficient egress path width',
             location: 'Floor 1 - Corridor A',
-            recommendation: 'Increase corridor width to minimum 44 inches'
+            recommendation: 'Increase corridor width to minimum 44 inches',
+            category: 'safety' as const
           },
           {
             id: '2',
@@ -53,7 +55,8 @@ export function Dashboard() {
             code: 'NFPA-101-7.2.2',
             description: 'Stairway dimensions in 3D model appear to be below minimum requirements',
             location: 'Stairwell B',
-            recommendation: 'Verify stair riser and tread dimensions per NFPA 101'
+            recommendation: 'Verify stair riser and tread dimensions per NFPA 101',
+            category: 'accessibility' as const
           }
         ];
       case 'ISRAEL':
@@ -64,7 +67,17 @@ export function Dashboard() {
             code: 'SI-5281-4.1.3',
             description: '3D model shows insufficient thermal insulation in exterior walls',
             location: 'Building Envelope - South Façade',
-            recommendation: 'Increase wall insulation to meet minimum R-value requirements'
+            recommendation: 'Increase wall insulation to meet minimum R-value requirements',
+            category: 'energy' as const
+          },
+          {
+            id: '2',
+            severity: 'warning' as const,
+            code: 'SI-1918-3.2.4',
+            description: 'Structural support beams may not meet seismic requirements',
+            location: 'Main Support Structure',
+            recommendation: 'Review structural calculations for seismic zone compliance',
+            category: 'structural' as const
           }
         ];
       case 'EUROPE':
@@ -75,7 +88,17 @@ export function Dashboard() {
             code: 'EN-1990-A1.4.2',
             description: '3D model structural elements require load verification',
             location: 'Primary Load-Bearing Elements',
-            recommendation: 'Review structural elements according to Eurocode specifications'
+            recommendation: 'Review structural elements according to Eurocode specifications',
+            category: 'structural' as const
+          },
+          {
+            id: '2',
+            severity: 'error' as const,
+            code: 'EU-2016-1628',
+            description: 'Fire safety measures insufficient in mechanical rooms',
+            location: 'Mechanical Room B',
+            recommendation: 'Add additional fire suppression systems and barriers',
+            category: 'safety' as const
           }
         ];
       default:
