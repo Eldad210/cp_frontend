@@ -1,3 +1,4 @@
+
 import { RegionCode, codeStandards } from '@/types/codes';
 import { Button } from './ui/button';
 import { Check, Globe } from 'lucide-react';
@@ -8,25 +9,25 @@ interface CodeSelectorProps {
 }
 
 export function CodeSelector({ selectedRegion, onRegionSelect }: CodeSelectorProps) {
-  const regions: RegionCode[] = ['USA', 'ISRAEL', 'EUROPE'];
+  const countries: RegionCode[] = ['USA', 'ISRAEL', 'EUROPE'];
 
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2 mb-4">
         <Globe className="h-5 w-5 text-blue-600" />
-        <h3 className="text-lg font-medium text-gray-900">Select Region Code</h3>
+        <h3 className="text-lg font-medium text-gray-900">Select Country</h3>
       </div>
       
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        {regions.map((region) => (
+        {countries.map((country) => (
           <Button
-            key={region}
-            variant={selectedRegion === region ? 'primary' : 'outline'}
+            key={country}
+            variant={selectedRegion === country ? 'primary' : 'outline'}
             className="justify-between"
-            onClick={() => onRegionSelect(region)}
+            onClick={() => onRegionSelect(country)}
           >
-            {region}
-            {selectedRegion === region && (
+            {country}
+            {selectedRegion === country && (
               <Check className="h-4 w-4 ml-2" />
             )}
           </Button>

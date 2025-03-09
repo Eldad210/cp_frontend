@@ -18,7 +18,7 @@ export function Dashboard() {
 
   const handleFileSelect = (file: File) => {
     if (!selectedRegion) {
-      alert('Please select a region code first');
+      alert('Please select a country first');
       return;
     }
 
@@ -172,7 +172,7 @@ export function Dashboard() {
                     <p>
                       {selectedRegion
                         ? 'Upload a plan to see analysis results'
-                        : 'Select a region code to begin analysis'}
+                        : 'Select a country to begin analysis'}
                     </p>
                   </div>
                 )}
