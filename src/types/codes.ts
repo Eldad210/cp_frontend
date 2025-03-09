@@ -25,10 +25,31 @@ export const codeStandards: CodeStandard[] = [
     category: 'Accessibility'
   },
   {
+    id: 'nfpa-101',
+    region: 'USA',
+    name: 'NFPA 101',
+    description: 'Life Safety Code',
+    category: 'Safety'
+  },
+  {
     id: 'si-5281',
     region: 'ISRAEL',
     name: 'SI 5281',
     description: 'Israeli Sustainable Building Standard',
     category: 'Sustainability'
+  },
+  {
+    id: 'si-1918',
+    region: 'ISRAEL',
+    name: 'SI 1918',
+    description: 'Israeli Earthquake Resistance Standard',
+    category: 'Structural'
+  },
+  {
+    id: 'si-1045',
+    region: 'ISRAEL',
+    name: 'SI 1045',
+    description: 'Thermal Insulation of Buildings',
+    category: 'Energy'
   }
 ];

@@ -1,5 +1,6 @@
+
 import { RegionCode, codeStandards } from '@/types/codes';
-import { Check, ChevronDown, Globe } from 'lucide-react';
+import { Check, ChevronDown, Globe, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/utils/cn';
 
@@ -17,6 +18,23 @@ export function CodeSelector({ selectedRegion, onRegionSelect }: CodeSelectorPro
     onRegionSelect(country);
     setIsOpen(false);
   };
+
+  // Group standards by category
+  const getGroupedStandards = () => {
+    if (!selectedRegion) return {};
+    
+    const filtered = codeStandards.filter(standard => standard.region === selectedRegion);
+    return filtered.reduce((groups, standard) => {
+      const category = standard.category;
+      if (!groups[category]) {
+        groups[category] = [];
+      }
+      groups[category].push(standard);
+      return groups;
+    }, {} as Record<string, typeof codeStandards>);
+  };
+
+  const groupedStandards = getGroupedStandards();
 
   return (
     <div className="space-y-4">
@@ -67,29 +85,26 @@ export function CodeSelector({ selectedRegion, onRegionSelect }: CodeSelectorPro
           <h4 className="text-sm font-medium text-gray-700 mb-3">
             Applicable Standards:
           </h4>
-          <div className="space-y-2">
-            {codeStandards
-              .filter(standard => standard.region === selectedRegion)
-              .map(standard => (
-                <div
-                  key={standard.id}
-                  className="bg-gray-50 p-3 rounded-lg"
-                >
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h5 className="text-sm font-medium text-gray-900">
-                        {standard.name}
-                      </h5>
-                      <p className="text-sm text-gray-500">
-                        {standard.description}
-                      </p>
-                    </div>
-                    <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                      {standard.category}
-                    </span>
-                  </div>
+          
+          <div className="space-y-4">
+            {Object.entries(groupedStandards).map(([category, standards]) => (
+              <div key={category} className="bg-gray-50 rounded-lg overflow-hidden">
+                <div className="bg-blue-100 px-3 py-2 flex justify-between items-center">
+                  <h5 className="font-medium text-blue-800">{category}</h5>
+                  <span className="text-xs bg-blue-200 text-blue-800 px-2 py-1 rounded">
+                    {standards.length} standard{standards.length !== 1 ? 's' : ''}
+                  </span>
                 </div>
-              ))}
+                <div className="p-3 space-y-2">
+                  {standards.map(standard => (
+                    <div key={standard.id} className="pl-2 border-l-2 border-blue-200">
+                      <h6 className="text-sm font-medium text-gray-900">{standard.name}</h6>
+                      <p className="text-sm text-gray-500">{standard.description}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       )}
