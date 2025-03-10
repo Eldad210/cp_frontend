@@ -34,7 +34,8 @@ export function FileUpload({ onFileSelect }: FileUploadProps) {
         p: 4,
         textAlign: 'center',
         cursor: 'pointer',
-        transition: 'border-color 0.2s',
+        transition: 'border-color 0.2s ease-in-out',
+        bgcolor: 'background.paper',
         '&:hover': {
           borderColor: 'primary.main',
         }
@@ -42,7 +43,7 @@ export function FileUpload({ onFileSelect }: FileUploadProps) {
     >
       <input {...getInputProps()} />
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <Upload size={48} color="#94a3b8" />
+        <Upload size={48} style={{ color: '#94a3b8' }} />
         <Typography variant="h6" sx={{ mt: 2, color: 'text.primary' }}>
           Upload IFC Model
         </Typography>
@@ -56,6 +57,7 @@ export function FileUpload({ onFileSelect }: FileUploadProps) {
         </Typography>
         <MuiButton 
           variant="outlined" 
+          color="primary"
           size="small" 
           sx={{ mt: 2, textTransform: 'none' }}
         >

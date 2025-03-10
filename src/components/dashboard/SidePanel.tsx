@@ -2,8 +2,9 @@
 import { RegionCode } from '@/types/codes';
 import { FileUpload } from '../FileUpload';
 import { CodeSelector } from '../CodeSelector';
-import { Button } from '../ui/button';
+import { Button } from '@mui/material';
 import { Rocket } from 'lucide-react';
+import { Box, Paper, Typography } from '@mui/material';
 
 interface SidePanelProps {
   selectedRegion: RegionCode;
@@ -21,35 +22,42 @@ export function SidePanel({
   selectedFile
 }: SidePanelProps) {
   return (
-    <div className="lg:col-span-1 space-y-8">
-      <div className="bg-white rounded-lg shadow p-6">
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+      <Paper sx={{ p: 3, borderRadius: 2 }}>
         <CodeSelector
           selectedRegion={selectedRegion}
           onRegionSelect={onRegionSelect}
         />
-      </div>
+      </Paper>
 
-      <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-lg font-medium text-gray-900 mb-4">Upload Plans</h2>
+      <Paper sx={{ p: 3, borderRadius: 2 }}>
+        <Typography variant="h6" gutterBottom>Upload Plans</Typography>
         <FileUpload onFileSelect={onFileSelect} />
         
-        <div className="mt-6">
+        <Box sx={{ mt: 3 }}>
           <Button 
-            className="w-full flex items-center justify-center gap-2"
+            variant="contained" 
+            color="primary"
+            fullWidth
             disabled={!selectedFile || !selectedRegion}
             onClick={onRunAnalysis}
+            startIcon={<Rocket size={16} />}
+            sx={{ textTransform: 'none' }}
           >
-            <Rocket className="h-4 w-4" />
             Run Analysis
           </Button>
           {!selectedFile && (
-            <p className="text-xs text-gray-500 mt-2 text-center">Upload a file to run analysis</p>
+            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', textAlign: 'center', mt: 1 }}>
+              Upload a file to run analysis
+            </Typography>
           )}
           {!selectedRegion && (
-            <p className="text-xs text-gray-500 mt-2 text-center">Select a country to run analysis</p>
+            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', textAlign: 'center', mt: 1 }}>
+              Select a country to run analysis
+            </Typography>
           )}
-        </div>
-      </div>
-    </div>
+        </Box>
+      </Paper>
+    </Box>
   );
 }

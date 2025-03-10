@@ -63,6 +63,15 @@ export const theme = createTheme({
       fontWeight: 500,
       fontSize: '1.125rem',
     },
+    h5: {
+      fontWeight: 600,
+      fontSize: '1.25rem',
+    },
+    h6: {
+      fontWeight: 600,
+      fontSize: '1rem',
+      lineHeight: 1.4,
+    },
     body1: {
       fontSize: '1rem',
     },
@@ -71,6 +80,14 @@ export const theme = createTheme({
     },
     button: {
       textTransform: 'none',
+      fontWeight: 500,
+    },
+    subtitle1: {
+      fontSize: '1rem',
+      fontWeight: 500,
+    },
+    subtitle2: {
+      fontSize: '0.875rem',
       fontWeight: 500,
     },
   },
@@ -84,6 +101,8 @@ export const theme = createTheme({
           borderRadius: 6,
           boxShadow: 'none',
           padding: '8px 16px',
+          textTransform: 'none',
+          fontWeight: 500,
           '&:hover': {
             boxShadow: 'none',
           },
@@ -129,12 +148,42 @@ export const theme = createTheme({
         },
       },
     },
+    MuiChip: {
+      styleOverrides: {
+        root: {
+          fontWeight: 500,
+          fontSize: '0.75rem',
+        },
+        sizeSmall: {
+          height: 24,
+        },
+      },
+    },
     MuiToolbar: {
       styleOverrides: {
         root: {
           padding: '8px 16px',
           '@media (min-width: 600px)': {
             padding: '8px 24px',
+          },
+        },
+      },
+    },
+    MuiDivider: {
+      styleOverrides: {
+        root: {
+          borderColor: 'rgba(0, 0, 0, 0.08)',
+        },
+      },
+    },
+    MuiContainer: {
+      styleOverrides: {
+        root: {
+          paddingLeft: 16,
+          paddingRight: 16,
+          '@media (min-width: 600px)': {
+            paddingLeft: 24,
+            paddingRight: 24,
           },
         },
       },

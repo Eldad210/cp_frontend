@@ -7,6 +7,12 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #f9fafb;
 }
 
-/* Remove any conflicting styles that might override Material UI */
+/* Make sure Material UI styles take precedence */
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
