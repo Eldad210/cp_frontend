@@ -3,6 +3,7 @@ import { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Upload } from 'lucide-react';
 import { Button } from './ui/button';
+import { Box, Typography, Paper } from '@mui/material';
 
 interface FileUploadProps {
   onFileSelect: (file: File) => void;
@@ -24,22 +25,40 @@ export function FileUpload({ onFileSelect }: FileUploadProps) {
   });
 
   return (
-    <div
+    <Paper
       {...getRootProps()}
-      className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-500 transition-colors cursor-pointer"
+      variant="outlined"
+      sx={{
+        border: '2px dashed',
+        borderColor: isDragActive ? 'primary.main' : 'grey.300',
+        borderRadius: 2,
+        p: 4,
+        textAlign: 'center',
+        cursor: 'pointer',
+        transition: 'border-color 0.2s',
+        '&:hover': {
+          borderColor: 'primary.main',
+        }
+      }}
     >
       <input {...getInputProps()} />
-      <Upload className="mx-auto h-12 w-12 text-gray-400" />
-      <h3 className="mt-4 text-lg font-medium text-gray-900">Upload IFC Model</h3>
-      <p className="mt-2 text-sm text-gray-500">
-        {isDragActive
-          ? "Drop the file here..."
-          : "Drag 'n' drop your IFC model here, or click to select file"}
-      </p>
-      <p className="mt-1 text-xs text-gray-500">IFC format only (max. 50MB)</p>
-      <Button variant="outline" size="sm" className="mt-4">
-        Select File
-      </Button>
-    </div>
+      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <Upload size={48} color="#94a3b8" />
+        <Typography variant="h6" sx={{ mt: 2, color: 'text.primary' }}>
+          Upload IFC Model
+        </Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+          {isDragActive
+            ? "Drop the file here..."
+            : "Drag 'n' drop your IFC model here, or click to select file"}
+        </Typography>
+        <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5 }}>
+          IFC format only (max. 50MB)
+        </Typography>
+        <Button variant="outline" size="sm" sx={{ mt: 2 }}>
+          Select File
+        </Button>
+      </Box>
+    </Paper>
   );
 }

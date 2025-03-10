@@ -1,4 +1,5 @@
 
+import { AppBar, Toolbar, Typography, Box, Chip } from '@mui/material';
 import { Building2, LogOut } from 'lucide-react';
 import { Button } from '../ui/button';
 import { User } from '@/types/auth';
@@ -10,29 +11,30 @@ interface DashboardHeaderProps {
 
 export function DashboardHeader({ user, onLogout }: DashboardHeaderProps) {
   return (
-    <header className="bg-white shadow">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Building2 className="h-8 w-8 text-blue-600" />
-            <h1 className="text-2xl font-bold text-gray-900">Construction Plan Analyzer</h1>
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-600">
-              Welcome, {user?.name} ({user?.role})
-            </span>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={onLogout}
-              className="flex items-center gap-2"
-            >
-              <LogOut className="h-4 w-4" />
-              Sign out
-            </Button>
-          </div>
-        </div>
-      </div>
-    </header>
+    <AppBar position="static" color="default" elevation={1} sx={{ backgroundColor: 'white' }}>
+      <Toolbar sx={{ py: 1, px: { xs: 2, sm: 3, lg: 4 } }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Building2 color="#2563eb" size={32} />
+          <Typography variant="h5" component="h1" fontWeight="bold" color="text.primary">
+            Construction Plan Analyzer
+          </Typography>
+        </Box>
+        
+        <Box sx={{ ml: 'auto', display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Typography variant="body2" color="text.secondary">
+            Welcome, {user?.name} ({user?.role})
+          </Typography>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onLogout}
+            sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
+          >
+            <LogOut size={16} />
+            Sign out
+          </Button>
+        </Box>
+      </Toolbar>
+    </AppBar>
   );
 }

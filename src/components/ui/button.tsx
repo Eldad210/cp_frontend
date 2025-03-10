@@ -1,34 +1,85 @@
-import { ButtonHTMLAttributes, forwardRef } from 'react';
-import { cn } from '@/utils/cn';
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+import { forwardRef } from 'react';
+import MuiButton, { ButtonProps as MuiButtonProps } from '@mui/material/Button';
+import { styled } from '@mui/material/styles';
+
+interface ButtonProps extends Omit<MuiButtonProps, 'variant' | 'size'> {
   variant?: 'primary' | 'secondary' | 'outline';
   size?: 'sm' | 'md' | 'lg';
 }
 
+const StyledButton = styled(MuiButton)<{ buttonVariant?: string; buttonSize?: string }>(
+  ({ theme, buttonVariant, buttonSize }) => ({
+    fontWeight: 500,
+    borderRadius: theme.shape.borderRadius,
+    textTransform: 'none',
+    ...(buttonVariant === 'primary' && {
+      backgroundColor: theme.palette.primary.main,
+      color: theme.palette.primary.contrastText,
+      '&:hover': {
+        backgroundColor: theme.palette.primary.dark,
+      },
+    }),
+    ...(buttonVariant === 'secondary' && {
+      backgroundColor: '#f3f4f6',
+      color: '#111827',
+      '&:hover': {
+        backgroundColor: '#e5e7eb',
+      },
+    }),
+    ...(buttonVariant === 'outline' && {
+      backgroundColor: 'transparent',
+      border: '1px solid #d1d5db',
+      color: '#374151',
+      '&:hover': {
+        backgroundColor: '#f3f4f6',
+      },
+    }),
+    ...(buttonSize === 'sm' && {
+      padding: '6px 12px',
+      fontSize: '0.875rem',
+    }),
+    ...(buttonSize === 'md' && {
+      padding: '8px 16px',
+      fontSize: '1rem',
+    }),
+    ...(buttonSize === 'lg' && {
+      padding: '12px 24px',
+      fontSize: '1.125rem',
+    }),
+    '&.Mui-disabled': {
+      opacity: 0.5,
+      pointerEvents: 'none',
+    },
+  })
+);
+
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant = 'primary', size = 'md', children, ...props }, ref) => {
+  ({ 
+    variant = 'primary', 
+    size = 'md', 
+    children, 
+    className, 
+    ...props 
+  }, ref) => {
+    // Convert our custom props to MUI variant
+    const getMuiVariant = (): MuiButtonProps['variant'] => {
+      if (variant === 'outline') return 'outlined';
+      return 'contained';
+    };
+
     return (
-      <button
+      <StyledButton
         ref={ref}
-        className={cn(
-          'inline-flex items-center justify-center rounded-md font-medium transition-colors',
-          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500',
-          'disabled:pointer-events-none disabled:opacity-50',
-          {
-            'bg-blue-600 text-white hover:bg-blue-700': variant === 'primary',
-            'bg-gray-100 text-gray-900 hover:bg-gray-200': variant === 'secondary',
-            'border border-gray-300 bg-transparent hover:bg-gray-100': variant === 'outline',
-            'px-3 py-1.5 text-sm': size === 'sm',
-            'px-4 py-2 text-base': size === 'md',
-            'px-6 py-3 text-lg': size === 'lg',
-          },
-          className
-        )}
+        buttonVariant={variant}
+        buttonSize={size}
+        variant={getMuiVariant()}
+        className={className}
+        disableElevation
         {...props}
       >
         {children}
-      </button>
+      </StyledButton>
     );
   }
 );
