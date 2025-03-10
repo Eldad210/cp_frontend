@@ -1,20 +1,8 @@
 
 import { RegionCode, codeStandards } from '@/types/codes';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { Check, ChevronDown, ChevronUp, Globe } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { 
-  Box, 
-  Typography, 
-  FormControl,
-  MenuItem,
-  Select,
-  Accordion, 
-  AccordionSummary, 
-  AccordionDetails,
-  Chip,
-  SelectChangeEvent
-} from '@mui/material';
-import PublicIcon from '@mui/icons-material/Public';
+import { cn } from '@/utils/cn';
 
 interface CodeSelectorProps {
   selectedRegion: RegionCode | null;
@@ -23,6 +11,7 @@ interface CodeSelectorProps {
 
 export function CodeSelector({ selectedRegion, onRegionSelect }: CodeSelectorProps) {
   const countries: RegionCode[] = ['USA', 'ISRAEL'];
+  const [isOpen, setIsOpen] = useState(false);
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
 
   // Initialize categories as collapsed by default when selectedRegion changes
@@ -40,8 +29,10 @@ export function CodeSelector({ selectedRegion, onRegionSelect }: CodeSelectorPro
     }
   }, [selectedRegion]);
 
-  const handleCountryChange = (event: SelectChangeEvent<string>) => {
-    onRegionSelect(event.target.value as RegionCode);
+  const toggleDropdown = () => setIsOpen(!isOpen);
+  const handleSelect = (country: RegionCode) => {
+    onRegionSelect(country);
+    setIsOpen(false);
   };
 
   const toggleCategory = (category: string) => {
@@ -69,103 +60,89 @@ export function CodeSelector({ selectedRegion, onRegionSelect }: CodeSelectorPro
   const groupedStandards = getGroupedStandards();
 
   return (
-    <Box>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-        <PublicIcon color="primary" />
-        <Typography variant="h6">
-          Select Country
-        </Typography>
-      </Box>
+    <div className="space-y-4">
+      <div className="flex items-center gap-2 mb-4">
+        <Globe className="h-5 w-5 text-blue-600" />
+        <h3 className="text-lg font-medium text-gray-900">Select Country</h3>
+      </div>
       
-      <FormControl fullWidth variant="outlined" size="small" sx={{ mb: 3 }}>
-        <Select
-          value={selectedRegion || ''}
-          onChange={handleCountryChange}
-          displayEmpty
-          inputProps={{ 'aria-label': 'Select country' }}
-          sx={{
-            bgcolor: selectedRegion ? 'primary.main' : 'background.paper',
-            color: selectedRegion ? 'primary.contrastText' : 'text.primary',
-            '.MuiOutlinedInput-notchedOutline': {
-              borderColor: selectedRegion ? 'primary.dark' : undefined,
-            },
-            '&:hover .MuiOutlinedInput-notchedOutline': {
-              borderColor: selectedRegion ? 'primary.dark' : undefined,
-            },
-          }}
+      <div className="relative">
+        <button
+          type="button"
+          className={cn(
+            "w-full flex items-center justify-between px-4 py-2 rounded-md border",
+            selectedRegion ? "bg-blue-600 text-white border-blue-700" : "bg-white text-gray-900 border-gray-300"
+          )}
+          onClick={toggleDropdown}
         >
-          <MenuItem value="" disabled>
-            Choose country
-          </MenuItem>
-          {countries.map((country) => (
-            <MenuItem key={country} value={country}>
-              {country}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+          <span>{selectedRegion || "Choose country"}</span>
+          <ChevronDown className="h-4 w-4 ml-2" />
+        </button>
+        
+        {isOpen && (
+          <div className="absolute z-10 mt-1 w-full bg-white rounded-md shadow-lg border border-gray-200">
+            <ul className="py-1 max-h-60 overflow-auto">
+              {countries.map((country) => (
+                <li 
+                  key={country}
+                  className={cn(
+                    "px-4 py-2 cursor-pointer flex items-center justify-between",
+                    "hover:bg-gray-100",
+                    selectedRegion === country ? "bg-blue-50" : ""
+                  )}
+                  onClick={() => handleSelect(country)}
+                >
+                  <span>{country}</span>
+                  {selectedRegion === country && (
+                    <Check className="h-4 w-4 text-blue-600" />
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
 
       {selectedRegion && (
-        <Box>
-          <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+        <div className="mt-6">
+          <h4 className="text-sm font-medium text-gray-700 mb-3">
             Applicable Standards:
-          </Typography>
+          </h4>
           
-          <Box sx={{ '& > *': { mb: 2 } }}>
+          <div className="space-y-4">
             {Object.entries(groupedStandards).map(([category, standards]) => (
-              <Accordion
-                key={category}
-                expanded={!!expandedCategories[category]}
-                onChange={() => toggleCategory(category)}
-                elevation={0}
-                disableGutters
-                sx={{ 
-                  bgcolor: 'primary.light', 
-                  '&.MuiAccordion-root:before': {
-                    display: 'none',
-                  },
-                  borderRadius: 1,
-                  overflow: 'hidden'
-                }}
-              >
-                <AccordionSummary
-                  expandIcon={expandedCategories[category] ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+              <div key={category} className="bg-blue-50 rounded-lg overflow-hidden">
+                <div 
+                  className="bg-blue-100 px-3 py-2 flex justify-between items-center cursor-pointer"
+                  onClick={() => toggleCategory(category)}
                 >
-                  <Box sx={{ display: 'flex', width: '100%', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Typography sx={{ fontWeight: 'medium', color: 'primary.dark' }}>
-                      {category}
-                    </Typography>
-                    <Chip
-                      label={`${standards.length} standard${standards.length !== 1 ? 's' : ''}`}
-                      size="small"
-                      sx={{ bgcolor: 'background.paper' }}
-                    />
-                  </Box>
-                </AccordionSummary>
-                <AccordionDetails sx={{ bgcolor: 'primary.lightest', p: 2 }}>
-                  <Box sx={{ '& > *': { mb: 2 } }}>
+                  <h5 className="font-medium text-blue-800">{category}</h5>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs bg-blue-200 text-blue-800 px-2 py-1 rounded">
+                      {standards.length} standard{standards.length !== 1 ? 's' : ''}
+                    </span>
+                    {expandedCategories[category] ? (
+                      <ChevronUp className="h-4 w-4 text-blue-600" />
+                    ) : (
+                      <ChevronDown className="h-4 w-4 text-blue-600" />
+                    )}
+                  </div>
+                </div>
+                {expandedCategories[category] && (
+                  <div className="p-3 space-y-2">
                     {standards.map(standard => (
-                      <Box 
-                        key={standard.id} 
-                        sx={{ 
-                          pl: 2, 
-                          borderLeft: 2, 
-                          borderColor: 'primary.light'
-                        }}
-                      >
-                        <Typography variant="subtitle2">{standard.name}</Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          {standard.description}
-                        </Typography>
-                      </Box>
+                      <div key={standard.id} className="pl-2 border-l-2 border-blue-200">
+                        <h6 className="text-sm font-medium text-gray-900">{standard.name}</h6>
+                        <p className="text-sm text-gray-500">{standard.description}</p>
+                      </div>
                     ))}
-                  </Box>
-                </AccordionDetails>
-              </Accordion>
+                  </div>
+                )}
+              </div>
             ))}
-          </Box>
-        </Box>
+          </div>
+        </div>
       )}
-    </Box>
+    </div>
   );
 }

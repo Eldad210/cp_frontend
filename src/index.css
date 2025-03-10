@@ -1,2 +1,3 @@
-
-/* Empty file - all styling is handled by Material UI */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

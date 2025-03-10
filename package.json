@@ -11,10 +11,6 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@emotion/react": "^11.14.0",
-    "@emotion/styled": "^11.14.0",
-    "@mui/icons-material": "^6.4.7",
-    "@mui/material": "^6.4.7",
     "@types/three": "^0.160.0",
     "clsx": "^2.1.0",
     "jwt-decode": "^4.0.0",

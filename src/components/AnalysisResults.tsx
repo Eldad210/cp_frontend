@@ -1,7 +1,6 @@
 
 import { AnalysisResult } from '@/types';
 import { AlertTriangle, CheckCircle, Construction, Eye, Flame, HardHat, Info, Shield, XCircle } from 'lucide-react';
-import { Box, Typography, Paper, Chip } from '@mui/material';
 
 interface AnalysisResultsProps {
   results: AnalysisResult[];
@@ -11,59 +10,27 @@ export function AnalysisResults({ results }: AnalysisResultsProps) {
   const getSeverityIcon = (severity: AnalysisResult['severity']) => {
     switch (severity) {
       case 'error':
-        return (
-          <Box sx={{ display: 'flex', color: 'error.main' }}>
-            <XCircle size={20} />
-          </Box>
-        );
+        return <XCircle className="h-5 w-5 text-red-500" />;
       case 'warning':
-        return (
-          <Box sx={{ display: 'flex', color: 'warning.main' }}>
-            <AlertTriangle size={20} />
-          </Box>
-        );
+        return <AlertTriangle className="h-5 w-5 text-yellow-500" />;
       case 'info':
-        return (
-          <Box sx={{ display: 'flex', color: 'info.main' }}>
-            <Info size={20} />
-          </Box>
-        );
+        return <Info className="h-5 w-5 text-blue-500" />;
     }
   };
 
   const getCategoryIcon = (category: AnalysisResult['category']) => {
     switch (category) {
       case 'safety':
-        return (
-          <Box sx={{ display: 'flex', color: 'orange.500' }}>
-            <HardHat size={20} />
-          </Box>
-        );
+        return <HardHat className="h-5 w-5 text-orange-500" />;
       case 'accessibility':
-        return (
-          <Box sx={{ display: 'flex', color: 'purple.500' }}>
-            <Eye size={20} />
-          </Box>
-        );
+        return <Eye className="h-5 w-5 text-purple-500" />;
       case 'structural':
-        return (
-          <Box sx={{ display: 'flex', color: 'primary.dark' }}>
-            <Construction size={20} />
-          </Box>
-        );
+        return <Construction className="h-5 w-5 text-blue-600" />;
       case 'energy':
-        return (
-          <Box sx={{ display: 'flex', color: 'warning.dark' }}>
-            <Flame size={20} />
-          </Box>
-        );
+        return <Flame className="h-5 w-5 text-yellow-600" />;
       case 'general':
       default:
-        return (
-          <Box sx={{ display: 'flex', color: 'text.secondary' }}>
-            <Shield size={20} />
-          </Box>
-        );
+        return <Shield className="h-5 w-5 text-gray-500" />;
     }
   };
 
@@ -83,73 +50,59 @@ export function AnalysisResults({ results }: AnalysisResultsProps) {
   );
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+    <div className="space-y-6">
       {results.length > 0 ? (
         sortedCategories.map((category) => (
-          <Box key={category} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, borderBottom: 1, borderColor: 'divider', pb: 1 }}>
+          <div key={category} className="space-y-4">
+            <div className="flex items-center gap-2 border-b pb-2">
               {getCategoryIcon(category as AnalysisResult['category'])}
-              <Typography variant="subtitle1" sx={{ textTransform: 'capitalize' }}>
-                {category}
-              </Typography>
-              <Chip 
-                size="small" 
-                label={resultsByCategory[category].length} 
-                sx={{ ml: 1, bgcolor: 'background.paper' }}
-              />
-            </Box>
+              <h3 className="text-md font-medium capitalize">{category}</h3>
+              <span className="ml-2 text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full">
+                {resultsByCategory[category].length}
+              </span>
+            </div>
             
             {resultsByCategory[category].map((result) => (
-              <Paper
+              <div
                 key={result.id}
-                variant="outlined"
-                sx={{
-                  p: 2,
-                  borderLeftWidth: 4,
+                className="bg-white rounded-lg shadow p-4 border-l-4"
+                style={{
                   borderLeftColor:
                     result.severity === 'error'
-                      ? 'error.main'
+                      ? '#ef4444'
                       : result.severity === 'warning'
-                      ? 'warning.main'
-                      : 'info.main',
+                      ? '#f59e0b'
+                      : '#3b82f6',
                 }}
               >
-                <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5 }}>
+                <div className="flex items-start gap-3">
                   {getSeverityIcon(result.severity)}
-                  <Box sx={{ flexGrow: 1 }}>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <Typography variant="subtitle2">
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between">
+                      <h4 className="text-sm font-medium text-gray-900">
                         Code: {result.code}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        {result.location}
-                      </Typography>
-                    </Box>
-                    <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-                      {result.description}
-                    </Typography>
-                    <Typography variant="body2" color="primary" sx={{ mt: 1 }}>
+                      </h4>
+                      <span className="text-xs text-gray-500">{result.location}</span>
+                    </div>
+                    <p className="mt-1 text-sm text-gray-600">{result.description}</p>
+                    <p className="mt-2 text-sm text-blue-600">
                       Recommendation: {result.recommendation}
-                    </Typography>
-                  </Box>
-                </Box>
-              </Paper>
+                    </p>
+                  </div>
+                </div>
+              </div>
             ))}
-          </Box>
+          </div>
         ))
       ) : (
-        <Box sx={{ textAlign: 'center', py: 4 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'center', color: 'success.main', mb: 1 }}>
-            <CheckCircle size={48} />
-          </Box>
-          <Typography variant="h6" gutterBottom>
-            All Clear!
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
+        <div className="text-center py-8">
+          <CheckCircle className="mx-auto h-12 w-12 text-green-500" />
+          <h3 className="mt-2 text-sm font-medium text-gray-900">All Clear!</h3>
+          <p className="mt-1 text-sm text-gray-500">
             No compliance issues were found in the plans.
-          </Typography>
-        </Box>
+          </p>
+        </div>
       )}
-    </Box>
+    </div>
   );
 }
