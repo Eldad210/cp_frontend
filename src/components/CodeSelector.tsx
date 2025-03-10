@@ -1,8 +1,7 @@
-
 import { RegionCode, codeStandards } from '@/types/codes';
 import { Check, ChevronDown, ChevronUp, Globe } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { Box, Typography, Button, Paper, List, ListItem, ListItemButton } from '@mui/material';
+import { Box, Typography, Button, Paper, List, ListItemButton } from '@mui/material';
 
 interface CodeSelectorProps {
   selectedRegion: RegionCode | null;
@@ -14,7 +13,6 @@ export function CodeSelector({ selectedRegion, onRegionSelect }: CodeSelectorPro
   const [isOpen, setIsOpen] = useState(false);
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
 
-  // Initialize categories as collapsed by default when selectedRegion changes
   useEffect(() => {
     if (selectedRegion) {
       const groupedStandards = getGroupedStandards();
@@ -42,7 +40,6 @@ export function CodeSelector({ selectedRegion, onRegionSelect }: CodeSelectorPro
     }));
   };
 
-  // Group standards by category
   const getGroupedStandards = () => {
     if (!selectedRegion) return {};
     
