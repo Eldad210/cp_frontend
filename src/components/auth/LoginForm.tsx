@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import { Button } from '../ui/button';
 import { Lock, Mail, LogIn } from 'lucide-react';
+import { Paper, Box, Typography, TextField, InputAdornment, CircularProgress, Alert } from '@mui/material';
 
 export function LoginForm() {
   const [email, setEmail] = useState('');
@@ -38,106 +39,183 @@ export function LoginForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div className="bg-white p-8 rounded-xl shadow-lg transform transition-all duration-300 hover:shadow-xl">
-          <div className="flex flex-col items-center">
-            <div className="mx-auto h-14 w-14 flex items-center justify-center rounded-full bg-blue-100 mb-4 transform transition-transform duration-500 hover:rotate-12">
-              <Lock className="h-7 w-7 text-blue-600" />
-            </div>
-            <h2 className="mt-2 text-center text-3xl font-extrabold text-gray-900">
-              Sign in to your account
-            </h2>
-            <p className="mt-2 text-center text-sm text-gray-600">
-              Access restricted to authorized personnel only
-            </p>
-          </div>
+    <Box 
+      className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8"
+      sx={{ 
+        animation: 'fadeIn 0.5s ease-out',
+        '@keyframes fadeIn': {
+          '0%': { opacity: 0 },
+          '100%': { opacity: 1 }
+        }
+      }}
+    >
+      <Box 
+        component={Paper} 
+        elevation={6}
+        className="max-w-md w-full space-y-8"
+        sx={{ 
+          borderRadius: '16px',
+          overflow: 'hidden',
+          transition: 'all 0.3s ease',
+          '&:hover': {
+            transform: 'translateY(-5px)',
+            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
+          }
+        }}
+      >
+        <Box className="bg-white p-8 rounded-t-xl">
+          <Box className="flex flex-col items-center" sx={{ mb: 4 }}>
+            <Box 
+              className="mx-auto h-16 w-16 flex items-center justify-center rounded-full bg-blue-100 mb-4"
+              sx={{ 
+                transition: 'all 0.5s ease',
+                '&:hover': {
+                  transform: 'rotate(12deg) scale(1.05)',
+                  backgroundColor: 'rgba(63, 81, 181, 0.15)'
+                }
+              }}
+            >
+              <Lock className="h-8 w-8 text-blue-600" />
+            </Box>
+            <Typography 
+              variant="h4" 
+              component="h1" 
+              sx={{ 
+                fontWeight: 700, 
+                color: 'text.primary',
+                mb: 1 
+              }}
+            >
+              Sign in
+            </Typography>
+            <Typography variant="body1" color="text.secondary">
+              Access the Construction Plan Analyzer
+            </Typography>
+          </Box>
           
-          <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          <form className="mt-6 space-y-6" onSubmit={handleSubmit}>
             {error && (
-              <div className="rounded-md bg-red-50 p-4 border border-red-200">
-                <p className="text-sm text-red-700 flex items-center">
-                  <span className="font-medium mr-1">Error:</span> {error}
-                </p>
-              </div>
+              <Alert 
+                severity="error" 
+                sx={{ 
+                  borderRadius: '8px',
+                  animation: 'slideIn 0.3s ease-out',
+                  '@keyframes slideIn': {
+                    '0%': { opacity: 0, transform: 'translateY(-10px)' },
+                    '100%': { opacity: 1, transform: 'translateY(0)' }
+                  }
+                }}
+              >
+                {error}
+              </Alert>
             )}
             
-            <div className="space-y-4">
-              <div className="relative">
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+            <Box className="space-y-4">
+              <Box>
+                <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1, ml: 1 }}>
                   Email address
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Mail className="h-5 w-5 text-gray-400" />
-                  </div>
-                  <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    required
-                    className="appearance-none block w-full pl-11 pr-3 py-3 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-900 sm:text-sm"
-                    placeholder="Enter your email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                </div>
-              </div>
+                </Typography>
+                <TextField
+                  fullWidth
+                  id="email"
+                  name="email"
+                  type="email"
+                  required
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <Mail className="h-5 w-5 text-gray-400" />
+                      </InputAdornment>
+                    ),
+                  }}
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: '10px',
+                      transition: 'all 0.2s ease',
+                      '&:hover .MuiOutlinedInput-notchedOutline': {
+                        borderColor: 'primary.main',
+                      },
+                    }
+                  }}
+                />
+              </Box>
               
-              <div className="relative">
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+              <Box>
+                <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1, ml: 1 }}>
                   Password
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Lock className="h-5 w-5 text-gray-400" />
-                  </div>
-                  <input
-                    id="password"
-                    name="password"
-                    type="password"
-                    required
-                    className="appearance-none block w-full pl-11 pr-3 py-3 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-900 sm:text-sm"
-                    placeholder="Enter your password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                </div>
-              </div>
-            </div>
+                </Typography>
+                <TextField
+                  fullWidth
+                  id="password"
+                  name="password"
+                  type="password"
+                  required
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <Lock className="h-5 w-5 text-gray-400" />
+                      </InputAdornment>
+                    ),
+                  }}
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: '10px',
+                      transition: 'all 0.2s ease',
+                      '&:hover .MuiOutlinedInput-notchedOutline': {
+                        borderColor: 'primary.main',
+                      },
+                    }
+                  }}
+                />
+              </Box>
+            </Box>
 
-            <div>
+            <Box>
               <Button
                 type="submit"
                 className="w-full py-3 flex justify-center items-center bg-blue-600 hover:bg-blue-700 focus:ring-blue-500 focus:ring-offset-blue-200 text-white transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 rounded-lg"
                 disabled={isLoading}
                 size="lg"
+                sx={{
+                  mt: 4,
+                  py: 1.5,
+                  borderRadius: '10px',
+                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+                  '&:hover': {
+                    transform: 'translateY(-2px)',
+                    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)'
+                  },
+                  transition: 'all 0.2s ease'
+                }}
               >
                 {isLoading ? (
-                  <span className="flex items-center">
-                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
+                  <Box className="flex items-center">
+                    <CircularProgress size={24} thickness={4} sx={{ color: 'white', mr: 2 }} />
                     Signing in...
-                  </span>
+                  </Box>
                 ) : (
-                  <span className="flex items-center">
+                  <Box className="flex items-center">
                     <LogIn className="mr-2 h-5 w-5" />
                     Sign in
-                  </span>
+                  </Box>
                 )}
               </Button>
-            </div>
+            </Box>
             
-            <div className="text-center mt-4">
-              <p className="text-xs text-gray-500">
+            <Box sx={{ textAlign: 'center', mt: 4 }}>
+              <Typography variant="caption" color="text.secondary">
                 By signing in, you agree to the Civil Planner Terms of Service and Privacy Policy
-              </p>
-            </div>
+              </Typography>
+            </Box>
           </form>
-        </div>
-      </div>
-    </div>
+        </Box>
+      </Box>
+    </Box>
   );
 }
