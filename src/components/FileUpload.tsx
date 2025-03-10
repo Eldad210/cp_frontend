@@ -3,6 +3,7 @@ import { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Upload } from 'lucide-react';
 import { Button } from './ui/button';
+import { Box, Typography, Paper } from '@mui/material';
 
 interface FileUploadProps {
   onFileSelect: (file: File) => void;
@@ -24,22 +25,39 @@ export function FileUpload({ onFileSelect }: FileUploadProps) {
   });
 
   return (
-    <div
+    <Paper
+      variant="outlined"
       {...getRootProps()}
-      className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-500 transition-colors cursor-pointer"
+      sx={{
+        borderStyle: 'dashed',
+        borderColor: theme => isDragActive ? theme.palette.primary.main : 'divider',
+        borderRadius: 1,
+        p: 3,
+        textAlign: 'center',
+        cursor: 'pointer',
+        '&:hover': {
+          borderColor: 'primary.main',
+          backgroundColor: 'action.hover',
+        },
+        transition: 'all 0.2s',
+      }}
     >
       <input {...getInputProps()} />
-      <Upload className="mx-auto h-12 w-12 text-gray-400" />
-      <h3 className="mt-4 text-lg font-medium text-gray-900">Upload IFC Model</h3>
-      <p className="mt-2 text-sm text-gray-500">
+      <Upload sx={{ color: 'text.secondary', width: 48, height: 48, mx: 'auto', mb: 2 }} />
+      <Typography variant="h6" gutterBottom>
+        Upload IFC Model
+      </Typography>
+      <Typography variant="body2" color="text.secondary" gutterBottom>
         {isDragActive
           ? "Drop the file here..."
           : "Drag 'n' drop your IFC model here, or click to select file"}
-      </p>
-      <p className="mt-1 text-xs text-gray-500">IFC format only (max. 50MB)</p>
-      <Button variant="outline" size="sm" className="mt-4">
+      </Typography>
+      <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 2 }}>
+        IFC format only (max. 50MB)
+      </Typography>
+      <Button variant="outline" size="sm">
         Select File
       </Button>
-    </div>
+    </Paper>
   );
 }

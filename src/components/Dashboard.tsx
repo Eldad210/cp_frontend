@@ -7,6 +7,7 @@ import { DashboardHeader } from './dashboard/DashboardHeader';
 import { SidePanel } from './dashboard/SidePanel';
 import { ResultsPanel } from './dashboard/ResultsPanel';
 import { createAnalyzedPlan } from './dashboard/analysisUtils';
+import { Container, Grid, Box } from '@mui/material';
 
 export function Dashboard() {
   const [activePlan, setActivePlan] = useState<Plan | null>(null);
@@ -29,12 +30,12 @@ export function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
       <DashboardHeader user={user} onLogout={logout} />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="space-y-8">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <Container maxWidth="lg" sx={{ py: 4 }}>
+        <Grid container spacing={3}>
+          <Grid item xs={12} lg={4}>
             <SidePanel 
               selectedRegion={selectedRegion}
               onRegionSelect={setSelectedRegion}
@@ -42,17 +43,17 @@ export function Dashboard() {
               onRunAnalysis={handleRunAnalysis}
               selectedFile={selectedFile}
             />
+          </Grid>
 
-            <div className="lg:col-span-2">
-              <ResultsPanel 
-                activePlan={activePlan}
-                selectedFile={selectedFile}
-                selectedRegion={selectedRegion}
-              />
-            </div>
-          </div>
-        </div>
-      </main>
-    </div>
+          <Grid item xs={12} lg={8}>
+            <ResultsPanel 
+              activePlan={activePlan}
+              selectedFile={selectedFile}
+              selectedRegion={selectedRegion}
+            />
+          </Grid>
+        </Grid>
+      </Container>
+    </Box>
   );
 }

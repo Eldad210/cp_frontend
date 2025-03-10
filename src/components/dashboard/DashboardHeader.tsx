@@ -1,7 +1,9 @@
 
-import { Building2, LogOut } from 'lucide-react';
+import { LogOut } from 'lucide-react';
 import { Button } from '../ui/button';
 import { User } from '@/types/auth';
+import { AppBar, Toolbar, Typography, Box, Avatar, Chip } from '@mui/material';
+import BusinessIcon from '@mui/icons-material/Business';
 
 interface DashboardHeaderProps {
   user: User | null;
@@ -10,29 +12,29 @@ interface DashboardHeaderProps {
 
 export function DashboardHeader({ user, onLogout }: DashboardHeaderProps) {
   return (
-    <header className="bg-white shadow">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Building2 className="h-8 w-8 text-blue-600" />
-            <h1 className="text-2xl font-bold text-gray-900">Construction Plan Analyzer</h1>
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-600">
-              Welcome, {user?.name} ({user?.role})
-            </span>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={onLogout}
-              className="flex items-center gap-2"
-            >
-              <LogOut className="h-4 w-4" />
-              Sign out
-            </Button>
-          </div>
-        </div>
-      </div>
-    </header>
+    <AppBar position="static" color="default" elevation={1} sx={{ backgroundColor: 'white' }}>
+      <Toolbar>
+        <BusinessIcon sx={{ color: 'primary.main', mr: 2, fontSize: 32 }} />
+        <Typography variant="h6" component="div" fontWeight="bold" sx={{ flexGrow: 1 }}>
+          Construction Plan Analyzer
+        </Typography>
+        
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Chip 
+            avatar={<Avatar>{user?.name.charAt(0)}</Avatar>}
+            label={`${user?.name} (${user?.role})`}
+            variant="outlined"
+          />
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onLogout}
+            startIcon={<LogOut size={16} />}
+          >
+            Sign out
+          </Button>
+        </Box>
+      </Toolbar>
+    </AppBar>
   );
 }
