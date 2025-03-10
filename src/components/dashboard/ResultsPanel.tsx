@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { AnalysisResult, Plan } from '../../types';
 import { ChevronDown, ChevronUp, FileSearch } from 'lucide-react';
@@ -11,8 +10,7 @@ import {
   Accordion, 
   AccordionSummary, 
   AccordionDetails,
-  Chip,
-  Divider
+  Chip
 } from '@mui/material';
 
 interface ResultsPanelProps {

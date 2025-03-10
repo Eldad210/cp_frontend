@@ -1,10 +1,9 @@
-
 import { RegionCode } from '@/types/codes';
 import { FileUpload } from '../FileUpload';
 import { CodeSelector } from '../CodeSelector';
 import { Button } from '../ui/button';
 import { Rocket } from 'lucide-react';
-import { Paper, Typography, Box, Divider } from '@mui/material';
+import { Paper, Typography, Box } from '@mui/material';
 
 interface SidePanelProps {
   selectedRegion: RegionCode;

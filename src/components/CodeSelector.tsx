@@ -1,6 +1,6 @@
 
 import { RegionCode, codeStandards } from '@/types/codes';
-import { Check, ChevronDown, ChevronUp, Globe } from 'lucide-react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { 
   Box, 

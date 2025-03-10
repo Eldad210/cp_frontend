@@ -3,7 +3,7 @@ import { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Upload } from 'lucide-react';
 import { Button } from './ui/button';
-import { Box, Typography, Paper } from '@mui/material';
+import { Typography, Paper } from '@mui/material';
 
 interface FileUploadProps {
   onFileSelect: (file: File) => void;
@@ -43,7 +43,9 @@ export function FileUpload({ onFileSelect }: FileUploadProps) {
       }}
     >
       <input {...getInputProps()} />
-      <Upload sx={{ color: 'text.secondary', width: 48, height: 48, mx: 'auto', mb: 2 }} />
+      <div style={{ color: 'text.secondary', margin: 'auto', marginBottom: '16px' }}>
+        <Upload size={48} />
+      </div>
       <Typography variant="h6" gutterBottom>
         Upload IFC Model
       </Typography>
