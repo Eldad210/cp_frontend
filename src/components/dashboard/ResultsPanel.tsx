@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { AnalysisResult, Plan } from '../../types';
 import { ChevronDown, ChevronUp, FileSearch } from 'lucide-react';
@@ -7,9 +6,6 @@ import {
   Box, 
   Paper, 
   Typography, 
-  Accordion, 
-  AccordionSummary, 
-  AccordionDetails,
   Chip,
   Divider
 } from '@mui/material';
