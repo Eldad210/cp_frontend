@@ -2,7 +2,7 @@
 import { RegionCode, codeStandards } from '@/types/codes';
 import { Check, ChevronDown, ChevronUp, Globe } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { Box, Typography, Button, Paper, List, ListItem } from '@mui/material';
+import { Box, Typography, Button, Paper, List, ListItem, ListItemButton } from '@mui/material';
 
 interface CodeSelectorProps {
   selectedRegion: RegionCode | null;
@@ -62,7 +62,7 @@ export function CodeSelector({ selectedRegion, onRegionSelect }: CodeSelectorPro
   return (
     <Box sx={{ marginTop: 2 }}>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 4 }}>
-        <Globe sx={{ height: '20px', width: '20px', color: '#2563eb' }} />
+        <Globe size={20} color="#2563eb" />
         <Typography variant="h6" sx={{ fontWeight: 500, color: '#111827' }}>
           Select Country
         </Typography>
@@ -101,9 +101,8 @@ export function CodeSelector({ selectedRegion, onRegionSelect }: CodeSelectorPro
           >
             <List sx={{ py: 1, maxHeight: '240px', overflow: 'auto' }}>
               {countries.map((country) => (
-                <ListItem 
+                <ListItemButton
                   key={country}
-                  button
                   onClick={() => handleSelect(country)}
                   sx={{
                     px: 2,
@@ -118,9 +117,9 @@ export function CodeSelector({ selectedRegion, onRegionSelect }: CodeSelectorPro
                 >
                   <Typography>{country}</Typography>
                   {selectedRegion === country && (
-                    <Check size={16} style={{ color: '#2563eb' }} />
+                    <Check size={16} color="#2563eb" />
                   )}
-                </ListItem>
+                </ListItemButton>
               ))}
             </List>
           </Paper>
@@ -172,9 +171,9 @@ export function CodeSelector({ selectedRegion, onRegionSelect }: CodeSelectorPro
                       {standards.length} standard{standards.length !== 1 ? 's' : ''}
                     </Box>
                     {expandedCategories[category] ? (
-                      <ChevronUp size={16} style={{ color: '#2563eb' }} />
+                      <ChevronUp size={16} color="#2563eb" />
                     ) : (
-                      <ChevronDown size={16} style={{ color: '#2563eb' }} />
+                      <ChevronDown size={16} color="#2563eb" />
                     )}
                   </Box>
                 </Box>

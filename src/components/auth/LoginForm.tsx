@@ -89,7 +89,7 @@ export function LoginForm() {
                 }
               }}
             >
-              <Lock sx={{ height: '32px', width: '32px', color: '#3b82f6' }} />
+              <Lock size={32} color="#3b82f6" />
             </Box>
             <Typography 
               variant="h4" 
@@ -142,7 +142,7 @@ export function LoginForm() {
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
-                        <Mail sx={{ height: '20px', width: '20px', color: '#9CA3AF' }} />
+                        <Mail size={20} color="#9CA3AF" />
                       </InputAdornment>
                     ),
                   }}
@@ -174,7 +174,7 @@ export function LoginForm() {
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
-                        <Lock sx={{ height: '20px', width: '20px', color: '#9CA3AF' }} />
+                        <Lock size={20} color="#9CA3AF" />
                       </InputAdornment>
                     ),
                   }}
@@ -221,7 +221,7 @@ export function LoginForm() {
                   </Box>
                 ) : (
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <LogIn sx={{ mr: 2, height: '20px', width: '20px' }} />
+                    <LogIn size={20} style={{ marginRight: 8 }} />
                     Sign in
                   </Box>
                 )}
