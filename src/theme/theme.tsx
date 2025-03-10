@@ -100,7 +100,7 @@ export const theme = createTheme({
         root: {
           borderRadius: 6,
           boxShadow: 'none',
-          padding: '8px 16px',
+          padding: '6px 12px', // Reduced padding
           textTransform: 'none',
           fontWeight: 500,
           '&:hover': {
@@ -155,16 +155,16 @@ export const theme = createTheme({
           fontSize: '0.75rem',
         },
         sizeSmall: {
-          height: 24,
+          height: 20, // Reduced height
         },
       },
     },
     MuiToolbar: {
       styleOverrides: {
         root: {
-          padding: '8px 16px',
+          padding: '4px 12px', // Reduced padding
           '@media (min-width: 600px)': {
-            padding: '8px 24px',
+            padding: '6px 16px', // Reduced padding for larger screens
           },
         },
       },
@@ -179,14 +179,31 @@ export const theme = createTheme({
     MuiContainer: {
       styleOverrides: {
         root: {
-          paddingLeft: 16,
-          paddingRight: 16,
+          paddingLeft: 12, // Reduced padding
+          paddingRight: 12, // Reduced padding
           '@media (min-width: 600px)': {
-            paddingLeft: 24,
-            paddingRight: 24,
+            paddingLeft: 16, // Reduced padding for larger screens
+            paddingRight: 16, // Reduced padding for larger screens
           },
         },
       },
     },
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          marginBottom: 8, // Add reduced margin by default
+        }
+      }
+    },
+    MuiInputBase: {
+      styleOverrides: {
+        root: {
+          fontSize: '0.925rem', // Slightly smaller text for inputs
+        },
+        input: {
+          padding: '10px 12px', // Reduced padding
+        }
+      }
+    }
   },
 });

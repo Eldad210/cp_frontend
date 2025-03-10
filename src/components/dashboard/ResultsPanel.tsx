@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { AnalysisResult, Plan } from '../../types';
 import { ChevronDown, ChevronUp, FileSearch } from 'lucide-react';
@@ -49,8 +50,8 @@ export function ResultsPanel({ activePlan, selectedFile, selectedRegion }: Resul
   };
 
   return (
-    <Paper sx={{ p: 3, borderRadius: 2, height: '100%' }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+    <Paper sx={{ p: 2, borderRadius: 2, height: '100%' }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
         <FileSearch size={20} style={{ color: '#3b82f6', marginRight: 8 }} />
         <Typography variant="h6">Analysis Results</Typography>
         {selectedRegion && (
@@ -68,10 +69,10 @@ export function ResultsPanel({ activePlan, selectedFile, selectedRegion }: Resul
       </Box>
       
       {activePlan && selectedFile ? (
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           <PlanViewer file={selectedFile} results={activePlan.results} />
           
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
             {Object.entries(getGroupedResults(activePlan.results)).map(([category, results]) => (
               <Paper 
                 key={category} 
@@ -81,8 +82,8 @@ export function ResultsPanel({ activePlan, selectedFile, selectedRegion }: Resul
                 <Box 
                   sx={{
                     bgcolor: 'primary.light',
-                    px: 2, 
-                    py: 1.5, 
+                    px: 1.5, 
+                    py: 1, 
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center',
@@ -102,7 +103,7 @@ export function ResultsPanel({ activePlan, selectedFile, selectedRegion }: Resul
                   >
                     {category}
                   </Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                     <Chip 
                       label={`${results.length} issue${results.length !== 1 ? 's' : ''}`}
                       size="small"
@@ -113,9 +114,9 @@ export function ResultsPanel({ activePlan, selectedFile, selectedRegion }: Resul
                       }}
                     />
                     {expandedCategories[category] ? (
-                      <ChevronUp size={18} style={{ color: 'white' }} />
+                      <ChevronUp size={16} style={{ color: 'white' }} />
                     ) : (
-                      <ChevronDown size={18} style={{ color: 'white' }} />
+                      <ChevronDown size={16} style={{ color: 'white' }} />
                     )}
                   </Box>
                 </Box>
@@ -124,15 +125,15 @@ export function ResultsPanel({ activePlan, selectedFile, selectedRegion }: Resul
                     {results.map((result, idx) => (
                       <Box key={result.id}>
                         {idx > 0 && <Divider />}
-                        <Box sx={{ p: 2 }}>
-                          <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+                        <Box sx={{ p: 1.5 }}>
+                          <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5 }}>
                             <Box 
                               sx={{ 
-                                width: 8, 
-                                height: 8, 
+                                width: 6, 
+                                height: 6, 
                                 borderRadius: '50%', 
                                 bgcolor: getSeverityColor(result.severity),
-                                mt: 1
+                                mt: 0.8
                               }}
                             />
                             <Box sx={{ flex: 1 }}>
@@ -148,14 +149,14 @@ export function ResultsPanel({ activePlan, selectedFile, selectedRegion }: Resul
                                   }}
                                 />
                               </Box>
-                              <Typography variant="body2" sx={{ color: 'text.primary', mb: 1 }}>
+                              <Typography variant="body2" sx={{ color: 'text.primary', mb: 0.75 }}>
                                 {result.description}
                               </Typography>
                               <Box sx={{ color: 'text.secondary' }}>
                                 <Typography variant="caption" display="block">
                                   <Box component="span" sx={{ fontWeight: 'medium' }}>Location:</Box> {result.location}
                                 </Typography>
-                                <Typography variant="caption" display="block" sx={{ mt: 0.5 }}>
+                                <Typography variant="caption" display="block" sx={{ mt: 0.25 }}>
                                   <Box component="span" sx={{ fontWeight: 'medium' }}>Recommendation:</Box> {result.recommendation}
                                 </Typography>
                               </Box>
@@ -171,7 +172,7 @@ export function ResultsPanel({ activePlan, selectedFile, selectedRegion }: Resul
           </Box>
         </Box>
       ) : (
-        <Box sx={{ textAlign: 'center', py: 6, color: 'text.secondary' }}>
+        <Box sx={{ textAlign: 'center', py: 4, color: 'text.secondary' }}>
           <Typography>
             {selectedRegion
               ? 'Upload a plan to see analysis results'

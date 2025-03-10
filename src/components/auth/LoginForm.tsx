@@ -46,7 +46,7 @@ export function LoginForm() {
         alignItems: 'center',
         justifyContent: 'center',
         background: 'linear-gradient(to bottom right, #EEF2FF, #E0E7FF)',
-        padding: '12px 16px',
+        padding: '8px',
         animation: 'fadeIn 0.5s ease-out',
         '@keyframes fadeIn': {
           '0%': { opacity: 0 },
@@ -58,9 +58,9 @@ export function LoginForm() {
         component={Paper} 
         elevation={6}
         sx={{ 
-          maxWidth: '480px',
+          maxWidth: '450px',
           width: '100%',
-          borderRadius: '16px',
+          borderRadius: '12px',
           overflow: 'hidden',
           transition: 'all 0.3s ease',
           '&:hover': {
@@ -69,19 +69,19 @@ export function LoginForm() {
           }
         }}
       >
-        <Box sx={{ backgroundColor: 'white', padding: '32px', borderTopLeftRadius: '16px', borderTopRightRadius: '16px' }}>
-          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 4 }}>
+        <Box sx={{ backgroundColor: 'white', padding: '20px', borderTopLeftRadius: '12px', borderTopRightRadius: '12px' }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 2 }}>
             <Box 
               sx={{ 
                 margin: '0 auto',
-                height: '64px',
-                width: '64px',
+                height: '56px',
+                width: '56px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 borderRadius: '50%',
                 backgroundColor: '#EEF2FF',
-                mb: 4,
+                mb: 2,
                 transition: 'all 0.5s ease',
                 '&:hover': {
                   transform: 'rotate(12deg) scale(1.05)',
@@ -89,7 +89,7 @@ export function LoginForm() {
                 }
               }}
             >
-              <Lock size={32} color="#3b82f6" />
+              <Lock size={28} color="#3b82f6" />
             </Box>
             <Typography 
               variant="h4" 
@@ -97,7 +97,8 @@ export function LoginForm() {
               sx={{ 
                 fontWeight: 700, 
                 color: 'text.primary',
-                mb: 1 
+                mb: 0.5,
+                fontSize: '1.75rem'
               }}
             >
               Sign in
@@ -107,13 +108,13 @@ export function LoginForm() {
             </Typography>
           </Box>
           
-          <form onSubmit={handleSubmit} style={{ marginTop: '24px' }}>
+          <form onSubmit={handleSubmit} style={{ marginTop: '16px' }}>
             {error && (
               <Alert 
                 severity="error" 
                 sx={{ 
                   borderRadius: '8px',
-                  marginBottom: '24px',
+                  marginBottom: '16px',
                   animation: 'slideIn 0.3s ease-out',
                   '@keyframes slideIn': {
                     '0%': { opacity: 0, transform: 'translateY(-10px)' },
@@ -125,9 +126,9 @@ export function LoginForm() {
               </Alert>
             )}
             
-            <Box sx={{ marginBottom: '24px' }}>
-              <Box sx={{ marginBottom: '16px' }}>
-                <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1, ml: 1 }}>
+            <Box sx={{ marginBottom: '16px' }}>
+              <Box sx={{ marginBottom: '12px' }}>
+                <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, ml: 0.5 }}>
                   Email address
                 </Typography>
                 <TextField
@@ -142,13 +143,13 @@ export function LoginForm() {
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
-                        <Mail size={20} color="#9CA3AF" />
+                        <Mail size={18} color="#9CA3AF" />
                       </InputAdornment>
                     ),
                   }}
                   sx={{
                     '& .MuiOutlinedInput-root': {
-                      borderRadius: '10px',
+                      borderRadius: '8px',
                       transition: 'all 0.2s ease',
                       '&:hover .MuiOutlinedInput-notchedOutline': {
                         borderColor: 'primary.main',
@@ -159,7 +160,7 @@ export function LoginForm() {
               </Box>
               
               <Box>
-                <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1, ml: 1 }}>
+                <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, ml: 0.5 }}>
                   Password
                 </Typography>
                 <TextField
@@ -174,13 +175,13 @@ export function LoginForm() {
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
-                        <Lock size={20} color="#9CA3AF" />
+                        <Lock size={18} color="#9CA3AF" />
                       </InputAdornment>
                     ),
                   }}
                   sx={{
                     '& .MuiOutlinedInput-root': {
-                      borderRadius: '10px',
+                      borderRadius: '8px',
                       transition: 'all 0.2s ease',
                       '&:hover .MuiOutlinedInput-notchedOutline': {
                         borderColor: 'primary.main',
@@ -198,7 +199,7 @@ export function LoginForm() {
                 size="lg"
                 sx={{
                   width: '100%',
-                  padding: '12px 0',
+                  padding: '10px 0',
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center',
@@ -209,26 +210,26 @@ export function LoginForm() {
                     boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)'
                   },
                   color: 'white',
-                  borderRadius: '10px',
+                  borderRadius: '8px',
                   boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
                   transition: 'all 0.2s ease'
                 }}
               >
                 {isLoading ? (
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <CircularProgress size={24} thickness={4} sx={{ color: 'white', mr: 2 }} />
+                    <CircularProgress size={20} thickness={4} sx={{ color: 'white', mr: 1.5 }} />
                     Signing in...
                   </Box>
                 ) : (
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <LogIn size={20} style={{ marginRight: 8 }} />
+                    <LogIn size={18} style={{ marginRight: 6 }} />
                     Sign in
                   </Box>
                 )}
               </Button>
             </Box>
             
-            <Box sx={{ textAlign: 'center', mt: 4 }}>
+            <Box sx={{ textAlign: 'center', mt: 2 }}>
               <Typography variant="caption" color="text.secondary">
                 By signing in, you agree to the Civil Planner Terms of Service and Privacy Policy
               </Typography>

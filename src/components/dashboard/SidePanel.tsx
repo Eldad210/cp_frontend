@@ -22,19 +22,19 @@ export function SidePanel({
   selectedFile
 }: SidePanelProps) {
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-      <Paper sx={{ p: 3, borderRadius: 2 }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <Paper sx={{ p: 2, borderRadius: 2 }}>
         <CodeSelector
           selectedRegion={selectedRegion}
           onRegionSelect={onRegionSelect}
         />
       </Paper>
 
-      <Paper sx={{ p: 3, borderRadius: 2 }}>
+      <Paper sx={{ p: 2, borderRadius: 2 }}>
         <Typography variant="h6" gutterBottom>Upload Plans</Typography>
         <FileUpload onFileSelect={onFileSelect} />
         
-        <Box sx={{ mt: 3 }}>
+        <Box sx={{ mt: 2 }}>
           <Button 
             variant="contained" 
             color="primary"
@@ -47,12 +47,12 @@ export function SidePanel({
             Run Analysis
           </Button>
           {!selectedFile && (
-            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', textAlign: 'center', mt: 1 }}>
+            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', textAlign: 'center', mt: 0.5 }}>
               Upload a file to run analysis
             </Typography>
           )}
           {!selectedRegion && (
-            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', textAlign: 'center', mt: 1 }}>
+            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', textAlign: 'center', mt: 0.5 }}>
               Select a country to run analysis
             </Typography>
           )}
