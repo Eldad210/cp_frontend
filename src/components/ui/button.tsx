@@ -6,6 +6,8 @@ import { cn } from '@/utils/cn';
 interface ButtonProps extends Omit<MUIButtonProps, 'variant' | 'size'> {
   variant?: 'primary' | 'secondary' | 'outline';
   size?: 'sm' | 'md' | 'lg';
+  startIcon?: React.ReactNode;
+  className?: string;
 }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(

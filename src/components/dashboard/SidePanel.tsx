@@ -1,3 +1,4 @@
+
 import { RegionCode } from '@/types/codes';
 import { FileUpload } from '../FileUpload';
 import { CodeSelector } from '../CodeSelector';
@@ -21,8 +22,8 @@ export function SidePanel({
   selectedFile
 }: SidePanelProps) {
   return (
-    <Box className="lg:col-span-1 space-y-4">
-      <Paper sx={{ p: 3, mb: 3 }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+      <Paper sx={{ p: 3 }}>
         <CodeSelector
           selectedRegion={selectedRegion}
           onRegionSelect={onRegionSelect}
@@ -37,7 +38,7 @@ export function SidePanel({
         
         <Box sx={{ mt: 3 }}>
           <Button 
-            className="w-full"
+            fullWidth
             disabled={!selectedFile || !selectedRegion}
             onClick={onRunAnalysis}
             startIcon={<Rocket size={16} />}

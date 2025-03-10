@@ -1,6 +1,7 @@
 
 import { AnalysisResult } from '@/types';
 import { AlertTriangle, CheckCircle, Construction, Eye, Flame, HardHat, Info, Shield, XCircle } from 'lucide-react';
+import { Box, Typography, Paper, Chip, Divider } from '@mui/material';
 
 interface AnalysisResultsProps {
   results: AnalysisResult[];
@@ -10,27 +11,27 @@ export function AnalysisResults({ results }: AnalysisResultsProps) {
   const getSeverityIcon = (severity: AnalysisResult['severity']) => {
     switch (severity) {
       case 'error':
-        return <XCircle className="h-5 w-5 text-red-500" />;
+        return <XCircle sx={{ fontSize: '1.25rem', color: 'error.main' }} />;
       case 'warning':
-        return <AlertTriangle className="h-5 w-5 text-yellow-500" />;
+        return <AlertTriangle sx={{ fontSize: '1.25rem', color: 'warning.main' }} />;
       case 'info':
-        return <Info className="h-5 w-5 text-blue-500" />;
+        return <Info sx={{ fontSize: '1.25rem', color: 'info.main' }} />;
     }
   };
 
   const getCategoryIcon = (category: AnalysisResult['category']) => {
     switch (category) {
       case 'safety':
-        return <HardHat className="h-5 w-5 text-orange-500" />;
+        return <HardHat sx={{ fontSize: '1.25rem', color: 'orange.500' }} />;
       case 'accessibility':
-        return <Eye className="h-5 w-5 text-purple-500" />;
+        return <Eye sx={{ fontSize: '1.25rem', color: 'purple.500' }} />;
       case 'structural':
-        return <Construction className="h-5 w-5 text-blue-600" />;
+        return <Construction sx={{ fontSize: '1.25rem', color: 'primary.dark' }} />;
       case 'energy':
-        return <Flame className="h-5 w-5 text-yellow-600" />;
+        return <Flame sx={{ fontSize: '1.25rem', color: 'warning.dark' }} />;
       case 'general':
       default:
-        return <Shield className="h-5 w-5 text-gray-500" />;
+        return <Shield sx={{ fontSize: '1.25rem', color: 'text.secondary' }} />;
     }
   };
 
@@ -50,59 +51,71 @@ export function AnalysisResults({ results }: AnalysisResultsProps) {
   );
 
   return (
-    <div className="space-y-6">
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
       {results.length > 0 ? (
         sortedCategories.map((category) => (
-          <div key={category} className="space-y-4">
-            <div className="flex items-center gap-2 border-b pb-2">
+          <Box key={category} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, borderBottom: 1, borderColor: 'divider', pb: 1 }}>
               {getCategoryIcon(category as AnalysisResult['category'])}
-              <h3 className="text-md font-medium capitalize">{category}</h3>
-              <span className="ml-2 text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full">
-                {resultsByCategory[category].length}
-              </span>
-            </div>
+              <Typography variant="subtitle1" sx={{ textTransform: 'capitalize' }}>
+                {category}
+              </Typography>
+              <Chip 
+                size="small" 
+                label={resultsByCategory[category].length} 
+                sx={{ ml: 1, bgcolor: 'background.paper' }}
+              />
+            </Box>
             
             {resultsByCategory[category].map((result) => (
-              <div
+              <Paper
                 key={result.id}
-                className="bg-white rounded-lg shadow p-4 border-l-4"
-                style={{
+                variant="outlined"
+                sx={{
+                  p: 2,
+                  borderLeftWidth: 4,
                   borderLeftColor:
                     result.severity === 'error'
-                      ? '#ef4444'
+                      ? 'error.main'
                       : result.severity === 'warning'
-                      ? '#f59e0b'
-                      : '#3b82f6',
+                      ? 'warning.main'
+                      : 'info.main',
                 }}
               >
-                <div className="flex items-start gap-3">
+                <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5 }}>
                   {getSeverityIcon(result.severity)}
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between">
-                      <h4 className="text-sm font-medium text-gray-900">
+                  <Box sx={{ flexGrow: 1 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <Typography variant="subtitle2">
                         Code: {result.code}
-                      </h4>
-                      <span className="text-xs text-gray-500">{result.location}</span>
-                    </div>
-                    <p className="mt-1 text-sm text-gray-600">{result.description}</p>
-                    <p className="mt-2 text-sm text-blue-600">
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {result.location}
+                      </Typography>
+                    </Box>
+                    <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                      {result.description}
+                    </Typography>
+                    <Typography variant="body2" color="primary" sx={{ mt: 1 }}>
                       Recommendation: {result.recommendation}
-                    </p>
-                  </div>
-                </div>
-              </div>
+                    </Typography>
+                  </Box>
+                </Box>
+              </Paper>
             ))}
-          </div>
+          </Box>
         ))
       ) : (
-        <div className="text-center py-8">
-          <CheckCircle className="mx-auto h-12 w-12 text-green-500" />
-          <h3 className="mt-2 text-sm font-medium text-gray-900">All Clear!</h3>
-          <p className="mt-1 text-sm text-gray-500">
+        <Box sx={{ textAlign: 'center', py: 4 }}>
+          <CheckCircle sx={{ fontSize: '3rem', color: 'success.main', mb: 1 }} />
+          <Typography variant="h6" gutterBottom>
+            All Clear!
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
             No compliance issues were found in the plans.
-          </p>
-        </div>
+          </Typography>
+        </Box>
       )}
-    </div>
+    </Box>
   );
 }
