@@ -1,5 +1,5 @@
 
-import { AppBar, Toolbar, Typography, Box, Chip } from '@mui/material';
+import { AppBar, Toolbar, Typography, Box } from '@mui/material';
 import { Building2, LogOut } from 'lucide-react';
 import { Button } from '../ui/button';
 import { User } from '@/types/auth';
