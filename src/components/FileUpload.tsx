@@ -2,8 +2,8 @@
 import { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Upload } from 'lucide-react';
+import { Box, Typography, Paper, Button as MuiButton } from '@mui/material';
 import { Button } from './ui/button';
-import { Box, Typography, Paper } from '@mui/material';
 
 interface FileUploadProps {
   onFileSelect: (file: File) => void;
@@ -55,9 +55,13 @@ export function FileUpload({ onFileSelect }: FileUploadProps) {
         <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5 }}>
           IFC format only (max. 50MB)
         </Typography>
-        <Button variant="outline" size="sm" sx={{ mt: 2 }}>
+        <MuiButton 
+          variant="outlined" 
+          size="small" 
+          sx={{ mt: 2, textTransform: 'none' }}
+        >
           Select File
-        </Button>
+        </MuiButton>
       </Box>
     </Paper>
   );

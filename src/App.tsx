@@ -4,13 +4,14 @@ import { LoginForm } from './components/auth/LoginForm';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { Dashboard } from './components/Dashboard';
 import { useAuthStore } from './store/authStore';
-import { Box } from '@mui/material';
+import { Box, Container, CssBaseline } from '@mui/material';
 
 function App() {
   const isAuthenticated = useAuthStore(state => state.isAuthenticated);
 
   return (
-    <Box sx={{ minHeight: '100vh' }}>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
+      <CssBaseline />
       <Router>
         <Routes>
           <Route path="/login" element={

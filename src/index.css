@@ -7,10 +7,6 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #f9fafb;
 }
 
-/* Utility classes that may still be needed */
-.min-h-screen {
-  min-height: 100vh;
-}
+/* Remove any conflicting styles that might override Material UI */
