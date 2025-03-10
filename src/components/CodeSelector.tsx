@@ -2,7 +2,7 @@
 import { RegionCode, codeStandards } from '@/types/codes';
 import { Check, ChevronDown, ChevronUp, Globe } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { cn } from '@/utils/cn';
+import { Box, Typography, Button, Paper, List, ListItem } from '@mui/material';
 
 interface CodeSelectorProps {
   selectedRegion: RegionCode | null;
@@ -60,89 +60,151 @@ export function CodeSelector({ selectedRegion, onRegionSelect }: CodeSelectorPro
   const groupedStandards = getGroupedStandards();
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-2 mb-4">
-        <Globe className="h-5 w-5 text-blue-600" />
-        <h3 className="text-lg font-medium text-gray-900">Select Country</h3>
-      </div>
+    <Box sx={{ marginTop: 2 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 4 }}>
+        <Globe sx={{ height: '20px', width: '20px', color: '#2563eb' }} />
+        <Typography variant="h6" sx={{ fontWeight: 500, color: '#111827' }}>
+          Select Country
+        </Typography>
+      </Box>
       
-      <div className="relative">
-        <button
-          type="button"
-          className={cn(
-            "w-full flex items-center justify-between px-4 py-2 rounded-md border",
-            selectedRegion ? "bg-blue-600 text-white border-blue-700" : "bg-white text-gray-900 border-gray-300"
-          )}
+      <Box sx={{ position: 'relative' }}>
+        <Button
+          variant={selectedRegion ? "contained" : "outlined"}
+          fullWidth
           onClick={toggleDropdown}
+          sx={{
+            justifyContent: 'space-between',
+            padding: '8px 16px',
+            borderRadius: '6px',
+            backgroundColor: selectedRegion ? '#2563eb' : 'white',
+            color: selectedRegion ? 'white' : '#111827',
+            borderColor: selectedRegion ? '#1e40af' : '#d1d5db',
+            textTransform: 'none'
+          }}
+          endIcon={<ChevronDown size={16} />}
         >
-          <span>{selectedRegion || "Choose country"}</span>
-          <ChevronDown className="h-4 w-4 ml-2" />
-        </button>
+          {selectedRegion || "Choose country"}
+        </Button>
         
         {isOpen && (
-          <div className="absolute z-10 mt-1 w-full bg-white rounded-md shadow-lg border border-gray-200">
-            <ul className="py-1 max-h-60 overflow-auto">
+          <Paper
+            sx={{
+              position: 'absolute',
+              zIndex: 10,
+              marginTop: 1,
+              width: '100%',
+              borderRadius: '6px',
+              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+              border: '1px solid #e5e7eb'
+            }}
+          >
+            <List sx={{ py: 1, maxHeight: '240px', overflow: 'auto' }}>
               {countries.map((country) => (
-                <li 
+                <ListItem 
                   key={country}
-                  className={cn(
-                    "px-4 py-2 cursor-pointer flex items-center justify-between",
-                    "hover:bg-gray-100",
-                    selectedRegion === country ? "bg-blue-50" : ""
-                  )}
+                  button
                   onClick={() => handleSelect(country)}
+                  sx={{
+                    px: 2,
+                    py: 1,
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    backgroundColor: selectedRegion === country ? '#eff6ff' : 'transparent',
+                    '&:hover': {
+                      backgroundColor: '#f9fafb'
+                    }
+                  }}
                 >
-                  <span>{country}</span>
+                  <Typography>{country}</Typography>
                   {selectedRegion === country && (
-                    <Check className="h-4 w-4 text-blue-600" />
+                    <Check size={16} style={{ color: '#2563eb' }} />
                   )}
-                </li>
+                </ListItem>
               ))}
-            </ul>
-          </div>
+            </List>
+          </Paper>
         )}
-      </div>
+      </Box>
 
       {selectedRegion && (
-        <div className="mt-6">
-          <h4 className="text-sm font-medium text-gray-700 mb-3">
+        <Box sx={{ mt: 6 }}>
+          <Typography variant="subtitle2" sx={{ fontWeight: 500, color: '#4b5563', mb: 3 }}>
             Applicable Standards:
-          </h4>
+          </Typography>
           
-          <div className="space-y-4">
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
             {Object.entries(groupedStandards).map(([category, standards]) => (
-              <div key={category} className="bg-blue-50 rounded-lg overflow-hidden">
-                <div 
-                  className="bg-blue-100 px-3 py-2 flex justify-between items-center cursor-pointer"
+              <Paper
+                key={category}
+                sx={{
+                  backgroundColor: '#eff6ff',
+                  borderRadius: '8px',
+                  overflow: 'hidden'
+                }}
+              >
+                <Box
+                  sx={{
+                    backgroundColor: '#dbeafe',
+                    px: 3,
+                    py: 2,
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    cursor: 'pointer'
+                  }}
                   onClick={() => toggleCategory(category)}
                 >
-                  <h5 className="font-medium text-blue-800">{category}</h5>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs bg-blue-200 text-blue-800 px-2 py-1 rounded">
+                  <Typography sx={{ fontWeight: 500, color: '#1e40af' }}>
+                    {category}
+                  </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                    <Box
+                      sx={{
+                        fontSize: '12px',
+                        backgroundColor: '#bfdbfe',
+                        color: '#1e40af',
+                        px: 2,
+                        py: 1,
+                        borderRadius: '4px'
+                      }}
+                    >
                       {standards.length} standard{standards.length !== 1 ? 's' : ''}
-                    </span>
+                    </Box>
                     {expandedCategories[category] ? (
-                      <ChevronUp className="h-4 w-4 text-blue-600" />
+                      <ChevronUp size={16} style={{ color: '#2563eb' }} />
                     ) : (
-                      <ChevronDown className="h-4 w-4 text-blue-600" />
+                      <ChevronDown size={16} style={{ color: '#2563eb' }} />
                     )}
-                  </div>
-                </div>
+                  </Box>
+                </Box>
                 {expandedCategories[category] && (
-                  <div className="p-3 space-y-2">
+                  <Box sx={{ p: 3 }}>
                     {standards.map(standard => (
-                      <div key={standard.id} className="pl-2 border-l-2 border-blue-200">
-                        <h6 className="text-sm font-medium text-gray-900">{standard.name}</h6>
-                        <p className="text-sm text-gray-500">{standard.description}</p>
-                      </div>
+                      <Box
+                        key={standard.id}
+                        sx={{
+                          pl: 2,
+                          borderLeft: '2px solid #bfdbfe',
+                          mb: 2,
+                          '&:last-child': { mb: 0 }
+                        }}
+                      >
+                        <Typography sx={{ fontSize: '14px', fontWeight: 500, color: '#111827' }}>
+                          {standard.name}
+                        </Typography>
+                        <Typography sx={{ fontSize: '14px', color: '#6b7280' }}>
+                          {standard.description}
+                        </Typography>
+                      </Box>
                     ))}
-                  </div>
+                  </Box>
                 )}
-              </div>
+              </Paper>
             ))}
-          </div>
-        </div>
+          </Box>
+        </Box>
       )}
-    </div>
+    </Box>
   );
 }

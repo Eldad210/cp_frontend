@@ -40,8 +40,13 @@ export function LoginForm() {
 
   return (
     <Box 
-      className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8"
       sx={{ 
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: 'linear-gradient(to bottom right, #EEF2FF, #E0E7FF)',
+        padding: '12px 16px',
         animation: 'fadeIn 0.5s ease-out',
         '@keyframes fadeIn': {
           '0%': { opacity: 0 },
@@ -52,8 +57,9 @@ export function LoginForm() {
       <Box 
         component={Paper} 
         elevation={6}
-        className="max-w-md w-full space-y-8"
         sx={{ 
+          maxWidth: '480px',
+          width: '100%',
           borderRadius: '16px',
           overflow: 'hidden',
           transition: 'all 0.3s ease',
@@ -63,11 +69,19 @@ export function LoginForm() {
           }
         }}
       >
-        <Box className="bg-white p-8 rounded-t-xl">
-          <Box className="flex flex-col items-center" sx={{ mb: 4 }}>
+        <Box sx={{ backgroundColor: 'white', padding: '32px', borderTopLeftRadius: '16px', borderTopRightRadius: '16px' }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 4 }}>
             <Box 
-              className="mx-auto h-16 w-16 flex items-center justify-center rounded-full bg-blue-100 mb-4"
               sx={{ 
+                margin: '0 auto',
+                height: '64px',
+                width: '64px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: '50%',
+                backgroundColor: '#EEF2FF',
+                mb: 4,
                 transition: 'all 0.5s ease',
                 '&:hover': {
                   transform: 'rotate(12deg) scale(1.05)',
@@ -75,7 +89,7 @@ export function LoginForm() {
                 }
               }}
             >
-              <Lock className="h-8 w-8 text-blue-600" />
+              <Lock sx={{ height: '32px', width: '32px', color: '#3b82f6' }} />
             </Box>
             <Typography 
               variant="h4" 
@@ -93,12 +107,13 @@ export function LoginForm() {
             </Typography>
           </Box>
           
-          <form className="mt-6 space-y-6" onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} style={{ marginTop: '24px' }}>
             {error && (
               <Alert 
                 severity="error" 
                 sx={{ 
                   borderRadius: '8px',
+                  marginBottom: '24px',
                   animation: 'slideIn 0.3s ease-out',
                   '@keyframes slideIn': {
                     '0%': { opacity: 0, transform: 'translateY(-10px)' },
@@ -110,8 +125,8 @@ export function LoginForm() {
               </Alert>
             )}
             
-            <Box className="space-y-4">
-              <Box>
+            <Box sx={{ marginBottom: '24px' }}>
+              <Box sx={{ marginBottom: '16px' }}>
                 <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1, ml: 1 }}>
                   Email address
                 </Typography>
@@ -127,7 +142,7 @@ export function LoginForm() {
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
-                        <Mail className="h-5 w-5 text-gray-400" />
+                        <Mail sx={{ height: '20px', width: '20px', color: '#9CA3AF' }} />
                       </InputAdornment>
                     ),
                   }}
@@ -159,7 +174,7 @@ export function LoginForm() {
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
-                        <Lock className="h-5 w-5 text-gray-400" />
+                        <Lock sx={{ height: '20px', width: '20px', color: '#9CA3AF' }} />
                       </InputAdornment>
                     ),
                   }}
@@ -179,29 +194,34 @@ export function LoginForm() {
             <Box>
               <Button
                 type="submit"
-                className="w-full py-3 flex justify-center items-center bg-blue-600 hover:bg-blue-700 focus:ring-blue-500 focus:ring-offset-blue-200 text-white transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 rounded-lg"
                 disabled={isLoading}
                 size="lg"
                 sx={{
-                  mt: 4,
-                  py: 1.5,
-                  borderRadius: '10px',
-                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+                  width: '100%',
+                  padding: '12px 0',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  backgroundColor: '#3b82f6',
                   '&:hover': {
+                    backgroundColor: '#2563eb',
                     transform: 'translateY(-2px)',
                     boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)'
                   },
+                  color: 'white',
+                  borderRadius: '10px',
+                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
                   transition: 'all 0.2s ease'
                 }}
               >
                 {isLoading ? (
-                  <Box className="flex items-center">
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
                     <CircularProgress size={24} thickness={4} sx={{ color: 'white', mr: 2 }} />
                     Signing in...
                   </Box>
                 ) : (
-                  <Box className="flex items-center">
-                    <LogIn className="mr-2 h-5 w-5" />
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <LogIn sx={{ mr: 2, height: '20px', width: '20px' }} />
                     Sign in
                   </Box>
                 )}
