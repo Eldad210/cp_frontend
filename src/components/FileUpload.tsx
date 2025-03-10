@@ -3,7 +3,6 @@ import { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Upload } from 'lucide-react';
 import { Box, Typography, Paper, Button as MuiButton } from '@mui/material';
-import { Button } from './ui/button';
 
 interface FileUploadProps {
   onFileSelect: (file: File) => void;
