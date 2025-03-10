@@ -1,7 +1,7 @@
 
 import { AnalysisResult } from '@/types';
 import { AlertTriangle, CheckCircle, Construction, Eye, Flame, HardHat, Info, Shield, XCircle } from 'lucide-react';
-import { Box, Typography, Paper, Chip, Divider } from '@mui/material';
+import { Box, Typography, Paper, Chip } from '@mui/material';
 
 interface AnalysisResultsProps {
   results: AnalysisResult[];
@@ -11,27 +11,59 @@ export function AnalysisResults({ results }: AnalysisResultsProps) {
   const getSeverityIcon = (severity: AnalysisResult['severity']) => {
     switch (severity) {
       case 'error':
-        return <XCircle sx={{ fontSize: '1.25rem', color: 'error.main' }} />;
+        return (
+          <Box sx={{ display: 'flex', color: 'error.main' }}>
+            <XCircle size={20} />
+          </Box>
+        );
       case 'warning':
-        return <AlertTriangle sx={{ fontSize: '1.25rem', color: 'warning.main' }} />;
+        return (
+          <Box sx={{ display: 'flex', color: 'warning.main' }}>
+            <AlertTriangle size={20} />
+          </Box>
+        );
       case 'info':
-        return <Info sx={{ fontSize: '1.25rem', color: 'info.main' }} />;
+        return (
+          <Box sx={{ display: 'flex', color: 'info.main' }}>
+            <Info size={20} />
+          </Box>
+        );
     }
   };
 
   const getCategoryIcon = (category: AnalysisResult['category']) => {
     switch (category) {
       case 'safety':
-        return <HardHat sx={{ fontSize: '1.25rem', color: 'orange.500' }} />;
+        return (
+          <Box sx={{ display: 'flex', color: 'orange.500' }}>
+            <HardHat size={20} />
+          </Box>
+        );
       case 'accessibility':
-        return <Eye sx={{ fontSize: '1.25rem', color: 'purple.500' }} />;
+        return (
+          <Box sx={{ display: 'flex', color: 'purple.500' }}>
+            <Eye size={20} />
+          </Box>
+        );
       case 'structural':
-        return <Construction sx={{ fontSize: '1.25rem', color: 'primary.dark' }} />;
+        return (
+          <Box sx={{ display: 'flex', color: 'primary.dark' }}>
+            <Construction size={20} />
+          </Box>
+        );
       case 'energy':
-        return <Flame sx={{ fontSize: '1.25rem', color: 'warning.dark' }} />;
+        return (
+          <Box sx={{ display: 'flex', color: 'warning.dark' }}>
+            <Flame size={20} />
+          </Box>
+        );
       case 'general':
       default:
-        return <Shield sx={{ fontSize: '1.25rem', color: 'text.secondary' }} />;
+        return (
+          <Box sx={{ display: 'flex', color: 'text.secondary' }}>
+            <Shield size={20} />
+          </Box>
+        );
     }
   };
 
@@ -107,7 +139,9 @@ export function AnalysisResults({ results }: AnalysisResultsProps) {
         ))
       ) : (
         <Box sx={{ textAlign: 'center', py: 4 }}>
-          <CheckCircle sx={{ fontSize: '3rem', color: 'success.main', mb: 1 }} />
+          <Box sx={{ display: 'flex', justifyContent: 'center', color: 'success.main', mb: 1 }}>
+            <CheckCircle size={48} />
+          </Box>
           <Typography variant="h6" gutterBottom>
             All Clear!
           </Typography>
