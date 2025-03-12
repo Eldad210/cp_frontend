@@ -24,13 +24,7 @@ export function LoginForm() {
       navigate('/dashboard');
     } catch (err) {
       if (err instanceof Error) {
-        if (err.message === 'Unauthorized email') {
-          setError('Access restricted to boris@civilplanner.co only');
-        } else if (err.message === 'Invalid password') {
-          setError('Incorrect password');
-        } else {
-          setError('Invalid credentials');
-        }
+        setError(err.message);
       } else {
         setError('An unexpected error occurred');
       }
