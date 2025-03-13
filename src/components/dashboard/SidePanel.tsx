@@ -2,7 +2,7 @@
 import { RegionCode } from '@/types/codes';
 import { FileUpload } from '../FileUpload';
 import { CodeSelector } from '../CodeSelector';
-import { Button } from '@mui/material';
+import { Button, CircularProgress } from '@mui/material';
 import { Rocket } from 'lucide-react';
 import { Box, Paper, Typography } from '@mui/material';
 
@@ -12,6 +12,7 @@ interface SidePanelProps {
   onFileSelect: (file: File) => void;
   onRunAnalysis: () => void;
   selectedFile: File | null;
+  isAnalyzing?: boolean;
 }
 
 export function SidePanel({ 
@@ -19,7 +20,8 @@ export function SidePanel({
   onRegionSelect, 
   onFileSelect,
   onRunAnalysis,
-  selectedFile
+  selectedFile,
+  isAnalyzing = false
 }: SidePanelProps) {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -39,12 +41,12 @@ export function SidePanel({
             variant="contained" 
             color="primary"
             fullWidth
-            disabled={!selectedFile || !selectedRegion}
+            disabled={!selectedFile || !selectedRegion || isAnalyzing}
             onClick={onRunAnalysis}
-            startIcon={<Rocket size={16} />}
+            startIcon={isAnalyzing ? <CircularProgress size={16} color="inherit" /> : <Rocket size={16} />}
             sx={{ textTransform: 'none' }}
           >
-            Run Analysis
+            {isAnalyzing ? 'Analyzing...' : 'Run Analysis'}
           </Button>
           {!selectedFile && (
             <Typography variant="caption" color="text.secondary" sx={{ display: 'block', textAlign: 'center', mt: 0.5 }}>
