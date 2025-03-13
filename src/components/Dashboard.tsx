@@ -85,18 +85,18 @@ export function Dashboard() {
         </Container>
       </Box>
       
-      <Snackbar
-        open={alert !== null}
-        autoHideDuration={6000}
-        onClose={handleCloseAlert}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        {alert && (
+      {alert && (
+        <Snackbar
+          open={true}
+          autoHideDuration={6000}
+          onClose={handleCloseAlert}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        >
           <Alert onClose={handleCloseAlert} severity={alert.type} sx={{ width: '100%' }}>
             {alert.message}
           </Alert>
-        )}
-      </Snackbar>
+        </Snackbar>
+      )}
     </Box>
   );
 }
