@@ -130,31 +130,6 @@ function IFCModel({ file }: { file: File }) {
   ) : null;
 }
 
-// Proper error message component that works with Three.js
-function ErrorMessage({ message }: { message: string }) {
-  return (
-    <sprite>
-      <spriteMaterial transparent opacity={0} />
-      <group position={[0, 0, 0]}>
-        <div
-          style={{
-            background: 'rgba(255, 255, 255, 0.8)',
-            padding: '8px',
-            borderRadius: '4px',
-            color: 'red',
-            fontWeight: 'bold',
-            whiteSpace: 'nowrap',
-            fontSize: '12px',
-            userSelect: 'none',
-          }}
-        >
-          {message}
-        </div>
-      </group>
-    </sprite>
-  );
-}
-
 // Scene setup component
 function Scene({ file }: { file: File }) {
   return (
