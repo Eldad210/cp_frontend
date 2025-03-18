@@ -3,22 +3,19 @@ import { FileUpload } from '../FileUpload';
 import { Button, CircularProgress } from '@mui/material';
 import { Rocket } from 'lucide-react';
 import { Box, Paper, Typography, Grid } from '@mui/material';
-import { RegionCode } from '@/types/codes';
 
 interface SidePanelProps {
   onFileSelect: (file: File) => void;
   onRunAnalysis: () => void;
   selectedFile: File | null;
   isAnalyzing?: boolean;
-  selectedRegion: RegionCode;
 }
 
 export function SidePanel({ 
   onFileSelect,
   onRunAnalysis,
   selectedFile,
-  isAnalyzing = false,
-  selectedRegion
+  isAnalyzing = false
 }: SidePanelProps) {
   return (
     <Grid container spacing={2}>
