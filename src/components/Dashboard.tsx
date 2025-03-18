@@ -11,12 +11,9 @@ import { Box, Container, Grid, Snackbar, Alert } from '@mui/material';
 // We'll uncomment this import when we're ready to use the API
 // import { sendAnalysisRequest } from '@/api/analysisService';
 
-interface DashboardProps {
-  selectedRegion: RegionCode;
-}
-
-export function Dashboard({ selectedRegion }: DashboardProps) {
+export function Dashboard() {
   const [activePlan, setActivePlan] = useState<Plan | null>(null);
+  const [selectedRegion, setSelectedRegion] = useState<RegionCode>('ISRAEL');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [alert, setAlert] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
@@ -90,6 +87,8 @@ export function Dashboard({ selectedRegion }: DashboardProps) {
             <Grid item xs={12} md={4} lg={3}>
               <Box sx={{ position: 'sticky', top: 16 }}>
                 <SidePanel 
+                  selectedRegion={selectedRegion}
+                  onRegionSelect={setSelectedRegion}
                   onFileSelect={handleFileSelect}
                   onRunAnalysis={handleRunAnalysis}
                   selectedFile={selectedFile}
