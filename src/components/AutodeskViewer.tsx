@@ -13,6 +13,12 @@ interface AutodeskViewerProps {
   results?: any[];
 }
 
+// Define a type for the progress event
+interface ProgressEvent {
+  loaded: number;
+  total: number;
+}
+
 function IFCModel({ file }: { file: File }) {
   const { scene } = useThree();
   const modelRef = useRef<THREE.Object3D>();
@@ -47,11 +53,11 @@ function IFCModel({ file }: { file: File }) {
           
           // Setup BVH after initialization
           loaderRef.current.ifcManager.setupThreeMeshBVH(
-            (progress) => {
+            (progress: number) => {
               // Ensure progress is a number between 0 and 1
               const normalizedProgress = typeof progress === 'number' ? progress : 0;
               console.log('BVH progress:', normalizedProgress);
-              setLoadingProgress((prev) => {
+              setLoadingProgress(() => {
                 const newProgress = Math.floor(normalizedProgress * 50);
                 console.log(`Setting BVH progress: ${newProgress}%`);
                 return newProgress;
@@ -66,7 +72,7 @@ function IFCModel({ file }: { file: File }) {
           );
           
           // Set the progress callback manually
-          loaderRef.current.ifcManager.setOnProgress((event) => {
+          loaderRef.current.ifcManager.setOnProgress((event: ProgressEvent) => {
             if (!event || typeof event.loaded !== 'number' || typeof event.total !== 'number') {
               console.warn('Invalid progress event:', event);
               return;
@@ -123,7 +129,7 @@ function IFCModel({ file }: { file: File }) {
       
       try {
         // Monitor loading progress explicitly
-        const onProgress = (event) => {
+        const onProgress = (event: ProgressEvent) => {
           if (!event || typeof event.loaded !== 'number' || typeof event.total !== 'number') {
             console.warn('Invalid direct progress event:', event);
             return;
