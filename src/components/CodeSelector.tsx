@@ -126,7 +126,7 @@ export function CodeSelector({ selectedRegion, onRegionSelect }: CodeSelectorPro
       {selectedRegion && (
         <Box sx={{ mt: 6 }}>
           <Typography variant="subtitle2" sx={{ fontWeight: 500, color: '#4b5563', mb: 3 }}>
-            Applicable Standards:
+            Codes:
           </Typography>
           
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
