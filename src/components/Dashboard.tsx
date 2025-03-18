@@ -32,25 +32,25 @@ export function Dashboard() {
       setAlert({ message: 'Analyzing file...', type: 'info' });
       
       // Send request to backend API
-      const response = await sendAnalysisRequest(selectedFile, selectedRegion);
+    //   const response = await sendAnalysisRequest(selectedFile, selectedRegion);
       
-      if (response.success) {
-        // If successful, create a new plan with the results
-        const newPlan = createAnalyzedPlan(selectedFile, selectedRegion);
-        setActivePlan(newPlan);
-        setAlert({ message: 'Analysis completed successfully', type: 'success' });
-      } else {
-        setAlert({ message: response.message || 'Analysis failed', type: 'error' });
-      }
-    } catch (error) {
-      console.error('Error during analysis:', error);
-      setAlert({ 
-        message: error instanceof Error ? error.message : 'Unknown error occurred during analysis', 
-        type: 'error' 
-      });
-    } finally {
-      setIsAnalyzing(false);
-    }
+    //   if (response.success) {
+    //     // If successful, create a new plan with the results
+    //     const newPlan = createAnalyzedPlan(selectedFile, selectedRegion);
+    //     setActivePlan(newPlan);
+    //     setAlert({ message: 'Analysis completed successfully', type: 'success' });
+    //   } else {
+    //     setAlert({ message: response.message || 'Analysis failed', type: 'error' });
+    //   }
+    // } catch (error) {
+    //   console.error('Error during analysis:', error);
+    //   setAlert({ 
+    //     message: error instanceof Error ? error.message : 'Unknown error occurred during analysis', 
+    //     type: 'error' 
+    //   });
+    // } finally {
+    //   setIsAnalyzing(false);
+    // }
   };
 
   const handleCloseAlert = () => {
