@@ -79,7 +79,12 @@ export function Dashboard() {
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', bgcolor: 'background.default' }}>
-      <DashboardHeader user={user} onLogout={logout} />
+      <DashboardHeader 
+        user={user} 
+        onLogout={logout} 
+        selectedRegion={selectedRegion}
+        onRegionSelect={setSelectedRegion}
+      />
 
       <Box sx={{ flexGrow: 1, py: 2, px: { xs: 1, sm: 2 } }}>
         <Container maxWidth="xl" sx={{ px: { xs: 1, sm: 2 } }}>
@@ -87,8 +92,6 @@ export function Dashboard() {
             <Grid item xs={12} md={4} lg={3}>
               <Box sx={{ position: 'sticky', top: 16 }}>
                 <SidePanel 
-                  selectedRegion={selectedRegion}
-                  onRegionSelect={setSelectedRegion}
                   onFileSelect={handleFileSelect}
                   onRunAnalysis={handleRunAnalysis}
                   selectedFile={selectedFile}
