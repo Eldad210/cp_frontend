@@ -42,26 +42,48 @@ function IFCModel({ file }: { file: File }) {
             'https://unpkg.com/web-ifc@0.0.36/'
           );
           
+          // Debug the IFCLoader manager
+          console.log("IFCLoader manager created:", loaderRef.current.ifcManager);
+          
           // Setup BVH after initialization
           loaderRef.current.ifcManager.setupThreeMeshBVH(
-            (progress: number) => {
-              console.log('BVH progress:', progress);
-              // Fix: Update loading progress properly during BVH setup
-              setLoadingProgress(Math.floor(progress * 50));
+            (progress) => {
+              // Ensure progress is a number between 0 and 1
+              const normalizedProgress = typeof progress === 'number' ? progress : 0;
+              console.log('BVH progress:', normalizedProgress);
+              setLoadingProgress((prev) => {
+                const newProgress = Math.floor(normalizedProgress * 50);
+                console.log(`Setting BVH progress: ${newProgress}%`);
+                return newProgress;
+              });
             },
             () => {
-              console.log('BVH setup complete');
+              console.log('BVH setup complete, setting progress to 50%');
+              setLoadingProgress(50);
               loadIFCFile();
             },
             {} // Empty settings object as the third parameter
           );
           
-          // Fix: Ensure the onProgress handler is properly set and updates state
-          loaderRef.current.ifcManager.setOnProgress((event: { loaded: number; total: number }) => {
-            const progress = event.total > 0 ? Math.floor((event.loaded / event.total) * 100) : 0;
-            console.log(`Loading progress: ${progress}%`);
-            // Start from 50% after BVH setup
-            setLoadingProgress(50 + Math.floor(progress * 0.5));
+          // Set the progress callback manually
+          loaderRef.current.ifcManager.setOnProgress((event) => {
+            if (!event || typeof event.loaded !== 'number' || typeof event.total !== 'number') {
+              console.warn('Invalid progress event:', event);
+              return;
+            }
+            
+            if (event.total <= 0) {
+              console.warn('Invalid total in progress event:', event.total);
+              return;
+            }
+            
+            const fileProgress = Math.floor((event.loaded / event.total) * 100);
+            console.log(`IFC loading progress: ${fileProgress}% (${event.loaded}/${event.total})`);
+            
+            // Map file progress (0-100) to overall progress (50-100)
+            const newProgress = 50 + Math.floor(fileProgress * 0.5);
+            console.log(`Setting overall progress: ${newProgress}%`);
+            setLoadingProgress(newProgress);
           });
         } else {
           loadIFCFile();
@@ -85,6 +107,7 @@ function IFCModel({ file }: { file: File }) {
       }
       
       const url = URL.createObjectURL(file);
+      console.log("Created URL for file:", url);
       
       // Add a placeholder while loading
       const geometry = new THREE.BoxGeometry(2, 2, 2);
@@ -96,10 +119,31 @@ function IFCModel({ file }: { file: File }) {
       scene.add(cube);
       modelRef.current = cube;
       
-      console.log("Loading IFC file:", file.name);
+      console.log("Loading IFC file:", file.name, "size:", file.size, "bytes");
       
       try {
-        // Fix: Directly update progress from the load method
+        // Monitor loading progress explicitly
+        const onProgress = (event) => {
+          if (!event || typeof event.loaded !== 'number' || typeof event.total !== 'number') {
+            console.warn('Invalid direct progress event:', event);
+            return;
+          }
+          
+          if (event.total <= 0) {
+            console.warn('Invalid total in direct progress event:', event.total);
+            return;
+          }
+          
+          const fileProgress = Math.floor((event.loaded / event.total) * 100);
+          console.log(`Direct loading progress: ${fileProgress}% (${event.loaded}/${event.total})`);
+          
+          // Map file progress (0-100) to overall progress (50-100)
+          const newProgress = 50 + Math.floor(fileProgress * 0.5);
+          console.log(`Setting direct progress: ${newProgress}%`);
+          setLoadingProgress(newProgress);
+        };
+        
+        // Load the IFC file with progress tracking
         loaderRef.current.load(
           url,
           (ifcModel) => {
@@ -119,14 +163,10 @@ function IFCModel({ file }: { file: File }) {
             ifcModel.position.y = -center.y;
             ifcModel.position.z = -center.z;
             
+            console.log("Setting final progress to 100%");
             setLoadingProgress(100);
           },
-          (event: { loaded: number; total: number }) => {
-            // Fix: Direct progress update during file loading
-            const progress = event.total > 0 ? Math.floor((event.loaded / event.total) * 100) : 0;
-            console.log(`Direct loading progress: ${progress}%`);
-            setLoadingProgress(50 + Math.floor(progress * 0.5));
-          },
+          onProgress,
           (error) => {
             console.error('Error loading IFC file:', error);
             setError('Failed to load IFC file. Please check the file format.');
@@ -144,6 +184,8 @@ function IFCModel({ file }: { file: File }) {
       }
     };
   }, [file, scene]);
+
+  console.log("Current loading progress:", loadingProgress);
 
   // Improved loading indicator with percentage
   if (error) {
