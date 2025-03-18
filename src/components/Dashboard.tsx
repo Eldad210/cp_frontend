@@ -81,10 +81,10 @@ export function Dashboard() {
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', bgcolor: 'background.default' }}>
       <DashboardHeader user={user} onLogout={logout} />
 
-      <Box sx={{ flexGrow: 1, py: 3, px: { xs: 2, sm: 3 } }}>
-        <Container maxWidth="xl">
-          <Grid container spacing={3}>
-            <Grid item xs={12} md={4}>
+      <Box sx={{ flexGrow: 1, py: 2, px: { xs: 1, sm: 2 } }}>
+        <Container maxWidth="xl" sx={{ px: { xs: 1, sm: 2 } }}>
+          <Grid container spacing={2}>
+            <Grid item xs={12} md={3}>
               <SidePanel 
                 selectedRegion={selectedRegion}
                 onRegionSelect={setSelectedRegion}
@@ -94,7 +94,7 @@ export function Dashboard() {
                 isAnalyzing={isAnalyzing}
               />
             </Grid>
-            <Grid item xs={12} md={8}>
+            <Grid item xs={12} md={9}>
               <ResultsPanel 
                 activePlan={activePlan}
                 selectedFile={selectedFile}
