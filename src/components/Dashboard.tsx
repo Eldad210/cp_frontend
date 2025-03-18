@@ -84,17 +84,19 @@ export function Dashboard() {
       <Box sx={{ flexGrow: 1, py: 2, px: { xs: 1, sm: 2 } }}>
         <Container maxWidth="xl" sx={{ px: { xs: 1, sm: 2 } }}>
           <Grid container spacing={2}>
-            <Grid item xs={12} md={3}>
-              <SidePanel 
-                selectedRegion={selectedRegion}
-                onRegionSelect={setSelectedRegion}
-                onFileSelect={handleFileSelect}
-                onRunAnalysis={handleRunAnalysis}
-                selectedFile={selectedFile}
-                isAnalyzing={isAnalyzing}
-              />
+            <Grid item xs={12} md={4} lg={3}>
+              <Box sx={{ position: 'sticky', top: 16 }}>
+                <SidePanel 
+                  selectedRegion={selectedRegion}
+                  onRegionSelect={setSelectedRegion}
+                  onFileSelect={handleFileSelect}
+                  onRunAnalysis={handleRunAnalysis}
+                  selectedFile={selectedFile}
+                  isAnalyzing={isAnalyzing}
+                />
+              </Box>
             </Grid>
-            <Grid item xs={12} md={9}>
+            <Grid item xs={12} md={8} lg={9}>
               <ResultsPanel 
                 activePlan={activePlan}
                 selectedFile={selectedFile}
