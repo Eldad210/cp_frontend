@@ -94,6 +94,7 @@ export function Dashboard({ selectedRegion }: DashboardProps) {
                   onRunAnalysis={handleRunAnalysis}
                   selectedFile={selectedFile}
                   isAnalyzing={isAnalyzing}
+                  selectedRegion={selectedRegion}
                 />
               </Box>
             </Grid>
