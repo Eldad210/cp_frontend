@@ -27,30 +27,49 @@ export function Dashboard() {
       return;
     }
 
+    // Set analyzing state and show info alert
+    setIsAnalyzing(true);
+    setAlert({ message: 'Analyzing file...', type: 'info' });
+    
     try {
-      setIsAnalyzing(true);
-      setAlert({ message: 'Analyzing file...', type: 'info' });
+      // For now, let's just simulate the analysis 
+      // by creating a plan directly without API call
+      const newPlan = createAnalyzedPlan(selectedFile, selectedRegion);
+      setActivePlan(newPlan);
+      setAlert({ message: 'Analysis completed successfully', type: 'success' });
+    } catch (error) {
+      console.error('Error during analysis:', error);
+      setAlert({ 
+        message: error instanceof Error ? error.message : 'Unknown error occurred during analysis', 
+        type: 'error' 
+      });
+    } finally {
+      setIsAnalyzing(false);
+    }
+    
+    // When ready to implement the actual API call, uncomment this:
+    /*
+    try {
+      const response = await sendAnalysisRequest(selectedFile, selectedRegion);
       
-      // Send request to backend API
-    //   const response = await sendAnalysisRequest(selectedFile, selectedRegion);
-      
-    //   if (response.success) {
-    //     // If successful, create a new plan with the results
-    //     const newPlan = createAnalyzedPlan(selectedFile, selectedRegion);
-    //     setActivePlan(newPlan);
-    //     setAlert({ message: 'Analysis completed successfully', type: 'success' });
-    //   } else {
-    //     setAlert({ message: response.message || 'Analysis failed', type: 'error' });
-    //   }
-    // } catch (error) {
-    //   console.error('Error during analysis:', error);
-    //   setAlert({ 
-    //     message: error instanceof Error ? error.message : 'Unknown error occurred during analysis', 
-    //     type: 'error' 
-    //   });
-    // } finally {
-    //   setIsAnalyzing(false);
-    // }
+      if (response.success) {
+        // If successful, create a new plan with the results
+        const newPlan = createAnalyzedPlan(selectedFile, selectedRegion);
+        setActivePlan(newPlan);
+        setAlert({ message: 'Analysis completed successfully', type: 'success' });
+      } else {
+        setAlert({ message: response.message || 'Analysis failed', type: 'error' });
+      }
+    } catch (error) {
+      console.error('Error during analysis:', error);
+      setAlert({ 
+        message: error instanceof Error ? error.message : 'Unknown error occurred during analysis', 
+        type: 'error' 
+      });
+    } finally {
+      setIsAnalyzing(false);
+    }
+    */
   };
 
   const handleCloseAlert = () => {
