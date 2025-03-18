@@ -14,7 +14,7 @@ interface AutodeskViewerProps {
 // IFC Viewer Component that loads and displays the IFC model
 function IFCModel({ file }: { file: File }) {
   const { scene } = useThree();
-  const modelRef = useRef<THREE.Group>();
+  const modelRef = useRef<THREE.Object3D>(); // Change from THREE.Group to THREE.Object3D
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
