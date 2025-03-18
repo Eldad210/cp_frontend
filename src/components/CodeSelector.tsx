@@ -165,7 +165,7 @@ export function CodeSelector({ selectedRegion, onRegionSelect }: CodeSelectorPro
                         borderRadius: '4px'
                       }}
                     >
-                      {standards.length} standard{standards.length !== 1 ? 's' : ''}
+                      {standards.length} {standards.length !== 1 ? 's' : ''}
                     </Box>
                     {expandedCategories[category] ? (
                       <ChevronUp size={16} color="#2563eb" />
