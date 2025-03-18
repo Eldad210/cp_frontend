@@ -11,7 +11,6 @@ interface AutodeskViewerProps {
   results?: any[];
 }
 
-// IFC Viewer Component that loads and displays the IFC model
 function IFCModel({ file }: { file: File }) {
   const { scene } = useThree();
   const modelRef = useRef<THREE.Object3D>();
@@ -20,32 +19,33 @@ function IFCModel({ file }: { file: File }) {
   const loaderRef = useRef<IFCLoader | null>(null);
 
   useEffect(() => {
-    // Initialize the loader only once
     if (!loaderRef.current) {
       console.log("Initializing IFCLoader...");
       loaderRef.current = new IFCLoader();
       
-      // Make sure we're using the correct web-ifc version
-      // The latest version might not work correctly; use a specific working version
-      loaderRef.current.ifcManager.setWasmPath('https://unpkg.com/web-ifc@0.0.36/');
+      loaderRef.current.ifcManager.setWasmPath(
+        'https://unpkg.com/web-ifc@0.0.36/'
+      );
+
+      loaderRef.current.ifcManager.setupThreeMeshBVH(
+        () => console.log('BVH ready'),
+        () => console.log('BVH progress')
+      );
       
-      // Set up progress tracking
       loaderRef.current.ifcManager.setOnProgress((event) => {
         const progress = Math.floor((event.loaded / event.total) * 100);
         setLoadingProgress(progress);
+        console.log(`Loading progress: ${progress}%`);
       });
     }
     
-    // Clean up previous model if it exists
     if (modelRef.current) {
       scene.remove(modelRef.current);
       modelRef.current = undefined;
     }
     
-    // Create a URL for the file
     const url = URL.createObjectURL(file);
     
-    // Show a debug cube while we're loading
     const geometry = new THREE.BoxGeometry(2, 2, 2);
     const material = new THREE.MeshStandardMaterial({ 
       color: 0x3b82f6,
@@ -55,7 +55,6 @@ function IFCModel({ file }: { file: File }) {
     scene.add(cube);
     modelRef.current = cube;
     
-    // Load the IFC file
     if (loaderRef.current) {
       console.log("Loading IFC file:", file.name);
       
@@ -65,20 +64,16 @@ function IFCModel({ file }: { file: File }) {
           (ifcModel) => {
             console.log("IFC model loaded successfully");
             
-            // Remove the placeholder cube
             if (modelRef.current) {
               scene.remove(modelRef.current);
             }
             
-            // Add the new model to the scene
             scene.add(ifcModel);
             modelRef.current = ifcModel;
             
-            // Center the model in view
             const box = new THREE.Box3().setFromObject(ifcModel);
             const center = box.getCenter(new THREE.Vector3());
             
-            // Adjust model position to center
             ifcModel.position.x = -center.x;
             ifcModel.position.y = -center.y;
             ifcModel.position.z = -center.z;
@@ -86,8 +81,9 @@ function IFCModel({ file }: { file: File }) {
             setLoadingProgress(100);
           },
           (event) => {
-            // Additional progress callback for debugging
-            console.log(`Loading progress: ${Math.floor((event.loaded / event.total) * 100)}%`);
+            const progress = Math.floor((event.loaded / event.total) * 100);
+            console.log(`Loading progress: ${progress}%`);
+            setLoadingProgress(progress);
           },
           (error) => {
             console.error('Error loading IFC file:', error);
@@ -130,7 +126,6 @@ function IFCModel({ file }: { file: File }) {
   ) : null;
 }
 
-// Scene setup component
 function Scene({ file }: { file: File }) {
   return (
     <>
@@ -166,7 +161,6 @@ export function AutodeskViewer({ file }: AutodeskViewerProps) {
   const [isLoading, setIsLoading] = useState(true);
   
   useEffect(() => {
-    // Set loading to false after a short delay to allow the component to mount
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 1000);
