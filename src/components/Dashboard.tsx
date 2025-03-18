@@ -8,7 +8,8 @@ import { SidePanel } from './dashboard/SidePanel';
 import { ResultsPanel } from './dashboard/ResultsPanel';
 import { createAnalyzedPlan } from './dashboard/analysisUtils';
 import { Box, Container, Grid, Snackbar, Alert } from '@mui/material';
-import { sendAnalysisRequest } from '@/api/analysisService';
+// We'll uncomment this import when we're ready to use the API
+// import { sendAnalysisRequest } from '@/api/analysisService';
 
 export function Dashboard() {
   const [activePlan, setActivePlan] = useState<Plan | null>(null);
@@ -47,7 +48,7 @@ export function Dashboard() {
       setIsAnalyzing(false);
     }
     
-    // When ready to implement the actual API call, uncomment this:
+    // When ready to implement the actual API call, uncomment this and the import above:
     /*
     try {
       const response = await sendAnalysisRequest(selectedFile, selectedRegion);
