@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState, Suspense } from 'react';
 import { Canvas, useThree } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera, Grid, Environment } from '@react-three/drei';
@@ -116,9 +115,9 @@ function IFCModel({ file }: { file: File }) {
           <boxGeometry args={[1, 1, 1]} />
           <meshStandardMaterial color="red" wireframe />
         </mesh>
-        <group position={[0, 2, 0]}>
-          <ErrorMessage message={error} />
-        </group>
+        <HtmlOverlay position={[0, 2, 0]} className="bg-white p-2 rounded shadow">
+          <span className="text-red-500 text-xs font-medium">{error}</span>
+        </HtmlOverlay>
       </>
     );
   }
