@@ -1,6 +1,7 @@
+
 import { useEffect, useRef, useState, Suspense } from 'react';
 import { Canvas, useThree } from '@react-three/fiber';
-import { OrbitControls, PerspectiveCamera, Grid, Environment } from '@react-three/drei';
+import { OrbitControls, PerspectiveCamera, Grid, Environment, Html } from '@react-three/drei';
 import { IFCLoader } from 'web-ifc-three/IFCLoader';
 import { Loader2, Axis3d } from 'lucide-react';
 import * as THREE from 'three';

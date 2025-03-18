@@ -1,6 +1,7 @@
 import { ReactNode, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
+import { Html } from '@react-three/drei';
 
 interface HtmlOverlayProps {
   children: ReactNode;
@@ -9,8 +10,7 @@ interface HtmlOverlayProps {
 }
 
 /**
- * A component for rendering HTML content in 3D space using CSS3DRenderer
- * This is a proper way to render HTML in a Three.js scene
+ * A component for rendering HTML content in 3D space using Drei's Html component
  */
 export function HtmlOverlay({ children, position = [0, 0, 0], className = '' }: HtmlOverlayProps) {
   const ref = useRef<THREE.Group>(null);
@@ -24,11 +24,7 @@ export function HtmlOverlay({ children, position = [0, 0, 0], className = '' }: 
 
   return (
     <group position={new THREE.Vector3(...position)} ref={ref}>
-      <mesh visible={false}>
-        <boxGeometry args={[0.1, 0.1, 0.1]} />
-        <meshBasicMaterial transparent opacity={0} />
-      </mesh>
-      <Html>
+      <Html transform distanceFactor={10}>
         <div className={`html-overlay ${className}`}>
           {children}
         </div>
@@ -36,21 +32,3 @@ export function HtmlOverlay({ children, position = [0, 0, 0], className = '' }: 
     </group>
   );
 }
-
-// This is a special component that allows HTML content in a Three.js scene
-// It uses the "annotation" pattern from react-three-fiber
-const Html: React.FC<{ children: ReactNode }> = ({ children }) => {
-  return (
-    <div
-      style={{
-        position: 'absolute',
-        transform: 'translate3d(-50%, -50%, 0)',
-        textAlign: 'center',
-        pointerEvents: 'none',
-        userSelect: 'none',
-      }}
-    >
-      {children}
-    </div>
-  );
-};
