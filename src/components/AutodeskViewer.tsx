@@ -28,8 +28,9 @@ function IFCModel({ file }: { file: File }) {
       );
 
       loaderRef.current.ifcManager.setupThreeMeshBVH(
+        (progress) => console.log('BVH progress:', progress),
         () => console.log('BVH ready'),
-        () => console.log('BVH progress')
+        {}  // Empty settings object as the third parameter
       );
       
       loaderRef.current.ifcManager.setOnProgress((event) => {
