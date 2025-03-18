@@ -5,6 +5,7 @@ import { OrbitControls, PerspectiveCamera, Grid, Environment } from '@react-thre
 import { IFCLoader } from 'web-ifc-three/IFCLoader';
 import { Loader2, Axis3d } from 'lucide-react';
 import * as THREE from 'three';
+import { HtmlOverlay } from './HtmlOverlay';
 
 interface AutodeskViewerProps {
   file: File;
@@ -22,10 +23,11 @@ function IFCModel({ file }: { file: File }) {
   useEffect(() => {
     // Initialize the loader only once
     if (!loaderRef.current) {
+      console.log("Initializing IFCLoader...");
       loaderRef.current = new IFCLoader();
       
       // Make sure we're using the correct web-ifc version
-      // The latest version might not work correctly; try a specific working version
+      // The latest version might not work correctly; use a specific working version
       loaderRef.current.ifcManager.setWasmPath('https://unpkg.com/web-ifc@0.0.36/');
       
       // Set up progress tracking
@@ -109,15 +111,15 @@ function IFCModel({ file }: { file: File }) {
 
   if (error) {
     return (
-      <mesh position={[0, 0, 0]}>
-        <boxGeometry args={[1, 1, 1]} />
-        <meshStandardMaterial color="red" wireframe />
-        <Html position={[0, 2, 0]}>
-          <div className="bg-white p-2 rounded shadow text-red-500 text-xs">
-            {error}
-          </div>
-        </Html>
-      </mesh>
+      <>
+        <mesh position={[0, 0, 0]}>
+          <boxGeometry args={[1, 1, 1]} />
+          <meshStandardMaterial color="red" wireframe />
+        </mesh>
+        <group position={[0, 2, 0]}>
+          <ErrorMessage message={error} />
+        </group>
+      </>
     );
   }
 
@@ -129,31 +131,28 @@ function IFCModel({ file }: { file: File }) {
   ) : null;
 }
 
-// Import Html component from drei for showing error messages
-function Html({ children, position = [0, 0, 0] }: { children: React.ReactNode, position?: [number, number, number] }) {
-  // Fix: Remove unused destructured elements and state
-  // Instead of getting size and viewport which aren't used
-  useThree();
-  
-  // Instead of using state for occlusion which isn't used
-  // Simplified to focus on just rendering the HTML content
-
+// Proper error message component that works with Three.js
+function ErrorMessage({ message }: { message: string }) {
   return (
-    <mesh position={position}>
-      <boxGeometry args={[0.1, 0.1, 0.1]} />
-      <meshBasicMaterial opacity={0} transparent />
+    <sprite>
+      <spriteMaterial transparent opacity={0} />
       <group position={[0, 0, 0]}>
         <div
           style={{
-            transform: `translate(-50%, -50%)`,
-            pointerEvents: 'none',
-            opacity: 1, // Remove the conditional opacity based on occlusion
+            background: 'rgba(255, 255, 255, 0.8)',
+            padding: '8px',
+            borderRadius: '4px',
+            color: 'red',
+            fontWeight: 'bold',
+            whiteSpace: 'nowrap',
+            fontSize: '12px',
+            userSelect: 'none',
           }}
         >
-          {children}
+          {message}
         </div>
       </group>
-    </mesh>
+    </sprite>
   );
 }
 
