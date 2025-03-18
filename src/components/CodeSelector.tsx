@@ -59,9 +59,9 @@ export function CodeSelector({ selectedRegion, onRegionSelect }: CodeSelectorPro
 
   return (
     <Box sx={{ marginTop: 2 }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 4 }}>
-        <Globe size={20} color="#2563eb" />
-        <Typography variant="h6" sx={{ fontWeight: 500, color: '#111827' }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 3 }}>
+        <Globe size={18} color="#2563eb" />
+        <Typography variant="subtitle1" sx={{ fontWeight: 500, color: '#111827' }}>
           Select Country
         </Typography>
       </Box>
@@ -73,14 +73,14 @@ export function CodeSelector({ selectedRegion, onRegionSelect }: CodeSelectorPro
           onClick={toggleDropdown}
           sx={{
             justifyContent: 'space-between',
-            padding: '8px 16px',
+            padding: '6px 12px',
             borderRadius: '6px',
             backgroundColor: selectedRegion ? '#2563eb' : 'white',
             color: selectedRegion ? 'white' : '#111827',
             borderColor: selectedRegion ? '#1e40af' : '#d1d5db',
             textTransform: 'none'
           }}
-          endIcon={<ChevronDown size={16} />}
+          endIcon={<ChevronDown size={14} />}
         >
           {selectedRegion || "Choose country"}
         </Button>
@@ -90,21 +90,21 @@ export function CodeSelector({ selectedRegion, onRegionSelect }: CodeSelectorPro
             sx={{
               position: 'absolute',
               zIndex: 10,
-              marginTop: 1,
+              marginTop: 0.5,
               width: '100%',
               borderRadius: '6px',
               boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
               border: '1px solid #e5e7eb'
             }}
           >
-            <List sx={{ py: 1, maxHeight: '240px', overflow: 'auto' }}>
+            <List sx={{ py: 0.5, maxHeight: '240px', overflow: 'auto' }}>
               {countries.map((country) => (
                 <ListItemButton
                   key={country}
                   onClick={() => handleSelect(country)}
                   sx={{
-                    px: 2,
-                    py: 1,
+                    px: 1.5,
+                    py: 0.75,
                     display: 'flex',
                     justifyContent: 'space-between',
                     backgroundColor: selectedRegion === country ? '#eff6ff' : 'transparent',
@@ -113,9 +113,9 @@ export function CodeSelector({ selectedRegion, onRegionSelect }: CodeSelectorPro
                     }
                   }}
                 >
-                  <Typography>{country}</Typography>
+                  <Typography variant="body2">{country}</Typography>
                   {selectedRegion === country && (
-                    <Check size={16} color="#2563eb" />
+                    <Check size={14} color="#2563eb" />
                   )}
                 </ListItemButton>
               ))}
@@ -125,12 +125,12 @@ export function CodeSelector({ selectedRegion, onRegionSelect }: CodeSelectorPro
       </Box>
 
       {selectedRegion && (
-        <Box sx={{ mt: 6 }}>
-          <Typography variant="subtitle2" sx={{ fontWeight: 500, color: '#4b5563', mb: 3 }}>
+        <Box sx={{ mt: 3, maxHeight: '65vh', overflow: 'auto' }}>
+          <Typography variant="subtitle2" sx={{ fontWeight: 500, color: '#4b5563', mb: 1.5 }}>
             Codes:
           </Typography>
           
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
             {Object.entries(groupedStandards).map(([category, standards]) => (
               <Paper
                 key={category}
@@ -143,8 +143,8 @@ export function CodeSelector({ selectedRegion, onRegionSelect }: CodeSelectorPro
                 <Box
                   sx={{
                     backgroundColor: '#dbeafe',
-                    px: 3,
-                    py: 2,
+                    px: 2,
+                    py: 1.25,
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center',
@@ -152,45 +152,45 @@ export function CodeSelector({ selectedRegion, onRegionSelect }: CodeSelectorPro
                   }}
                   onClick={() => toggleCategory(category)}
                 >
-                  <Typography sx={{ fontWeight: 500, color: '#1e40af' }}>
+                  <Typography variant="body1" sx={{ fontWeight: 500, color: '#1e40af' }}>
                     {category}
                   </Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <Box
                       sx={{
-                        fontSize: '12px',
+                        fontSize: '0.75rem',
                         backgroundColor: '#bfdbfe',
                         color: '#1e40af',
-                        px: 2,
-                        py: 1,
+                        px: 1.5,
+                        py: 0.5,
                         borderRadius: '4px'
                       }}
                     >
-                      {standards.length} {standards.length !== 1 ? 's' : ''}
+                      {standards.length}
                     </Box>
                     {expandedCategories[category] ? (
-                      <ChevronUp size={16} color="#2563eb" />
+                      <ChevronUp size={14} color="#2563eb" />
                     ) : (
-                      <ChevronDown size={16} color="#2563eb" />
+                      <ChevronDown size={14} color="#2563eb" />
                     )}
                   </Box>
                 </Box>
                 {expandedCategories[category] && (
-                  <Box sx={{ p: 3 }}>
+                  <Box sx={{ p: 2 }}>
                     {standards.map(standard => (
                       <Box
                         key={standard.id}
                         sx={{
-                          pl: 2,
+                          pl: 1.5,
                           borderLeft: '2px solid #bfdbfe',
-                          mb: 2,
+                          mb: 1.5,
                           '&:last-child': { mb: 0 }
                         }}
                       >
-                        <Typography sx={{ fontSize: '14px', fontWeight: 500, color: '#111827' }}>
+                        <Typography sx={{ fontSize: '0.875rem', fontWeight: 500, color: '#111827' }}>
                           {standard.name}
                         </Typography>
-                        <Typography sx={{ fontSize: '14px', color: '#6b7280' }}>
+                        <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>
                           {standard.description}
                         </Typography>
                       </Box>
