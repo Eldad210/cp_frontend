@@ -14,53 +14,83 @@ interface AutodeskViewerProps {
 // IFC Viewer Component that loads and displays the IFC model
 function IFCModel({ file }: { file: File }) {
   const { scene } = useThree();
-  const modelRef = useRef<THREE.Object3D>(); // Change from THREE.Group to THREE.Object3D
+  const modelRef = useRef<THREE.Object3D>(); 
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const loaderRef = useRef<IFCLoader | null>(null);
 
   useEffect(() => {
-    const loader = new IFCLoader();
-    loader.ifcManager.setWasmPath('https://unpkg.com/web-ifc@0.0.43/');
+    // Initialize the loader only once
+    if (!loaderRef.current) {
+      loaderRef.current = new IFCLoader();
+      
+      // Use a specific version of web-ifc for better compatibility
+      loaderRef.current.ifcManager.setWasmPath('https://unpkg.com/web-ifc@0.0.36/');
+      
+      // Set up progress tracking
+      loaderRef.current.ifcManager.setOnProgress((event) => {
+        const progress = Math.floor((event.loaded / event.total) * 100);
+        setLoadingProgress(progress);
+      });
+    }
+    
+    // Clean up previous model if it exists
+    if (modelRef.current) {
+      scene.remove(modelRef.current);
+      modelRef.current = undefined;
+    }
     
     // Create a URL for the file
     const url = URL.createObjectURL(file);
     
-    // Set up progress tracking
-    loader.ifcManager.setOnProgress((event) => {
-      const progress = Math.floor((event.loaded / event.total) * 100);
-      setLoadingProgress(progress);
+    // Show a debug cube while we're loading
+    const geometry = new THREE.BoxGeometry(2, 2, 2);
+    const material = new THREE.MeshStandardMaterial({ 
+      color: 0x3b82f6,
+      wireframe: true,
     });
+    const cube = new THREE.Mesh(geometry, material);
+    scene.add(cube);
+    modelRef.current = cube;
     
     // Load the IFC file
-    loader.load(
-      url,
-      (ifcModel) => {
-        // Clear any previous models
-        if (modelRef.current) {
-          scene.remove(modelRef.current);
+    if (loaderRef.current) {
+      console.log("Loading IFC file:", file.name);
+      
+      loaderRef.current.load(
+        url,
+        (ifcModel) => {
+          console.log("IFC model loaded successfully");
+          
+          // Remove the placeholder cube
+          if (modelRef.current) {
+            scene.remove(modelRef.current);
+          }
+          
+          // Add the new model to the scene
+          scene.add(ifcModel);
+          modelRef.current = ifcModel;
+          
+          // Center the model in view
+          const box = new THREE.Box3().setFromObject(ifcModel);
+          const center = box.getCenter(new THREE.Vector3());
+          
+          // Adjust model position to center
+          ifcModel.position.x = -center.x;
+          ifcModel.position.y = -center.y;
+          ifcModel.position.z = -center.z;
+          
+          setLoadingProgress(100);
+        },
+        () => {
+          // Progress callback - handled by setOnProgress above
+        },
+        (error) => {
+          console.error('Error loading IFC file:', error);
+          setError('Failed to load IFC file. Please check the file format.');
         }
-        
-        // Add the new model to the scene
-        scene.add(ifcModel);
-        modelRef.current = ifcModel;
-        
-        // Center the model in view
-        const box = new THREE.Box3().setFromObject(ifcModel);
-        const center = box.getCenter(new THREE.Vector3());
-        
-        // Adjust model position to center
-        ifcModel.position.x = -center.x;
-        ifcModel.position.y = -center.y;
-        ifcModel.position.z = -center.z;
-      },
-      () => {
-        // Progress callback - handled by setOnProgress above
-      },
-      (error) => {
-        console.error('Error loading IFC file:', error);
-        setError('Failed to load IFC file. Please check the file format.');
-      }
-    );
+      );
+    }
     
     return () => {
       URL.revokeObjectURL(url);
