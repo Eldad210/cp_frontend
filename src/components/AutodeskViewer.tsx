@@ -131,8 +131,12 @@ function IFCModel({ file }: { file: File }) {
 
 // Import Html component from drei for showing error messages
 function Html({ children, position = [0, 0, 0] }: { children: React.ReactNode, position?: [number, number, number] }) {
-  const { size, viewport } = useThree();
-  const [occluded, setOccluded] = useState(false);
+  // Fix: Remove unused destructured elements and state
+  // Instead of getting size and viewport which aren't used
+  useThree();
+  
+  // Instead of using state for occlusion which isn't used
+  // Simplified to focus on just rendering the HTML content
 
   return (
     <mesh position={position}>
@@ -143,7 +147,7 @@ function Html({ children, position = [0, 0, 0] }: { children: React.ReactNode, p
           style={{
             transform: `translate(-50%, -50%)`,
             pointerEvents: 'none',
-            opacity: occluded ? 0.25 : 1,
+            opacity: 1, // Remove the conditional opacity based on occlusion
           }}
         >
           {children}
