@@ -1,3 +1,4 @@
+
 import { useEffect, useRef, useState, Suspense } from 'react';
 import { Canvas, useThree } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera, Grid, Environment } from '@react-three/drei';
@@ -28,7 +29,7 @@ function IFCModel({ file }: { file: File }) {
       );
 
       loaderRef.current.ifcManager.setupThreeMeshBVH(
-        (progress) => console.log('BVH progress:', progress),
+        (progress: number) => console.log('BVH progress:', progress),
         () => console.log('BVH ready'),
         {}  // Empty settings object as the third parameter
       );
