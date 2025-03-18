@@ -3,7 +3,6 @@ import { FileUpload } from '../FileUpload';
 import { Button, CircularProgress } from '@mui/material';
 import { Rocket } from 'lucide-react';
 import { Box, Paper, Typography, Grid } from '@mui/material';
-import { CodeSelector } from '../CodeSelector';
 import { RegionCode } from '@/types/codes';
 
 interface SidePanelProps {
@@ -49,10 +48,6 @@ export function SidePanel({
             </Box>
           </Box>
         </Paper>
-      </Grid>
-      
-      <Grid item xs={12}>
-        <CodeSelector selectedRegion={selectedRegion} onRegionSelect={() => {}} />
       </Grid>
     </Grid>
   );
