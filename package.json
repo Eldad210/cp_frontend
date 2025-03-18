@@ -15,6 +15,8 @@
     "@emotion/styled": "^11.14.0",
     "@mui/icons-material": "^6.4.7",
     "@mui/material": "^6.4.7",
+    "@react-three/drei": "^9.92.7",
+    "@react-three/fiber": "^8.15.19",
     "@types/three": "^0.160.0",
     "clsx": "^2.1.0",
     "firebase": "^10.8.0",
@@ -27,6 +29,8 @@
     "react-router-dom": "^6.22.3",
     "tailwind-merge": "^2.2.1",
     "three": "^0.160.0",
+    "web-ifc": "^0.0.43",
+    "web-ifc-three": "^0.0.125",
     "zustand": "^4.5.2"
   },
   "devDependencies": {
