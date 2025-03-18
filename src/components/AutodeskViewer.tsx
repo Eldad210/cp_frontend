@@ -1,9 +1,10 @@
 
 import { useEffect, useRef, useState, Suspense } from 'react';
-import { Canvas, useLoader, useThree } from '@react-three/fiber';
+import { Canvas, useThree } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera, Grid, Environment } from '@react-three/drei';
 import { IFCLoader } from 'web-ifc-three/IFCLoader';
 import { Loader2, Axis3d } from 'lucide-react';
+import * as THREE from 'three';
 
 interface AutodeskViewerProps {
   file: File;
@@ -46,15 +47,14 @@ function IFCModel({ file }: { file: File }) {
         // Center the model in view
         const box = new THREE.Box3().setFromObject(ifcModel);
         const center = box.getCenter(new THREE.Vector3());
-        const size = box.getSize(new THREE.Vector3());
         
         // Adjust model position to center
         ifcModel.position.x = -center.x;
         ifcModel.position.y = -center.y;
         ifcModel.position.z = -center.z;
       },
-      (progress) => {
-        // Progress is handled by setOnProgress above
+      () => {
+        // Progress callback - handled by setOnProgress above
       },
       (error) => {
         console.error('Error loading IFC file:', error);
@@ -119,9 +119,8 @@ function Scene({ file }: { file: File }) {
   );
 }
 
-export function AutodeskViewer({ file, results }: AutodeskViewerProps) {
+export function AutodeskViewer({ file }: AutodeskViewerProps) {
   const [isLoading, setIsLoading] = useState(true);
-  const [viewerError, setViewerError] = useState<string | null>(null);
   
   useEffect(() => {
     // Set loading to false after a short delay to allow the component to mount
@@ -145,15 +144,6 @@ export function AutodeskViewer({ file, results }: AutodeskViewerProps) {
           <div className="flex flex-col items-center space-y-2">
             <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
             <p className="text-sm text-gray-700">Loading viewer...</p>
-          </div>
-        </div>
-      )}
-      
-      {viewerError && (
-        <div className="absolute inset-0 flex items-center justify-center bg-white/90">
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 max-w-md">
-            <h3 className="text-red-800 font-medium mb-2">Viewer Error</h3>
-            <p className="text-red-700">{viewerError}</p>
           </div>
         </div>
       )}
