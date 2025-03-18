@@ -8,5 +8,9 @@ interface PlanViewerProps {
 }
 
 export function PlanViewer({ file, results }: PlanViewerProps) {
-  return <AutodeskViewer file={file} results={results} />;
+  return (
+    <div className="w-full h-full">
+      <AutodeskViewer file={file} results={results} />
+    </div>
+  );
 }

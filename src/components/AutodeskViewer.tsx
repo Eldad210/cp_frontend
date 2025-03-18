@@ -14,7 +14,7 @@ interface AutodeskViewerProps {
 // IFC Viewer Component that loads and displays the IFC model
 function IFCModel({ file }: { file: File }) {
   const { scene } = useThree();
-  const modelRef = useRef<THREE.Object3D>(); 
+  const modelRef = useRef<THREE.Object3D>();
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const loaderRef = useRef<IFCLoader | null>(null);
@@ -24,7 +24,8 @@ function IFCModel({ file }: { file: File }) {
     if (!loaderRef.current) {
       loaderRef.current = new IFCLoader();
       
-      // Use a specific version of web-ifc for better compatibility
+      // Make sure we're using the correct web-ifc version
+      // The latest version might not work correctly; try a specific working version
       loaderRef.current.ifcManager.setWasmPath('https://unpkg.com/web-ifc@0.0.36/');
       
       // Set up progress tracking
@@ -57,39 +58,45 @@ function IFCModel({ file }: { file: File }) {
     if (loaderRef.current) {
       console.log("Loading IFC file:", file.name);
       
-      loaderRef.current.load(
-        url,
-        (ifcModel) => {
-          console.log("IFC model loaded successfully");
-          
-          // Remove the placeholder cube
-          if (modelRef.current) {
-            scene.remove(modelRef.current);
+      try {
+        loaderRef.current.load(
+          url,
+          (ifcModel) => {
+            console.log("IFC model loaded successfully");
+            
+            // Remove the placeholder cube
+            if (modelRef.current) {
+              scene.remove(modelRef.current);
+            }
+            
+            // Add the new model to the scene
+            scene.add(ifcModel);
+            modelRef.current = ifcModel;
+            
+            // Center the model in view
+            const box = new THREE.Box3().setFromObject(ifcModel);
+            const center = box.getCenter(new THREE.Vector3());
+            
+            // Adjust model position to center
+            ifcModel.position.x = -center.x;
+            ifcModel.position.y = -center.y;
+            ifcModel.position.z = -center.z;
+            
+            setLoadingProgress(100);
+          },
+          (event) => {
+            // Additional progress callback for debugging
+            console.log(`Loading progress: ${Math.floor((event.loaded / event.total) * 100)}%`);
+          },
+          (error) => {
+            console.error('Error loading IFC file:', error);
+            setError('Failed to load IFC file. Please check the file format.');
           }
-          
-          // Add the new model to the scene
-          scene.add(ifcModel);
-          modelRef.current = ifcModel;
-          
-          // Center the model in view
-          const box = new THREE.Box3().setFromObject(ifcModel);
-          const center = box.getCenter(new THREE.Vector3());
-          
-          // Adjust model position to center
-          ifcModel.position.x = -center.x;
-          ifcModel.position.y = -center.y;
-          ifcModel.position.z = -center.z;
-          
-          setLoadingProgress(100);
-        },
-        () => {
-          // Progress callback - handled by setOnProgress above
-        },
-        (error) => {
-          console.error('Error loading IFC file:', error);
-          setError('Failed to load IFC file. Please check the file format.');
-        }
-      );
+        );
+      } catch (error) {
+        console.error('Exception during IFC loading:', error);
+        setError('Exception occurred while loading IFC file');
+      }
     }
     
     return () => {
@@ -105,6 +112,11 @@ function IFCModel({ file }: { file: File }) {
       <mesh position={[0, 0, 0]}>
         <boxGeometry args={[1, 1, 1]} />
         <meshStandardMaterial color="red" wireframe />
+        <Html position={[0, 2, 0]}>
+          <div className="bg-white p-2 rounded shadow text-red-500 text-xs">
+            {error}
+          </div>
+        </Html>
       </mesh>
     );
   }
@@ -115,6 +127,30 @@ function IFCModel({ file }: { file: File }) {
       <meshStandardMaterial color="blue" wireframe />
     </mesh>
   ) : null;
+}
+
+// Import Html component from drei for showing error messages
+function Html({ children, position = [0, 0, 0] }: { children: React.ReactNode, position?: [number, number, number] }) {
+  const { size, viewport } = useThree();
+  const [occluded, setOccluded] = useState(false);
+
+  return (
+    <mesh position={position}>
+      <boxGeometry args={[0.1, 0.1, 0.1]} />
+      <meshBasicMaterial opacity={0} transparent />
+      <group position={[0, 0, 0]}>
+        <div
+          style={{
+            transform: `translate(-50%, -50%)`,
+            pointerEvents: 'none',
+            opacity: occluded ? 0.25 : 1,
+          }}
+        >
+          {children}
+        </div>
+      </group>
+    </mesh>
+  );
 }
 
 // Scene setup component
