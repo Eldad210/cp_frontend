@@ -11,9 +11,12 @@ import { Box, Container, Grid, Snackbar, Alert } from '@mui/material';
 // We'll uncomment this import when we're ready to use the API
 // import { sendAnalysisRequest } from '@/api/analysisService';
 
-export function Dashboard() {
+interface DashboardProps {
+  selectedRegion: RegionCode;
+}
+
+export function Dashboard({ selectedRegion }: DashboardProps) {
   const [activePlan, setActivePlan] = useState<Plan | null>(null);
-  const [selectedRegion, setSelectedRegion] = useState<RegionCode>('ISRAEL');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [alert, setAlert] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
@@ -79,12 +82,7 @@ export function Dashboard() {
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', bgcolor: 'background.default' }}>
-      <DashboardHeader 
-        user={user} 
-        onLogout={logout} 
-        selectedRegion={selectedRegion}
-        onRegionSelect={setSelectedRegion}
-      />
+      <DashboardHeader user={user} onLogout={logout} />
 
       <Box sx={{ flexGrow: 1, py: 2, px: { xs: 1, sm: 2 } }}>
         <Container maxWidth="xl" sx={{ px: { xs: 1, sm: 2 } }}>
