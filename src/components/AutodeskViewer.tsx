@@ -6,6 +6,7 @@ import { IFCLoader } from 'web-ifc-three/IFCLoader';
 import { Loader2, Axis3d } from 'lucide-react';
 import * as THREE from 'three';
 import { HtmlOverlay } from './HtmlOverlay';
+import { IfcAPI } from 'web-ifc';
 
 interface AutodeskViewerProps {
   file: File;
@@ -18,46 +19,80 @@ function IFCModel({ file }: { file: File }) {
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const loaderRef = useRef<IFCLoader | null>(null);
+  const ifcAPI = useRef<IfcAPI | null>(null);
 
   useEffect(() => {
-    if (!loaderRef.current) {
-      console.log("Initializing IFCLoader...");
-      loaderRef.current = new IFCLoader();
+    // Initialize the IFC API first
+    if (!ifcAPI.current) {
+      console.log("Initializing IfcAPI...");
+      ifcAPI.current = new IfcAPI();
+      ifcAPI.current.SetWasmPath('https://unpkg.com/web-ifc@0.0.36/');
       
-      loaderRef.current.ifcManager.setWasmPath(
-        'https://unpkg.com/web-ifc@0.0.36/'
-      );
-
-      loaderRef.current.ifcManager.setupThreeMeshBVH(
-        (progress: number) => console.log('BVH progress:', progress),
-        () => console.log('BVH ready'),
-        {}  // Empty settings object as the third parameter
-      );
-      
-      loaderRef.current.ifcManager.setOnProgress((event) => {
-        const progress = Math.floor((event.loaded / event.total) * 100);
-        setLoadingProgress(progress);
-        console.log(`Loading progress: ${progress}%`);
+      // Load the WebAssembly module
+      ifcAPI.current.Init().then(() => {
+        console.log("IfcAPI initialized successfully");
+        
+        // Once the IfcAPI is initialized, create the IFCLoader
+        if (!loaderRef.current) {
+          console.log("Creating IFCLoader...");
+          loaderRef.current = new IFCLoader();
+          
+          // Set the WASM path for the IFCLoader
+          loaderRef.current.ifcManager.setWasmPath(
+            'https://unpkg.com/web-ifc@0.0.36/'
+          );
+          
+          // Setup BVH after initialization
+          loaderRef.current.ifcManager.setupThreeMeshBVH(
+            (progress: number) => {
+              console.log('BVH progress:', progress);
+              setLoadingProgress(Math.floor(progress * 50)); // Use half for BVH, half for loading
+            },
+            () => {
+              console.log('BVH setup complete');
+              loadIFCFile();
+            },
+            {} // Empty settings object as the third parameter
+          );
+          
+          loaderRef.current.ifcManager.setOnProgress((event) => {
+            const progress = Math.floor((event.loaded / event.total) * 100);
+            setLoadingProgress(50 + Math.floor(progress * 0.5)); // Start from 50% after BVH setup
+            console.log(`Loading progress: ${progress}%`);
+          });
+        } else {
+          loadIFCFile();
+        }
+      }).catch(err => {
+        console.error("Error initializing IfcAPI:", err);
+        setError("Failed to initialize IFC API. Please try again.");
       });
     }
     
-    if (modelRef.current) {
-      scene.remove(modelRef.current);
-      modelRef.current = undefined;
-    }
-    
-    const url = URL.createObjectURL(file);
-    
-    const geometry = new THREE.BoxGeometry(2, 2, 2);
-    const material = new THREE.MeshStandardMaterial({ 
-      color: 0x3b82f6,
-      wireframe: true,
-    });
-    const cube = new THREE.Mesh(geometry, material);
-    scene.add(cube);
-    modelRef.current = cube;
-    
-    if (loaderRef.current) {
+    // Function to load the IFC file
+    const loadIFCFile = () => {
+      if (!loaderRef.current) {
+        setError("IFC loader not initialized");
+        return;
+      }
+      
+      if (modelRef.current) {
+        scene.remove(modelRef.current);
+        modelRef.current = undefined;
+      }
+      
+      const url = URL.createObjectURL(file);
+      
+      // Add a placeholder while loading
+      const geometry = new THREE.BoxGeometry(2, 2, 2);
+      const material = new THREE.MeshStandardMaterial({ 
+        color: 0x3b82f6,
+        wireframe: true,
+      });
+      const cube = new THREE.Mesh(geometry, material);
+      scene.add(cube);
+      modelRef.current = cube;
+      
       console.log("Loading IFC file:", file.name);
       
       try {
@@ -85,7 +120,7 @@ function IFCModel({ file }: { file: File }) {
           (event) => {
             const progress = Math.floor((event.loaded / event.total) * 100);
             console.log(`Loading progress: ${progress}%`);
-            setLoadingProgress(progress);
+            setLoadingProgress(50 + Math.floor(progress * 0.5));
           },
           (error) => {
             console.error('Error loading IFC file:', error);
@@ -96,10 +131,9 @@ function IFCModel({ file }: { file: File }) {
         console.error('Exception during IFC loading:', error);
         setError('Exception occurred while loading IFC file');
       }
-    }
+    };
     
     return () => {
-      URL.revokeObjectURL(url);
       if (modelRef.current) {
         scene.remove(modelRef.current);
       }
@@ -121,10 +155,15 @@ function IFCModel({ file }: { file: File }) {
   }
 
   return loadingProgress < 100 ? (
-    <mesh position={[0, 0, 0]}>
-      <boxGeometry args={[1, 1, 1]} />
-      <meshStandardMaterial color="blue" wireframe />
-    </mesh>
+    <>
+      <mesh position={[0, 0, 0]}>
+        <boxGeometry args={[1, 1, 1]} />
+        <meshStandardMaterial color="blue" wireframe />
+      </mesh>
+      <HtmlOverlay position={[0, 2, 0]} className="bg-white p-2 rounded shadow">
+        <span className="text-blue-500 text-xs font-medium">Loading: {loadingProgress}%</span>
+      </HtmlOverlay>
+    </>
   ) : null;
 }
 
