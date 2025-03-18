@@ -16,7 +16,7 @@ interface AutodeskViewerProps {
 function IFCModel({ file }: { file: File }) {
   const { scene } = useThree();
   const modelRef = useRef<THREE.Object3D>();
-  const [loadingProgress, setLoadingProgress] = useState(0);
+  const [loadingProgress, setLoadingProgress] = useState<number>(0);
   const [error, setError] = useState<string | null>(null);
   const loaderRef = useRef<IFCLoader | null>(null);
   const ifcAPI = useRef<IfcAPI | null>(null);
@@ -46,7 +46,8 @@ function IFCModel({ file }: { file: File }) {
           loaderRef.current.ifcManager.setupThreeMeshBVH(
             (progress: number) => {
               console.log('BVH progress:', progress);
-              setLoadingProgress(Math.floor(progress * 50)); // Use half for BVH, half for loading
+              // Fix: Update loading progress properly during BVH setup
+              setLoadingProgress(Math.floor(progress * 50));
             },
             () => {
               console.log('BVH setup complete');
@@ -55,10 +56,12 @@ function IFCModel({ file }: { file: File }) {
             {} // Empty settings object as the third parameter
           );
           
-          loaderRef.current.ifcManager.setOnProgress((event) => {
-            const progress = Math.floor((event.loaded / event.total) * 100);
-            setLoadingProgress(50 + Math.floor(progress * 0.5)); // Start from 50% after BVH setup
+          // Fix: Ensure the onProgress handler is properly set and updates state
+          loaderRef.current.ifcManager.setOnProgress((event: { loaded: number; total: number }) => {
+            const progress = event.total > 0 ? Math.floor((event.loaded / event.total) * 100) : 0;
             console.log(`Loading progress: ${progress}%`);
+            // Start from 50% after BVH setup
+            setLoadingProgress(50 + Math.floor(progress * 0.5));
           });
         } else {
           loadIFCFile();
@@ -96,6 +99,7 @@ function IFCModel({ file }: { file: File }) {
       console.log("Loading IFC file:", file.name);
       
       try {
+        // Fix: Directly update progress from the load method
         loaderRef.current.load(
           url,
           (ifcModel) => {
@@ -117,9 +121,10 @@ function IFCModel({ file }: { file: File }) {
             
             setLoadingProgress(100);
           },
-          (event) => {
-            const progress = Math.floor((event.loaded / event.total) * 100);
-            console.log(`Loading progress: ${progress}%`);
+          (event: { loaded: number; total: number }) => {
+            // Fix: Direct progress update during file loading
+            const progress = event.total > 0 ? Math.floor((event.loaded / event.total) * 100) : 0;
+            console.log(`Direct loading progress: ${progress}%`);
             setLoadingProgress(50 + Math.floor(progress * 0.5));
           },
           (error) => {
@@ -140,6 +145,7 @@ function IFCModel({ file }: { file: File }) {
     };
   }, [file, scene]);
 
+  // Improved loading indicator with percentage
   if (error) {
     return (
       <>
@@ -161,7 +167,15 @@ function IFCModel({ file }: { file: File }) {
         <meshStandardMaterial color="blue" wireframe />
       </mesh>
       <HtmlOverlay position={[0, 2, 0]} className="bg-white p-2 rounded shadow">
-        <span className="text-blue-500 text-xs font-medium">Loading: {loadingProgress}%</span>
+        <div className="flex flex-col items-center">
+          <span className="text-blue-500 text-xs font-medium mb-1">Loading: {loadingProgress}%</span>
+          <div className="w-24 bg-gray-200 rounded-full h-1.5">
+            <div 
+              className="bg-blue-600 h-1.5 rounded-full" 
+              style={{ width: `${loadingProgress}%` }}
+            ></div>
+          </div>
+        </div>
       </HtmlOverlay>
     </>
   ) : null;
