@@ -2,7 +2,78 @@
 import { AnalysisResult, Plan } from '@/types';
 import { RegionCode } from '@/types/codes';
 
-// Function to get region-specific analysis results
+// Function to convert API response to AnalysisResult format
+export const convertApiResultsToAnalysisResults = (apiResults: any[]): AnalysisResult[] => {
+  return apiResults.flatMap(item => {
+    // If there are no issues, return an empty array
+    if (!item.issues || item.issues.length === 0) {
+      return [];
+    }
+    
+    // Map each issue to an AnalysisResult
+    return item.issues.map((issue: any, index: number) => {
+      const severity = issue.messageType === 'success' ? 'info' : issue.messageType;
+      
+      return {
+        id: `${item.countryCode}-${item.codeNum}-${index}`,
+        severity: severity as 'error' | 'warning' | 'info',
+        code: item.codeNum,
+        description: issue.message,
+        location: 'Determined by analysis',
+        recommendation: 'See details in message',
+        // Default to 'general' but try to categorize based on code if possible
+        category: getCategoryFromCode(item.codeNum)
+      };
+    });
+  });
+};
+
+// Helper function to guess category from code
+const getCategoryFromCode = (code: string): 'safety' | 'accessibility' | 'structural' | 'energy' | 'general' => {
+  const lowerCode = code.toLowerCase();
+  
+  if (lowerCode.includes('safety') || lowerCode.includes('fire') || lowerCode.includes('emergency')) {
+    return 'safety';
+  }
+  if (lowerCode.includes('access') || lowerCode.includes('ada')) {
+    return 'accessibility';
+  }
+  if (lowerCode.includes('struct') || lowerCode.includes('load') || lowerCode.includes('seismic')) {
+    return 'structural';
+  }
+  if (lowerCode.includes('energy') || lowerCode.includes('insul') || lowerCode.includes('thermal')) {
+    return 'energy';
+  }
+  
+  return 'general';
+};
+
+// Function to create a new plan with analysis results
+export const createAnalyzedPlan = (
+  file: File, 
+  region: RegionCode, 
+  apiResults?: any[]
+): Plan => {
+  let results: AnalysisResult[] = [];
+  
+  if (apiResults && apiResults.length > 0) {
+    // Convert API results to our AnalysisResult format
+    results = convertApiResultsToAnalysisResults(apiResults);
+  } else {
+    // Fallback to mock results if no API results provided
+    results = getRegionSpecificResults(region);
+  }
+  
+  return {
+    id: Math.random().toString(36).substr(2, 9),
+    name: file.name,
+    uploadDate: new Date(),
+    status: 'completed',
+    results: results
+  };
+};
+
+// Function to get region-specific mock analysis results (for fallback)
 export const getRegionSpecificResults = (region: RegionCode): AnalysisResult[] => {
   // Define IFC-specific issues
   switch (region) {
@@ -51,15 +122,4 @@ export const getRegionSpecificResults = (region: RegionCode): AnalysisResult[] =
     default:
       return [];
   }
-};
-
-// Function to create a new plan with analysis results
-export const createAnalyzedPlan = (file: File, region: RegionCode): Plan => {
-  return {
-    id: Math.random().toString(36).substr(2, 9),
-    name: file.name,
-    uploadDate: new Date(),
-    status: 'completed',
-    results: getRegionSpecificResults(region)
-  };
 };

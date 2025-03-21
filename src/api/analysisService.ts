@@ -6,15 +6,19 @@ type AnalysisItem = {
   codeNum: string;
 };
 
-export interface AnalysisRequest {
-  file: string;
-  items: AnalysisItem[];
-}
-
 export interface AnalysisResponse {
   success: boolean;
   message?: string;
-  results?: any[]; // Replace with your actual response type
+  results?: Array<{
+    countryCode: string;
+    codeNum: string;
+    checked: boolean;
+    checkedCorrectly: boolean;
+    issues?: Array<{
+      messageType: "error" | "warning" | "success";
+      message: string;
+    }>;
+  }>;
 }
 
 export const sendAnalysisRequest = async (
@@ -22,8 +26,9 @@ export const sendAnalysisRequest = async (
   region: RegionCode
 ): Promise<AnalysisResponse> => {
   try {
-    // Convert file to base64
-    const base64File = await fileToBase64(file);
+    // Create form data for multipart/form-data request
+    const formData = new FormData();
+    formData.append('file', file);
     
     // Create items array based on region
     // You might want to get actual code numbers from your standards
@@ -34,13 +39,11 @@ export const sendAnalysisRequest = async (
       }
     ];
     
-    const requestBody: AnalysisRequest = {
-      file: base64File,
-      items: items
-    };
+    // Append items as JSON string
+    formData.append('items', JSON.stringify(items));
     
-    // The API URL should come from environment variables in a production app
-    const apiUrl = 'https://yourapi.example.com/analyze';
+    // The API URL from the provided specification
+    const apiUrl = 'https://AnalyserAPI.onrender.com/analyze';
     
     // In a real app, you'd store this token securely
     const bearerToken = 'YOUR_BEARER_TOKEN';
@@ -48,17 +51,20 @@ export const sendAnalysisRequest = async (
     const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
         'Authorization': `Bearer ${bearerToken}`
       },
-      body: JSON.stringify(requestBody)
+      body: formData
     });
     
     if (!response.ok) {
       throw new Error(`Error: ${response.status} ${response.statusText}`);
     }
     
-    return await response.json();
+    const data = await response.json();
+    return {
+      success: true,
+      results: data.results
+    };
   } catch (error) {
     console.error('Analysis request failed:', error);
     return {
@@ -66,14 +72,4 @@ export const sendAnalysisRequest = async (
       message: error instanceof Error ? error.message : 'Unknown error occurred'
     };
   }
-};
-
-// Helper function to convert File to base64 string
-const fileToBase64 = (file: File): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = error => reject(error);
-  });
 };

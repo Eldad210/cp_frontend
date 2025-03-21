@@ -8,8 +8,7 @@ import { SidePanel } from './dashboard/SidePanel';
 import { ResultsPanel } from './dashboard/ResultsPanel';
 import { createAnalyzedPlan } from './dashboard/analysisUtils';
 import { Box, Container, Grid, Snackbar, Alert } from '@mui/material';
-// We'll uncomment this import when we're ready to use the API
-// import { sendAnalysisRequest } from '@/api/analysisService';
+import { sendAnalysisRequest } from '@/api/analysisService';
 
 export function Dashboard() {
   const [activePlan, setActivePlan] = useState<Plan | null>(null);
@@ -33,29 +32,12 @@ export function Dashboard() {
     setAlert({ message: 'Analyzing file...', type: 'info' });
     
     try {
-      // For now, let's just simulate the analysis 
-      // by creating a plan directly without API call
-      const newPlan = createAnalyzedPlan(selectedFile, selectedRegion);
-      setActivePlan(newPlan);
-      setAlert({ message: 'Analysis completed successfully', type: 'success' });
-    } catch (error) {
-      console.error('Error during analysis:', error);
-      setAlert({ 
-        message: error instanceof Error ? error.message : 'Unknown error occurred during analysis', 
-        type: 'error' 
-      });
-    } finally {
-      setIsAnalyzing(false);
-    }
-    
-    // When ready to implement the actual API call, uncomment this and the import above:
-    /*
-    try {
+      // Call the actual API service
       const response = await sendAnalysisRequest(selectedFile, selectedRegion);
       
-      if (response.success) {
-        // If successful, create a new plan with the results
-        const newPlan = createAnalyzedPlan(selectedFile, selectedRegion);
+      if (response.success && response.results) {
+        // Create a plan with the API response results
+        const newPlan = createAnalyzedPlan(selectedFile, selectedRegion, response.results);
         setActivePlan(newPlan);
         setAlert({ message: 'Analysis completed successfully', type: 'success' });
       } else {
@@ -70,7 +52,6 @@ export function Dashboard() {
     } finally {
       setIsAnalyzing(false);
     }
-    */
   };
 
   const handleCloseAlert = () => {
@@ -87,8 +68,6 @@ export function Dashboard() {
             <Grid item xs={12} md={4} lg={3}>
               <Box sx={{ position: 'sticky', top: 16 }}>
                 <SidePanel 
-                  selectedRegion={selectedRegion}
-                  onRegionSelect={setSelectedRegion}
                   onFileSelect={handleFileSelect}
                   onRunAnalysis={handleRunAnalysis}
                   selectedFile={selectedFile}
