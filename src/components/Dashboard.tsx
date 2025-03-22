@@ -12,7 +12,7 @@ import { sendAnalysisRequest } from '@/api/analysisService';
 
 export function Dashboard() {
   const [activePlan, setActivePlan] = useState<Plan | null>(null);
-  const [selectedRegion] = useState<RegionCode>('ISRAEL');
+  const [selectedRegion, setSelectedRegion] = useState<RegionCode>('ISRAEL');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [alert, setAlert] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
