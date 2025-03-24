@@ -10,8 +10,11 @@ import {
 
 export const useAuthStore = create<AuthState>((set) => {
   // Initialize auth state from Firebase
-  onAuthStateChanged(auth, (firebaseUser) => {
+  onAuthStateChanged (auth, async (firebaseUser) => {
+
+   
     if (firebaseUser) {
+      const token = await firebaseUser.getIdToken();
       const user: User = {
         id: firebaseUser.uid,
         email: firebaseUser.email || '',
@@ -21,7 +24,7 @@ export const useAuthStore = create<AuthState>((set) => {
       
       set({
         user,
-        token: firebaseUser.refreshToken,
+        token: token,
         isAuthenticated: true
       });
     } else {
@@ -42,6 +45,7 @@ export const useAuthStore = create<AuthState>((set) => {
       try {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const firebaseUser = userCredential.user;
+        const token = await firebaseUser.getIdToken();
         
         // Create user object from firebase user
         const user: User = {
@@ -51,9 +55,11 @@ export const useAuthStore = create<AuthState>((set) => {
           role: 'engineer' // Default role - you might want to store this in a database
         };
 
+        console.log(token);
+
         set({
           user,
-          token: firebaseUser.refreshToken,
+          token: token,
           isAuthenticated: true
         });
       } catch (error) {

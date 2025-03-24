@@ -1,5 +1,5 @@
-
 import { RegionCode } from "@/types/codes";
+import { useAuthStore } from "@/store/authStore";
 
 type AnalysisItem = {
   countryCode: string;
@@ -26,6 +26,13 @@ export const sendAnalysisRequest = async (
   region: RegionCode
 ): Promise<AnalysisResponse> => {
   try {
+    // Get the Firebase token from the auth store
+    const token = useAuthStore.getState().token;
+    
+    if (!token) {
+      throw new Error('Authentication token not found. Please log in again.');
+    }
+
     // Create form data for multipart/form-data request
     const formData = new FormData();
     formData.append('file', file);
@@ -35,7 +42,7 @@ export const sendAnalysisRequest = async (
     const items: AnalysisItem[] = [
       {
         countryCode: region === 'USA' ? 'US' : 'IL',
-        codeNum: region === 'USA' ? 'IBC-2021-1006.2' : 'SI-5281-4.1.3'
+        codeNum: "1"
       }
     ];
     
@@ -45,13 +52,10 @@ export const sendAnalysisRequest = async (
     // The API URL from the provided specification
     const apiUrl = 'https://AnalyserAPI.onrender.com/analyze';
     
-    // In a real app, you'd store this token securely
-    const bearerToken = 'YOUR_BEARER_TOKEN';
-    
     const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${bearerToken}`
+        'Authorization': `Bearer ${token}`
       },
       body: formData
     });
@@ -61,6 +65,7 @@ export const sendAnalysisRequest = async (
     }
     
     const data = await response.json();
+    debugger;
     return {
       success: true,
       results: data.results

@@ -1,24 +1,39 @@
-
 import { FileUpload } from '../FileUpload';
+import { CodeSelector } from '../CodeSelector';
 import { Button, CircularProgress } from '@mui/material';
 import { Rocket } from 'lucide-react';
 import { Box, Paper, Typography, Grid } from '@mui/material';
+import { RegionCode } from '@/types/codes';
 
 interface SidePanelProps {
   onFileSelect: (file: File) => void;
   onRunAnalysis: () => void;
   selectedFile: File | null;
   isAnalyzing?: boolean;
+  selectedRegion: RegionCode | null;
+  onRegionSelect: (region: RegionCode) => void;
 }
 
 export function SidePanel({ 
   onFileSelect,
   onRunAnalysis,
   selectedFile,
-  isAnalyzing = false
+  isAnalyzing = false,
+  selectedRegion,
+  onRegionSelect
 }: SidePanelProps) {
   return (
     <Grid container spacing={2}>
+       <Grid item xs={12}>
+        <Paper sx={{ p: 2, borderRadius: 2 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <CodeSelector 
+              selectedRegion={selectedRegion}
+              onRegionSelect={onRegionSelect}
+            />
+          </Box>
+        </Paper>
+      </Grid>
       <Grid item xs={12}>
         <Paper sx={{ p: 2, borderRadius: 2 }}>
           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -46,6 +61,7 @@ export function SidePanel({
           </Box>
         </Paper>
       </Grid>
+     
     </Grid>
   );
 }

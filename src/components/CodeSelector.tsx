@@ -1,4 +1,3 @@
-
 import { RegionCode, codeStandards } from '@/types/codes';
 import { Check, ChevronDown, ChevronUp, Globe } from 'lucide-react';
 import { useState, useEffect } from 'react';
@@ -13,6 +12,13 @@ export function CodeSelector({ selectedRegion, onRegionSelect }: CodeSelectorPro
   const countries: RegionCode[] = ['USA', 'ISRAEL'];
   const [isOpen, setIsOpen] = useState(false);
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    // Set Israel as default if no region is selected
+    if (!selectedRegion) {
+      onRegionSelect('ISRAEL');
+    }
+  }, []); // Run only once on mount
 
   useEffect(() => {
     if (selectedRegion) {

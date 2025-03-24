@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Plan } from '../types';
 import { useAuthStore } from '../store/authStore';
@@ -72,6 +71,8 @@ export function Dashboard() {
                   onRunAnalysis={handleRunAnalysis}
                   selectedFile={selectedFile}
                   isAnalyzing={isAnalyzing}
+                  selectedRegion={selectedRegion}
+                  onRegionSelect={setSelectedRegion}
                 />
               </Box>
             </Grid>
