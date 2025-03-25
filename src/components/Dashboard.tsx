@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Plan } from '../types';
 import { useAuthStore } from '../store/authStore';
-import { RegionCode } from '@/types/codes';
 import { DashboardHeader } from './dashboard/DashboardHeader';
 import { SidePanel } from './dashboard/SidePanel';
 import { ResultsPanel } from './dashboard/ResultsPanel';
@@ -11,8 +10,8 @@ import { sendAnalysisRequest } from '@/api/analysisService';
 
 export function Dashboard() {
   const [activePlan, setActivePlan] = useState<Plan | null>(null);
-  const [selectedRegion, setSelectedRegion] = useState<RegionCode>('ISRAEL');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedCodes, setSelectedCodes] = useState<Array<{ countryCode: string; codeNum: string }>>([]);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [alert, setAlert] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
   const { user, logout } = useAuthStore();
@@ -22,7 +21,7 @@ export function Dashboard() {
   };
 
   const handleRunAnalysis = async () => {
-    if (!selectedFile || !selectedRegion) {
+    if (!selectedFile || selectedCodes.length === 0) {
       return;
     }
 
@@ -31,12 +30,12 @@ export function Dashboard() {
     setAlert({ message: 'Analyzing file...', type: 'info' });
     
     try {
-      // Call the actual API service
-      const response = await sendAnalysisRequest(selectedFile, selectedRegion);
+      // Call the actual API service with selected codes
+      const response = await sendAnalysisRequest(selectedFile, selectedCodes);
       
       if (response.success && response.results) {
         // Create a plan with the API response results
-        const newPlan = createAnalyzedPlan(selectedFile, selectedRegion, response.results);
+        const newPlan = createAnalyzedPlan(selectedFile, 'ISRAEL', response.results);
         setActivePlan(newPlan);
         setAlert({ message: 'Analysis completed successfully', type: 'success' });
       } else {
@@ -71,8 +70,8 @@ export function Dashboard() {
                   onRunAnalysis={handleRunAnalysis}
                   selectedFile={selectedFile}
                   isAnalyzing={isAnalyzing}
-                  selectedRegion={selectedRegion}
-                  onRegionSelect={setSelectedRegion}
+                  selectedCodes={selectedCodes}
+                  onCodeSelect={setSelectedCodes}
                 />
               </Box>
             </Grid>
@@ -80,7 +79,7 @@ export function Dashboard() {
               <ResultsPanel 
                 activePlan={activePlan}
                 selectedFile={selectedFile}
-                selectedRegion={selectedRegion}
+                selectedRegion="ISRAEL"
               />
             </Grid>
           </Grid>

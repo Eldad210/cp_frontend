@@ -1,44 +1,64 @@
-import { RegionCode, codeStandards } from '@/types/codes';
-import { Check, ChevronDown, ChevronUp, Globe } from 'lucide-react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { Box, Typography, Button, Paper, List, ListItemButton } from '@mui/material';
+import { Box, Typography, Paper, CircularProgress, Checkbox } from '@mui/material';
+import { getCodeList, CodeListResponse } from '@/api/analysisService';
 
 interface CodeSelectorProps {
-  selectedRegion: RegionCode | null;
-  onRegionSelect: (region: RegionCode) => void;
+  selectedCodes: Array<{ countryCode: string; codeNum: string }>;
+  onCodeSelect: (codes: Array<{ countryCode: string; codeNum: string }>) => void;
 }
 
-export function CodeSelector({ selectedRegion, onRegionSelect }: CodeSelectorProps) {
-  const countries: RegionCode[] = ['USA', 'ISRAEL'];
-  const [isOpen, setIsOpen] = useState(false);
+export function CodeSelector({ 
+  selectedCodes,
+  onCodeSelect 
+}: CodeSelectorProps) {
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
+  const [codes, setCodes] = useState<CodeListResponse['results']>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Set Israel as default if no region is selected
-    if (!selectedRegion) {
-      onRegionSelect('ISRAEL');
-    }
-  }, []); // Run only once on mount
+    const fetchCodes = async () => {
+      setLoading(true);
+      setError(null);
+      
+      try {
+        const response = await getCodeList({
+          countryCode: ['IL']
+        });
+        
+        if (response.success && response.results) {
+          setCodes(response.results);
+          
+          // Select all codes by default
+          const allCodes = response.results.map(code => ({
+            countryCode: code.countryCode,
+            codeNum: code.codeNum
+          }));
+          onCodeSelect(allCodes);
+          
+          // Group codes by category and set initial expanded state
+          const categories = [...new Set(response.results.map(code => code.category))];
+          const initialExpandedState = categories.reduce(
+            (acc, category) => {
+              acc[category] = false;
+              return acc;
+            },
+            {} as Record<string, boolean>
+          );
+          setExpandedCategories(initialExpandedState);
+        } else {
+          setError(response.message || 'Failed to fetch codes');
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to fetch codes');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  useEffect(() => {
-    if (selectedRegion) {
-      const groupedStandards = getGroupedStandards();
-      const initialExpandedState = Object.keys(groupedStandards).reduce(
-        (acc, category) => {
-          acc[category] = false;
-          return acc;
-        },
-        {} as Record<string, boolean>
-      );
-      setExpandedCategories(initialExpandedState);
-    }
-  }, [selectedRegion]);
-
-  const toggleDropdown = () => setIsOpen(!isOpen);
-  const handleSelect = (country: RegionCode) => {
-    onRegionSelect(country);
-    setIsOpen(false);
-  };
+    fetchCodes();
+  }, []); // Only fetch once on mount
 
   const toggleCategory = (category: string) => {
     setExpandedCategories(prev => ({
@@ -47,158 +67,231 @@ export function CodeSelector({ selectedRegion, onRegionSelect }: CodeSelectorPro
     }));
   };
 
-  const getGroupedStandards = () => {
-    if (!selectedRegion) return {};
+  type CodeItem = {
+    countryCode: string;
+    codeNum: string;
+    description: string;
+    name: string;
+    category: string;
+  };
+
+  const handleCodeSelect = (code: CodeItem) => {
+    const isSelected = selectedCodes.some(
+      selected => selected.countryCode === code.countryCode && selected.codeNum === code.codeNum
+    );
+
+    if (isSelected) {
+      onCodeSelect(selectedCodes.filter(
+        selected => !(selected.countryCode === code.countryCode && selected.codeNum === code.codeNum)
+      ));
+    } else {
+      onCodeSelect([...selectedCodes, { countryCode: code.countryCode, codeNum: code.codeNum }]);
+    }
+  };
+
+  const isCodeSelected = (code: CodeItem) => {
+    if(selectedCodes){
+      return selectedCodes.some(
+        selected => selected.countryCode === code.countryCode && selected.codeNum === code.codeNum
+      );
+    }
+    return false;
+  };
+
+  const getGroupedCodes = () => {
+    if (!codes) return {};
     
-    const filtered = codeStandards.filter(standard => standard.region === selectedRegion);
-    return filtered.reduce((groups, standard) => {
-      const category = standard.category;
+    return codes.reduce((groups, code) => {
+      const category = code.category || 'Uncategorized';
       if (!groups[category]) {
         groups[category] = [];
       }
-      groups[category].push(standard);
+      groups[category].push(code);
       return groups;
-    }, {} as Record<string, typeof codeStandards>);
+    }, {} as Record<string, typeof codes>);
   };
 
-  const groupedStandards = getGroupedStandards();
+  const groupedCodes = getGroupedCodes();
 
   return (
-    <Box sx={{ marginTop: 2 }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 3 }}>
-        <Globe size={18} color="#2563eb" />
-        <Typography variant="subtitle1" sx={{ fontWeight: 500, color: '#111827' }}>
-          Select Country
-        </Typography>
-      </Box>
-      
-      <Box sx={{ position: 'relative' }}>
-        <Button
-          variant={selectedRegion ? "contained" : "outlined"}
-          fullWidth
-          onClick={toggleDropdown}
-          sx={{
-            justifyContent: 'space-between',
-            padding: '6px 12px',
-            borderRadius: '6px',
-            backgroundColor: selectedRegion ? '#2563eb' : 'white',
-            color: selectedRegion ? 'white' : '#111827',
-            borderColor: selectedRegion ? '#1e40af' : '#d1d5db',
-            textTransform: 'none'
+    <Box sx={{ 
+      width: '100%',
+      backgroundColor: '#ffffff',
+      borderRadius: '12px',
+      boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
+      overflow: 'hidden'
+    }}>
+      <Box sx={{ 
+        p: 3,
+        maxHeight: '75vh',
+        overflow: 'auto',
+        '&::-webkit-scrollbar': {
+          width: '8px',
+        },
+        '&::-webkit-scrollbar-track': {
+          background: '#f1f5f9',
+          borderRadius: '4px',
+        },
+        '&::-webkit-scrollbar-thumb': {
+          background: '#cbd5e1',
+          borderRadius: '4px',
+          '&:hover': {
+            background: '#94a3b8',
+          },
+        },
+      }}>
+        <Typography 
+          variant="h6" 
+          sx={{ 
+            fontWeight: 600, 
+            color: '#1e293b',
+            mb: 2.5,
+            fontSize: '1.125rem'
           }}
-          endIcon={<ChevronDown size={14} />}
         >
-          {selectedRegion || "Choose country"}
-        </Button>
+          Codes
+        </Typography>
         
-        {isOpen && (
-          <Paper
-            sx={{
-              position: 'absolute',
-              zIndex: 10,
-              marginTop: 0.5,
-              width: '100%',
-              borderRadius: '6px',
-              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-              border: '1px solid #e5e7eb'
-            }}
-          >
-            <List sx={{ py: 0.5, maxHeight: '240px', overflow: 'auto' }}>
-              {countries.map((country) => (
-                <ListItemButton
-                  key={country}
-                  onClick={() => handleSelect(country)}
-                  sx={{
-                    px: 1.5,
-                    py: 0.75,
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    backgroundColor: selectedRegion === country ? '#eff6ff' : 'transparent',
-                    '&:hover': {
-                      backgroundColor: '#f9fafb'
-                    }
-                  }}
-                >
-                  <Typography variant="body2">{country}</Typography>
-                  {selectedRegion === country && (
-                    <Check size={14} color="#2563eb" />
-                  )}
-                </ListItemButton>
-              ))}
-            </List>
-          </Paper>
-        )}
-      </Box>
-
-      {selectedRegion && (
-        <Box sx={{ mt: 3, maxHeight: '65vh', overflow: 'auto' }}>
-          <Typography variant="subtitle2" sx={{ fontWeight: 500, color: '#4b5563', mb: 1.5 }}>
-            Codes:
+        {loading ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
+            <CircularProgress size={28} sx={{ color: '#2563eb' }} />
+          </Box>
+        ) : error ? (
+          <Typography color="error" sx={{ py: 4, textAlign: 'center' }}>
+            {error}
           </Typography>
-          
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-            {Object.entries(groupedStandards).map(([category, standards]) => (
+        ) : (
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            {Object.entries(groupedCodes).map(([category, categoryCodes]) => (
               <Paper
                 key={category}
+                elevation={0}
                 sx={{
-                  backgroundColor: '#eff6ff',
-                  borderRadius: '8px',
-                  overflow: 'hidden'
+                  border: '1px solid #e2e8f0',
+                  borderRadius: '10px',
+                  overflow: 'hidden',
+                  transition: 'all 0.2s ease-in-out',
+                  '&:hover': {
+                    borderColor: '#cbd5e1',
+                  }
                 }}
               >
                 <Box
                   sx={{
-                    backgroundColor: '#dbeafe',
-                    px: 2,
-                    py: 1.25,
+                    px: 2.5,
+                    py: 2,
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center',
-                    cursor: 'pointer'
+                    cursor: 'pointer',
+                    backgroundColor: '#f8fafc',
+                    borderBottom: expandedCategories[category] ? '1px solid #e2e8f0' : 'none',
+                    transition: 'all 0.2s ease-in-out',
+                    '&:hover': {
+                      backgroundColor: '#f1f5f9',
+                    }
                   }}
                   onClick={() => toggleCategory(category)}
                 >
-                  <Typography variant="body1" sx={{ fontWeight: 500, color: '#1e40af' }}>
+                  <Typography 
+                    variant="body1" 
+                    sx={{ 
+                      fontWeight: 600, 
+                      color: '#334155',
+                      fontSize: '0.9375rem'
+                    }}
+                  >
                     {category}
                   </Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                     <Box
                       sx={{
                         fontSize: '0.75rem',
-                        backgroundColor: '#bfdbfe',
-                        color: '#1e40af',
+                        fontWeight: 600,
+                        backgroundColor: '#e2e8f0',
+                        color: '#475569',
                         px: 1.5,
                         py: 0.5,
-                        borderRadius: '4px'
+                        borderRadius: '6px',
+                        minWidth: '24px',
+                        textAlign: 'center'
                       }}
                     >
-                      {standards.length}
+                      {categoryCodes.length}
                     </Box>
                     {expandedCategories[category] ? (
-                      <ChevronUp size={14} color="#2563eb" />
+                      <ChevronUp size={16} color="#64748b" />
                     ) : (
-                      <ChevronDown size={14} color="#2563eb" />
+                      <ChevronDown size={16} color="#64748b" />
                     )}
                   </Box>
                 </Box>
                 {expandedCategories[category] && (
-                  <Box sx={{ p: 2 }}>
-                    {standards.map(standard => (
+                  <Box sx={{ p: 2.5 }}>
+                    {categoryCodes.map(code => (
                       <Box
-                        key={standard.id}
+                        key={`${code.countryCode}-${code.codeNum}`}
                         sx={{
-                          pl: 1.5,
-                          borderLeft: '2px solid #bfdbfe',
-                          mb: 1.5,
+                          mb: 2,
                           '&:last-child': { mb: 0 }
                         }}
                       >
-                        <Typography sx={{ fontSize: '0.875rem', fontWeight: 500, color: '#111827' }}>
-                          {standard.name}
-                        </Typography>
-                        <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>
-                          {standard.description}
-                        </Typography>
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            alignItems: 'flex-start',
+                            gap: 1.5,
+                            cursor: 'pointer',
+                            p: 1.5,
+                            borderRadius: '8px',
+                            transition: 'all 0.2s ease-in-out',
+                            '&:hover': {
+                              backgroundColor: '#f8fafc',
+                            }
+                          }}
+                          onClick={() => handleCodeSelect(code)}
+                        >
+                          <Checkbox
+                            checked={isCodeSelected(code)}
+                            onChange={(e) => {
+                              e.stopPropagation();
+                              handleCodeSelect(code);
+                            }}
+                            onClick={(e) => e.stopPropagation()}
+                            size="small"
+                            sx={{
+                              color: '#94a3b8',
+                              '&.Mui-checked': {
+                                color: '#2563eb',
+                              },
+                              '&:hover': {
+                                backgroundColor: 'rgba(37, 99, 235, 0.04)',
+                              }
+                            }}
+                          />
+                          <Box sx={{ flex: 1 }}>
+                            <Typography 
+                              sx={{ 
+                                fontSize: '0.875rem', 
+                                fontWeight: 500, 
+                                color: '#1e293b',
+                                mb: 0.5,
+                                lineHeight: 1.4
+                              }}
+                            >
+                              {code.name}
+                            </Typography>
+                            <Typography 
+                              sx={{ 
+                                fontSize: '0.8125rem', 
+                                color: '#64748b',
+                                lineHeight: 1.4
+                              }}
+                            >
+                              {code.description}
+                            </Typography>
+                          </Box>
+                        </Box>
                       </Box>
                     ))}
                   </Box>
@@ -206,8 +299,8 @@ export function CodeSelector({ selectedRegion, onRegionSelect }: CodeSelectorPro
               </Paper>
             ))}
           </Box>
-        </Box>
-      )}
+        )}
+      </Box>
     </Box>
   );
 }

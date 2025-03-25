@@ -1,15 +1,18 @@
-
 import { useState } from 'react';
 import { AnalysisResult, Plan } from '../../types';
-import { ChevronDown, ChevronUp, FileSearch } from 'lucide-react';
+import { ChevronDown, ChevronUp, FileSearch, AlertTriangle, AlertCircle, Info } from 'lucide-react';
 import { PlanViewer } from '../PlanViewer';
 import { 
   Box, 
   Paper, 
   Typography, 
   Chip,
-  Divider
+  Divider,
+  ToggleButton,
+  ToggleButtonGroup
 } from '@mui/material';
+
+type SeverityFilter = 'all' | 'error' | 'warning' | 'info';
 
 interface ResultsPanelProps {
   activePlan: Plan | null;
@@ -19,9 +22,15 @@ interface ResultsPanelProps {
 
 export function ResultsPanel({ activePlan, selectedFile, selectedRegion }: ResultsPanelProps) {
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
+  const [severityFilter, setSeverityFilter] = useState<SeverityFilter>('error');
 
   const getGroupedResults = (results: AnalysisResult[]) => {
-    return results.reduce((groups, result) => {
+    // Filter results by severity first
+    const filteredResults = severityFilter === 'all' 
+      ? results 
+      : results.filter(result => result.severity === severityFilter);
+
+    return filteredResults.reduce((groups, result) => {
       const category = result.category;
       if (!groups[category]) {
         groups[category] = [];
@@ -38,6 +47,15 @@ export function ResultsPanel({ activePlan, selectedFile, selectedRegion }: Resul
     }));
   };
 
+  const handleSeverityChange = (
+    event: React.MouseEvent<HTMLElement>,
+    newSeverity: SeverityFilter | null,
+  ) => {
+    if (newSeverity !== null) {
+      setSeverityFilter(newSeverity);
+    }
+  };
+
   const getSeverityColor = (severity: string) => {
     switch (severity) {
       case 'error':
@@ -47,6 +65,13 @@ export function ResultsPanel({ activePlan, selectedFile, selectedRegion }: Resul
       default:
         return '#3b82f6';
     }
+  };
+
+  const getTotalIssueCount = (severity: SeverityFilter) => {
+    if (!activePlan?.results) return 0;
+    return severity === 'all'
+      ? activePlan.results.length
+      : activePlan.results.filter(result => result.severity === severity).length;
   };
 
   return (
@@ -70,6 +95,108 @@ export function ResultsPanel({ activePlan, selectedFile, selectedRegion }: Resul
       
       {activePlan && selectedFile ? (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <ToggleButtonGroup
+              value={severityFilter}
+              exclusive
+              onChange={handleSeverityChange}
+              aria-label="severity filter"
+              size="small"
+            >
+              <ToggleButton 
+                value="all" 
+                aria-label="all issues"
+                sx={{ 
+                  px: 2,
+                  '&.Mui-selected': {
+                    bgcolor: '#e2e8f0',
+                    '&:hover': {
+                      bgcolor: '#cbd5e1',
+                    },
+                  },
+                }}
+              >
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Typography variant="body2">All</Typography>
+                  <Chip 
+                    label={getTotalIssueCount('all')} 
+                    size="small" 
+                    sx={{ bgcolor: '#94a3b8', color: 'white' }} 
+                  />
+                </Box>
+              </ToggleButton>
+              <ToggleButton 
+                value="error" 
+                aria-label="errors only"
+                sx={{ 
+                  px: 2,
+                  '&.Mui-selected': {
+                    bgcolor: '#fee2e2',
+                    '&:hover': {
+                      bgcolor: '#fecaca',
+                    },
+                  },
+                }}
+              >
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <AlertCircle size={16} color="#ef4444" />
+                  <Typography variant="body2">Errors</Typography>
+                  <Chip 
+                    label={getTotalIssueCount('error')} 
+                    size="small" 
+                    sx={{ bgcolor: '#ef4444', color: 'white' }} 
+                  />
+                </Box>
+              </ToggleButton>
+              <ToggleButton 
+                value="warning" 
+                aria-label="warnings only"
+                sx={{ 
+                  px: 2,
+                  '&.Mui-selected': {
+                    bgcolor: '#fef3c7',
+                    '&:hover': {
+                      bgcolor: '#fde68a',
+                    },
+                  },
+                }}
+              >
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <AlertTriangle size={16} color="#f59e0b" />
+                  <Typography variant="body2">Warnings</Typography>
+                  <Chip 
+                    label={getTotalIssueCount('warning')} 
+                    size="small" 
+                    sx={{ bgcolor: '#f59e0b', color: 'white' }} 
+                  />
+                </Box>
+              </ToggleButton>
+              <ToggleButton 
+                value="info" 
+                aria-label="info only"
+                sx={{ 
+                  px: 2,
+                  '&.Mui-selected': {
+                    bgcolor: '#dbeafe',
+                    '&:hover': {
+                      bgcolor: '#bfdbfe',
+                    },
+                  },
+                }}
+              >
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Info size={16} color="#3b82f6" />
+                  <Typography variant="body2">Info</Typography>
+                  <Chip 
+                    label={getTotalIssueCount('info')} 
+                    size="small" 
+                    sx={{ bgcolor: '#3b82f6', color: 'white' }} 
+                  />
+                </Box>
+              </ToggleButton>
+            </ToggleButtonGroup>
+          </Box>
+
           <PlanViewer file={selectedFile} results={activePlan.results} />
           
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>

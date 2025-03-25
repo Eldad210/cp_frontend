@@ -1,10 +1,4 @@
-import { RegionCode } from "@/types/codes";
 import { useAuthStore } from "@/store/authStore";
-
-type AnalysisItem = {
-  countryCode: string;
-  codeNum: string;
-};
 
 export interface AnalysisResponse {
   success: boolean;
@@ -23,7 +17,7 @@ export interface AnalysisResponse {
 
 export const sendAnalysisRequest = async (
   file: File,
-  region: RegionCode
+  selectedCodes: Array<{ countryCode: string; codeNum: string }>
 ): Promise<AnalysisResponse> => {
   try {
     // Get the Firebase token from the auth store
@@ -37,20 +31,11 @@ export const sendAnalysisRequest = async (
     const formData = new FormData();
     formData.append('file', file);
     
-    // Create items array based on region
-    // You might want to get actual code numbers from your standards
-    const items: AnalysisItem[] = [
-      {
-        countryCode: region === 'USA' ? 'US' : 'IL',
-        codeNum: "1"
-      }
-    ];
-    
-    // Append items as JSON string
-    formData.append('items', JSON.stringify(items));
+    // Use the selected codes for analysis
+    formData.append('items', JSON.stringify(selectedCodes));
     
     // The API URL from the provided specification
-    const apiUrl = 'https://AnalyserAPI.onrender.com/analyze';
+    const apiUrl = 'https://AnalyserAPI.onrender.com/analyse';
     
     const response = await fetch(apiUrl, {
       method: 'POST',
@@ -65,13 +50,71 @@ export const sendAnalysisRequest = async (
     }
     
     const data = await response.json();
-    debugger;
     return {
       success: true,
       results: data.results
     };
   } catch (error) {
     console.error('Analysis request failed:', error);
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : 'Unknown error occurred'
+    };
+  }
+};
+
+export interface CodeListResponse {
+  success: boolean;
+  message?: string;
+  results?: Array<{
+    countryCode: string;
+    codeNum: string;
+    description: string;
+    name: string;
+    category: string;
+  }>;
+}
+
+export const getCodeList = async (
+  filters?: {
+    codeNum?: string[];
+    category?: string[];
+    countryCode?: string[];
+  }
+): Promise<CodeListResponse> => {
+  try {
+    const token = useAuthStore.getState().token;
+    
+    if (!token) {
+      throw new Error('Authentication token not found. Please log in again.');
+    }
+
+    // Build query parameters
+    const params = new URLSearchParams();
+    if (filters?.codeNum) params.append('codeNum', filters.codeNum.join(','));
+    if (filters?.category) params.append('category', filters.category.join(','));
+    if (filters?.countryCode) params.append('countryCode', filters.countryCode.join(','));
+    
+    const apiUrl = `https://AnalyserAPI.onrender.com/codeList?${params.toString()}`;
+    
+    const response = await fetch(apiUrl, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Error: ${response.status} ${response.statusText}`);
+    }
+    
+    const data = await response.json();
+    return {
+      success: true,
+      results: data.results
+    };
+  } catch (error) {
+    console.error('Failed to fetch code list:', error);
     return {
       success: false,
       message: error instanceof Error ? error.message : 'Unknown error occurred'
