@@ -94,6 +94,7 @@ export const getCodeList = async (
     if (filters?.codeNum) params.append('codeNum', filters.codeNum.join(','));
     if (filters?.category) params.append('category', filters.category.join(','));
     if (filters?.countryCode) params.append('countryCode', filters.countryCode.join(','));
+    params.append('language', 'HE');
     
     const apiUrl = `https://AnalyserAPI.onrender.com/codeList?${params.toString()}`;
     
