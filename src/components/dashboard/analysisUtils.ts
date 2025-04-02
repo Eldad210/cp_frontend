@@ -19,8 +19,8 @@ export const convertApiResultsToAnalysisResults = (apiResults: any[]): AnalysisR
         severity: severity as 'error' | 'warning' | 'info',
         code: item.codeNum,
         description: issue.message,
-        location: 'Determined by analysis',
-        recommendation: 'See details in message',
+        // location: 'Determined by analysis',
+        // recommendation: 'See details in message',
         // Default to 'general' but try to categorize based on code if possible
         category: getCategoryFromCode(item.codeNum)
       };

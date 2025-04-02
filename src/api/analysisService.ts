@@ -72,6 +72,7 @@ export interface CodeListResponse {
     description: string;
     name: string;
     category: string;
+    categoryDescription?: string;
   }>;
 }
 
@@ -80,6 +81,7 @@ export const getCodeList = async (
     codeNum?: string[];
     category?: string[];
     countryCode?: string[];
+    language?: string[];
   }
 ): Promise<CodeListResponse> => {
   try {
@@ -94,7 +96,8 @@ export const getCodeList = async (
     if (filters?.codeNum) params.append('codeNum', filters.codeNum.join(','));
     if (filters?.category) params.append('category', filters.category.join(','));
     if (filters?.countryCode) params.append('countryCode', filters.countryCode.join(','));
-    params.append('language', 'HE');
+    if (filters?.language) params.append('language', filters.language.join(','));
+   
     
     const apiUrl = `https://AnalyserAPI.onrender.com/codeList?${params.toString()}`;
     

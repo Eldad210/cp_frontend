@@ -279,14 +279,14 @@ export function ResultsPanel({ activePlan, selectedFile, selectedRegion }: Resul
                               <Typography variant="body2" sx={{ color: 'text.primary', mb: 0.75 }}>
                                 {result.description}
                               </Typography>
-                              <Box sx={{ color: 'text.secondary' }}>
+                              {/* <Box sx={{ color: 'text.secondary' }}>
                                 <Typography variant="caption" display="block">
                                   <Box component="span" sx={{ fontWeight: 'medium' }}>Location:</Box> {result.location}
                                 </Typography>
                                 <Typography variant="caption" display="block" sx={{ mt: 0.25 }}>
                                   <Box component="span" sx={{ fontWeight: 'medium' }}>Recommendation:</Box> {result.recommendation}
                                 </Typography>
-                              </Box>
+                              </Box> */}
                             </Box>
                           </Box>
                         </Box>

@@ -24,7 +24,8 @@ export function CodeSelector({
       
       try {
         const response = await getCodeList({
-          countryCode: ['IL']
+          countryCode: ['IL'],
+          language: ['EN']
         });
         
         if (response.success && response.results) {
@@ -73,6 +74,7 @@ export function CodeSelector({
     description: string;
     name: string;
     category: string;
+    categoryDescription?: string;
   };
 
   const handleCodeSelect = (code: CodeItem) => {
@@ -201,7 +203,7 @@ export function CodeSelector({
                       fontSize: '0.9375rem'
                     }}
                   >
-                    {category}
+                    {categoryCodes[0]?.categoryDescription || category}
                   </Typography>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                     <Box
