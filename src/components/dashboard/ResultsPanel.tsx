@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { AnalysisResult, Plan } from '../../types';
-import { ChevronDown, ChevronUp, FileSearch, AlertTriangle, AlertCircle, Info } from 'lucide-react';
+import { ChevronDown, ChevronUp, FileSearch, AlertTriangle, AlertCircle, Info, Rocket } from 'lucide-react';
 import { PlanViewer } from '../PlanViewer';
+import { FileUpload } from '../FileUpload';
 import { 
   Box, 
   Paper, 
@@ -9,18 +10,32 @@ import {
   Chip,
   Divider,
   ToggleButton,
-  ToggleButtonGroup
+  ToggleButtonGroup,
+  Button,
+  CircularProgress
 } from '@mui/material';
 
 type SeverityFilter = 'all' | 'error' | 'warning' | 'info';
 
 interface ResultsPanelProps {
+  onFileSelect: (file: File) => void;
   activePlan: Plan | null;
   selectedFile: File | null;
   selectedRegion: string | null;
+  isAnalyzing?: boolean;
+  selectedCodes: Array<{ countryCode: string; codeNum: string }>;
+  onRunAnalysis: () => void;
 }
 
-export function ResultsPanel({ activePlan, selectedFile, selectedRegion }: ResultsPanelProps) {
+export function ResultsPanel({ 
+  onFileSelect, 
+  activePlan, 
+  selectedFile, 
+  selectedRegion, 
+  isAnalyzing = false, 
+  selectedCodes, 
+  onRunAnalysis 
+}: ResultsPanelProps) {
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
   const [severityFilter, setSeverityFilter] = useState<SeverityFilter>('error');
 
@@ -75,238 +90,263 @@ export function ResultsPanel({ activePlan, selectedFile, selectedRegion }: Resul
   };
 
   return (
-    <Paper sx={{ p: 2, borderRadius: 2, height: '100%' }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-        <FileSearch size={20} style={{ color: '#3b82f6', marginRight: 8 }} />
-        <Typography variant="h6">Analysis Results</Typography>
-        {selectedRegion && (
-          <Chip 
-            label={`${selectedRegion} Standards`} 
-            sx={{ 
-              ml: 'auto', 
-              bgcolor: 'primary.light', 
-              color: 'primary.contrastText',
-              fontWeight: 500
-            }} 
-            size="small" 
-          />
-        )}
-      </Box>
-      
-      {activePlan && selectedFile ? (
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <ToggleButtonGroup
-              value={severityFilter}
-              exclusive
-              onChange={handleSeverityChange}
-              aria-label="severity filter"
-              size="small"
-            >
-              <ToggleButton 
-                value="all" 
-                aria-label="all issues"
-                sx={{ 
-                  px: 2,
-                  '&.Mui-selected': {
-                    bgcolor: '#e2e8f0',
-                    '&:hover': {
-                      bgcolor: '#cbd5e1',
+    <Box>
+      <Paper sx={{ p: 2, borderRadius: 2, height: '100%' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+          <FileSearch size={20} style={{ color: '#3b82f6', marginRight: 8 }} />
+          <Typography variant="h6">Analysis Results</Typography>
+          {selectedRegion && (
+            <Chip 
+              label={`${selectedRegion} Standards`} 
+              sx={{ 
+                ml: 'auto', 
+                bgcolor: 'primary.light', 
+                color: 'primary.contrastText',
+                fontWeight: 500
+              }} 
+              size="small" 
+            />
+          )}
+        </Box>
+        
+        {activePlan && selectedFile ? (
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <ToggleButtonGroup
+                value={severityFilter}
+                exclusive
+                onChange={handleSeverityChange}
+                aria-label="severity filter"
+                size="small"
+              >
+                <ToggleButton 
+                  value="all" 
+                  aria-label="all issues"
+                  sx={{ 
+                    px: 2,
+                    '&.Mui-selected': {
+                      bgcolor: '#e2e8f0',
+                      '&:hover': {
+                        bgcolor: '#cbd5e1',
+                      },
                     },
-                  },
-                }}
-              >
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Typography variant="body2">All</Typography>
-                  <Chip 
-                    label={getTotalIssueCount('all')} 
-                    size="small" 
-                    sx={{ bgcolor: '#94a3b8', color: 'white' }} 
-                  />
-                </Box>
-              </ToggleButton>
-              <ToggleButton 
-                value="error" 
-                aria-label="errors only"
-                sx={{ 
-                  px: 2,
-                  '&.Mui-selected': {
-                    bgcolor: '#fee2e2',
-                    '&:hover': {
-                      bgcolor: '#fecaca',
-                    },
-                  },
-                }}
-              >
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <AlertCircle size={16} color="#ef4444" />
-                  <Typography variant="body2">Errors</Typography>
-                  <Chip 
-                    label={getTotalIssueCount('error')} 
-                    size="small" 
-                    sx={{ bgcolor: '#ef4444', color: 'white' }} 
-                  />
-                </Box>
-              </ToggleButton>
-              <ToggleButton 
-                value="warning" 
-                aria-label="warnings only"
-                sx={{ 
-                  px: 2,
-                  '&.Mui-selected': {
-                    bgcolor: '#fef3c7',
-                    '&:hover': {
-                      bgcolor: '#fde68a',
-                    },
-                  },
-                }}
-              >
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <AlertTriangle size={16} color="#f59e0b" />
-                  <Typography variant="body2">Warnings</Typography>
-                  <Chip 
-                    label={getTotalIssueCount('warning')} 
-                    size="small" 
-                    sx={{ bgcolor: '#f59e0b', color: 'white' }} 
-                  />
-                </Box>
-              </ToggleButton>
-              <ToggleButton 
-                value="info" 
-                aria-label="info only"
-                sx={{ 
-                  px: 2,
-                  '&.Mui-selected': {
-                    bgcolor: '#dbeafe',
-                    '&:hover': {
-                      bgcolor: '#bfdbfe',
-                    },
-                  },
-                }}
-              >
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Info size={16} color="#3b82f6" />
-                  <Typography variant="body2">Info</Typography>
-                  <Chip 
-                    label={getTotalIssueCount('info')} 
-                    size="small" 
-                    sx={{ bgcolor: '#3b82f6', color: 'white' }} 
-                  />
-                </Box>
-              </ToggleButton>
-            </ToggleButtonGroup>
-          </Box>
-
-          <PlanViewer file={selectedFile} results={activePlan.results} />
-          
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-            {Object.entries(getGroupedResults(activePlan.results)).map(([category, results]) => (
-              <Paper 
-                key={category} 
-                variant="outlined" 
-                sx={{ overflow: 'hidden', borderRadius: 1 }}
-              >
-                <Box 
-                  sx={{
-                    bgcolor: 'primary.light',
-                    px: 1.5, 
-                    py: 1, 
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    cursor: 'pointer',
-                    borderBottom: '1px solid',
-                    borderColor: 'divider'
                   }}
-                  onClick={() => toggleCategory(category)}
                 >
-                  <Typography 
-                    variant="subtitle1" 
-                    sx={{ 
-                      color: 'primary.contrastText', 
-                      fontWeight: 500,
-                      textTransform: 'capitalize'
-                    }}
-                  >
-                    {category}
-                  </Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Typography variant="body2">All</Typography>
                     <Chip 
-                      label={`${results.length} issue${results.length !== 1 ? 's' : ''}`}
-                      size="small"
-                      sx={{ 
-                        bgcolor: 'primary.dark', 
-                        color: 'white',
-                        fontWeight: 500
-                      }}
+                      label={getTotalIssueCount('all')} 
+                      size="small" 
+                      sx={{ bgcolor: '#94a3b8', color: 'white' }} 
                     />
-                    {expandedCategories[category] ? (
-                      <ChevronUp size={16} style={{ color: 'white' }} />
-                    ) : (
-                      <ChevronDown size={16} style={{ color: 'white' }} />
-                    )}
                   </Box>
-                </Box>
-                {expandedCategories[category] && (
-                  <Box>
-                    {results.map((result, idx) => (
-                      <Box key={result.id}>
-                        {idx > 0 && <Divider />}
-                        <Box sx={{ p: 1.5 }}>
-                          <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5 }}>
-                            <Box 
-                              sx={{ 
-                                width: 6, 
-                                height: 6, 
-                                borderRadius: '50%', 
-                                bgcolor: getSeverityColor(result.severity),
-                                mt: 0.8
-                              }}
-                            />
-                            <Box sx={{ flex: 1 }}>
-                              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-                                <Typography variant="subtitle2">{result.code}</Typography>
-                                <Chip 
-                                  label={result.severity}
-                                  size="small"
-                                  sx={{ 
-                                    bgcolor: `${getSeverityColor(result.severity)}20`,
-                                    color: getSeverityColor(result.severity),
-                                    fontWeight: 500
-                                  }}
-                                />
+                </ToggleButton>
+                <ToggleButton 
+                  value="error" 
+                  aria-label="errors only"
+                  sx={{ 
+                    px: 2,
+                    '&.Mui-selected': {
+                      bgcolor: '#fee2e2',
+                      '&:hover': {
+                        bgcolor: '#fecaca',
+                      },
+                    },
+                  }}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <AlertCircle size={16} color="#ef4444" />
+                    <Typography variant="body2">Errors</Typography>
+                    <Chip 
+                      label={getTotalIssueCount('error')} 
+                      size="small" 
+                      sx={{ bgcolor: '#ef4444', color: 'white' }} 
+                    />
+                  </Box>
+                </ToggleButton>
+                <ToggleButton 
+                  value="warning" 
+                  aria-label="warnings only"
+                  sx={{ 
+                    px: 2,
+                    '&.Mui-selected': {
+                      bgcolor: '#fef3c7',
+                      '&:hover': {
+                        bgcolor: '#fde68a',
+                      },
+                    },
+                  }}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <AlertTriangle size={16} color="#f59e0b" />
+                    <Typography variant="body2">Warnings</Typography>
+                    <Chip 
+                      label={getTotalIssueCount('warning')} 
+                      size="small" 
+                      sx={{ bgcolor: '#f59e0b', color: 'white' }} 
+                    />
+                  </Box>
+                </ToggleButton>
+                <ToggleButton 
+                  value="info" 
+                  aria-label="info only"
+                  sx={{ 
+                    px: 2,
+                    '&.Mui-selected': {
+                      bgcolor: '#dbeafe',
+                      '&:hover': {
+                        bgcolor: '#bfdbfe',
+                      },
+                    },
+                  }}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Info size={16} color="#3b82f6" />
+                    <Typography variant="body2">Info</Typography>
+                    <Chip 
+                      label={getTotalIssueCount('info')} 
+                      size="small" 
+                      sx={{ bgcolor: '#3b82f6', color: 'white' }} 
+                    />
+                  </Box>
+                </ToggleButton>
+              </ToggleButtonGroup>
+            </Box>
+
+            <PlanViewer file={selectedFile} results={activePlan.results} />
+            
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+              {Object.entries(getGroupedResults(activePlan.results)).map(([category, results]) => (
+                <Paper 
+                  key={category} 
+                  variant="outlined" 
+                  sx={{ overflow: 'hidden', borderRadius: 1 }}
+                >
+                  <Box 
+                    sx={{
+                      bgcolor: 'primary.light',
+                      px: 1.5, 
+                      py: 1, 
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      cursor: 'pointer',
+                      borderBottom: '1px solid',
+                      borderColor: 'divider'
+                    }}
+                    onClick={() => toggleCategory(category)}
+                  >
+                    <Typography 
+                      variant="subtitle1" 
+                      sx={{ 
+                        color: 'primary.contrastText', 
+                        fontWeight: 500,
+                        textTransform: 'capitalize'
+                      }}
+                    >
+                      {category}
+                    </Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      <Chip 
+                        label={`${results.length} issue${results.length !== 1 ? 's' : ''}`}
+                        size="small"
+                        sx={{ 
+                          bgcolor: 'primary.dark', 
+                          color: 'white',
+                          fontWeight: 500
+                        }}
+                      />
+                      {expandedCategories[category] ? (
+                        <ChevronUp size={16} style={{ color: 'white' }} />
+                      ) : (
+                        <ChevronDown size={16} style={{ color: 'white' }} />
+                      )}
+                    </Box>
+                  </Box>
+                  {expandedCategories[category] && (
+                    <Box>
+                      {results.map((result, idx) => (
+                        <Box key={result.id}>
+                          {idx > 0 && <Divider />}
+                          <Box sx={{ p: 1.5 }}>
+                            <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5 }}>
+                              <Box 
+                                sx={{ 
+                                  width: 6, 
+                                  height: 6, 
+                                  borderRadius: '50%', 
+                                  bgcolor: getSeverityColor(result.severity),
+                                  mt: 0.8
+                                }}
+                              />
+                              <Box sx={{ flex: 1 }}>
+                                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+                                  <Typography variant="subtitle2">{result.code}</Typography>
+                                  <Chip 
+                                    label={result.severity}
+                                    size="small"
+                                    sx={{ 
+                                      bgcolor: `${getSeverityColor(result.severity)}20`,
+                                      color: getSeverityColor(result.severity),
+                                      fontWeight: 500
+                                    }}
+                                  />
+                                </Box>
+                                <Typography variant="body2" sx={{ color: 'text.primary', mb: 0.75 }}>
+                                  {result.description}
+                                </Typography>
                               </Box>
-                              <Typography variant="body2" sx={{ color: 'text.primary', mb: 0.75 }}>
-                                {result.description}
-                              </Typography>
-                              {/* <Box sx={{ color: 'text.secondary' }}>
-                                <Typography variant="caption" display="block">
-                                  <Box component="span" sx={{ fontWeight: 'medium' }}>Location:</Box> {result.location}
-                                </Typography>
-                                <Typography variant="caption" display="block" sx={{ mt: 0.25 }}>
-                                  <Box component="span" sx={{ fontWeight: 'medium' }}>Recommendation:</Box> {result.recommendation}
-                                </Typography>
-                              </Box> */}
                             </Box>
                           </Box>
                         </Box>
-                      </Box>
-                    ))}
-                  </Box>
-                )}
-              </Paper>
-            ))}
+                      ))}
+                    </Box>
+                  )}
+                </Paper>
+              ))}
+            </Box>
           </Box>
+        ) : (
+          <Box sx={{ textAlign: 'center', py: 4, color: 'text.secondary' }}>
+            <Typography>
+              {selectedRegion
+                ? 'Upload a plan to see analysis results'
+                : 'Select a country to begin analysis'}
+            </Typography>
+          </Box>
+        )}
+      </Paper>
+
+      <Paper sx={{ p: 2, borderRadius: 2, mt: 2 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <Typography variant="h6" gutterBottom>Upload Plans</Typography>
+          <FileUpload onFileSelect={onFileSelect} buttonText={selectedFile ? 'Change File' : 'Upload File'} />
+          
+          {/* <Box sx={{ mt: 2, width: '100%' }}>
+            <Button 
+              variant="contained" 
+              color="primary"
+              fullWidth
+              disabled={!selectedFile || isAnalyzing || selectedCodes.length === 0}
+              onClick={onRunAnalysis}
+              startIcon={isAnalyzing ? <CircularProgress size={16} color="inherit" /> : <Rocket size={16} />}
+              sx={{ textTransform: 'none' }}
+            >
+              {isAnalyzing ? 'Analyzing...' : 'Run Analysis'}
+            </Button>
+            {!selectedFile && (
+              <Typography variant="caption" color="text.secondary" sx={{ display: 'block', textAlign: 'center', mt: 0.5 }}>
+                Upload a file to run analysis
+              </Typography>
+            )}
+            {selectedFile && selectedCodes.length === 0 && (
+              <Typography variant="caption" color="text.secondary" sx={{ display: 'block', textAlign: 'center', mt: 0.5 }}>
+                Select at least one code to analyze
+              </Typography>
+            )}
+          </Box> */}
         </Box>
-      ) : (
-        <Box sx={{ textAlign: 'center', py: 4, color: 'text.secondary' }}>
-          <Typography>
-            {selectedRegion
-              ? 'Upload a plan to see analysis results'
-              : 'Select a country to begin analysis'}
-          </Typography>
-        </Box>
-      )}
-    </Paper>
+      </Paper>
+    </Box>
   );
 }

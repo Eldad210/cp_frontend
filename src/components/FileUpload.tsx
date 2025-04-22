@@ -6,9 +6,10 @@ import { Box, Typography, Paper, Button as MuiButton } from '@mui/material';
 
 interface FileUploadProps {
   onFileSelect: (file: File) => void;
+  buttonText?: string;
 }
 
-export function FileUpload({ onFileSelect }: FileUploadProps) {
+export function FileUpload({ onFileSelect ,buttonText}: FileUploadProps) {
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
       onFileSelect(acceptedFiles[0]);
@@ -64,7 +65,7 @@ export function FileUpload({ onFileSelect }: FileUploadProps) {
           size="small" 
           sx={{ mt: 1.5, textTransform: 'none', px: 3, py: 0.5 }}
         >
-          Select File
+          {buttonText}
         </MuiButton>
       </Box>
     </Paper>

@@ -5,8 +5,9 @@ import { DashboardHeader } from './dashboard/DashboardHeader';
 import { SidePanel } from './dashboard/SidePanel';
 import { ResultsPanel } from './dashboard/ResultsPanel';
 import { createAnalyzedPlan } from './dashboard/analysisUtils';
-import { Box, Container, Grid, Snackbar, Alert } from '@mui/material';
+import { Box, Container, Grid, Snackbar, Alert, Button } from '@mui/material';
 import { sendAnalysisRequest } from '@/api/analysisService';
+import { useNavigate } from 'react-router-dom';
 
 export function Dashboard() {
   const [activePlan, setActivePlan] = useState<Plan | null>(null);
@@ -15,6 +16,7 @@ export function Dashboard() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [alert, setAlert] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
   const { user, logout } = useAuthStore();
+  const navigate = useNavigate();
 
   const handleFileSelect = (file: File) => {
     setSelectedFile(file);
@@ -77,6 +79,7 @@ export function Dashboard() {
             </Grid>
             <Grid item xs={12} md={8} lg={9}>
               <ResultsPanel 
+                 onFileSelect={handleFileSelect}
                 activePlan={activePlan}
                 selectedFile={selectedFile}
                 selectedRegion="ISRAEL"
@@ -98,6 +101,25 @@ export function Dashboard() {
           </Alert>
         </Snackbar>
       )}
+
+      <Box sx={{ py: 2, px: 2, bgcolor: 'grey.200', textAlign: 'start', position: 'fixed', bottom: 0, width: '100%' }}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => navigate('/create-validation')}
+        >
+          Create Validation
+        </Button>
+        <Button
+          variant="outlined"
+          color="secondary"
+          sx={{ ml: 2 }}
+          onClick={handleRunAnalysis}
+          disabled={isAnalyzing || !selectedFile || selectedCodes.length === 0}
+        >
+          Run Analysis
+        </Button>
+      </Box>
     </Box>
   );
 }

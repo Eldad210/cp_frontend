@@ -34,7 +34,7 @@ export function SidePanel({
         </Paper>
       </Grid>
       <Grid item xs={12}>
-        <Paper sx={{ p: 2, borderRadius: 2 }}>
+        {/* <Paper sx={{ p: 2, borderRadius: 2 }}>
           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <Typography variant="h6" gutterBottom>Upload Plans</Typography>
             <FileUpload onFileSelect={onFileSelect} />
@@ -63,7 +63,7 @@ export function SidePanel({
               )}
             </Box>
           </Box>
-        </Paper>
+        </Paper> */}
       </Grid>
      
     </Grid>

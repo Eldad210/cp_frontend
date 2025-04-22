@@ -1,8 +1,9 @@
-
 import { AppBar, Toolbar, Typography, Box } from '@mui/material';
 import { Building2, LogOut } from 'lucide-react';
+import { ChatBubble } from '@mui/icons-material';
 import { Button } from '../ui/button';
 import { User } from '@/types/auth';
+import { useNavigate } from 'react-router-dom';
 
 interface DashboardHeaderProps {
   user: User | null;
@@ -10,6 +11,8 @@ interface DashboardHeaderProps {
 }
 
 export function DashboardHeader({ user, onLogout }: DashboardHeaderProps) {
+  const navigate = useNavigate();
+
   return (
     <AppBar position="static" color="default" elevation={1} sx={{ backgroundColor: 'white' }}>
       <Toolbar sx={{ py: 1, px: { xs: 2, sm: 3, lg: 4 } }}>
@@ -24,15 +27,24 @@ export function DashboardHeader({ user, onLogout }: DashboardHeaderProps) {
           <Typography variant="body2" color="text.secondary">
             Welcome, {user?.name} ({user?.role})
           </Typography>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={onLogout}
-            sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
-          >
-            <LogOut size={16} />
-            Sign out
-          </Button>
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            {/* <Button
+              color="inherit"
+              startIcon={<ChatBubble />}
+              onClick={() => navigate('/chat')}
+            >
+              Chat
+            </Button> */}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onLogout}
+              sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
+            >
+              <LogOut size={16} />
+              Sign out
+            </Button>
+          </Box>
         </Box>
       </Toolbar>
     </AppBar>
