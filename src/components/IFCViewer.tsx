@@ -79,22 +79,7 @@ export const IFCViewer: React.FC<IFCViewerProps> = ({ file, onError, onLoad }) =
 
   return (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <Box sx={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center',
-        mb: 1 
-      }}>
-        <Typography variant="subtitle2">IFC Model Viewer</Typography>
-        <Button 
-          size="small"
-          variant="outlined"
-          onClick={clearModel}
-          startIcon={<CleaningServicesIcon />}
-        >
-          Clear
-        </Button>
-      </Box>
+     
 
       <Box sx={{ 
         flex: 1,
@@ -113,6 +98,24 @@ export const IFCViewer: React.FC<IFCViewerProps> = ({ file, onError, onLoad }) =
             height: '100%'
           }} 
         />
+      </Box>
+      <Box sx={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center',
+        mb: 1 
+      }}>
+        {/* <Typography variant="subtitle2" sx={{ flex: 1, textAlign: 'center' }}>
+          IFC Model Viewer
+        </Typography> */}
+        <Button 
+          size="small"
+          variant="outlined"
+          onClick={clearModel}
+          startIcon={<CleaningServicesIcon />}
+        >
+          Clear
+        </Button>
       </Box>
     </Box>
   );

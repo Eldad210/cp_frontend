@@ -5,7 +5,7 @@ import { DashboardHeader } from './dashboard/DashboardHeader';
 import { SidePanel } from './dashboard/SidePanel';
 import { ResultsPanel } from './dashboard/ResultsPanel';
 import { createAnalyzedPlan } from './dashboard/analysisUtils';
-import { Box, Container, Grid, Snackbar, Alert, Button, Typography } from '@mui/material';
+import { Box, Snackbar, Alert, Button, Typography } from '@mui/material';
 import { sendAnalysisRequest } from '@/api/analysisService';
 import { useNavigate } from 'react-router-dom';
 import { IFCViewer } from "./IFCViewer";
@@ -60,12 +60,16 @@ export function Dashboard() {
   };
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh', bgcolor: 'background.default' }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh', bgcolor: '#f1f5f9' }}>
       <DashboardHeader user={user} onLogout={logout} />
-
-      <Box sx={{ display: 'flex', flexGrow: 1, overflow: 'hidden' }}>
-        {/* Left Panel */}
-        <Box sx={{ width: '33.33%', borderRight: 1, borderColor: 'divider', overflow: 'auto' }}>
+      
+      <Box sx={{ display: 'flex', flex: 1, height: 'calc(100vh - 64px)', overflow: 'hidden' }}>
+        {/* Left Panel - Codes */}
+        <Box sx={{ 
+          width: '320px', 
+          borderRight: '1px solid #e2e8f0',
+          bgcolor: '#ffffff'
+        }}>
           <SidePanel 
             onFileSelect={handleFileSelect}
             onRunAnalysis={handleRunAnalysis}
@@ -76,41 +80,131 @@ export function Dashboard() {
           />
         </Box>
 
-        {/* Middle Panel */}
-        <Box sx={{ width: '33.33%', borderRight: 1, borderColor: 'divider', overflow: 'auto' }}>
+        {/* Middle Panel - IFC Viewer */}
+        <Box sx={{ 
+          flex: 1,
+          borderRight: '1px solid #e2e8f0',
+          bgcolor: '#ffffff',
+          display: 'flex',
+          flexDirection: 'column'
+        }}>
+          {/* Upload Section - Always at top */}
+          <Box sx={{ p: 3, borderBottom: '1px solid #e2e8f0' }}>
+            <Box 
+              component="label"
+              sx={{ 
+                width: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                bgcolor: '#ffffff',
+                borderRadius: '12px',
+                border: '2px dashed #e2e8f0',
+                p: 4,
+                gap: 1.5,
+                cursor: 'pointer',
+                transition: 'all 0.2s ease-in-out',
+                '&:hover': {
+                  borderColor: '#3b82f6',
+                  bgcolor: '#f8fafc'
+                }
+              }}
+              onDragOver={(e) => {
+                e.preventDefault();
+                e.currentTarget.style.borderColor = '#3b82f6';
+                e.currentTarget.style.backgroundColor = '#f8fafc';
+              }}
+              onDragLeave={(e) => {
+                e.preventDefault();
+                e.currentTarget.style.borderColor = '#e2e8f0';
+                e.currentTarget.style.backgroundColor = '#ffffff';
+              }}
+              onDrop={(e) => {
+                e.preventDefault();
+                const file = e.dataTransfer.files[0];
+                if (file && file.name.endsWith('.ifc')) {
+                  handleFileSelect(file);
+                }
+              }}
+            >
+              <Typography variant="h6">
+                {selectedFile ? 'Change IFC File' : 'Upload Plans'}
+              </Typography>
+              {selectedFile ? (
+                <Typography variant="body2" color="text.secondary" align="center">
+                  Current file: {selectedFile.name}
+                </Typography>
+              ) : (
+                <>
+                  <Typography variant="body2" color="text.secondary" align="center">
+                    Drag 'n' drop your IFC model here, or click to select file
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    IFC format only (max. 50MB)
+                  </Typography>
+                </>
+              )}
+              <input
+                type="file"
+                hidden
+                accept=".ifc"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) handleFileSelect(file);
+                }}
+              />
+            </Box>
+          </Box>
+
+          {/* IFC Viewer */}
+          <Box sx={{ flex: 1, minHeight: 0 }}>
+            {selectedFile ? (
+              <IFCViewer 
+                file={selectedFile}
+                onError={(error) => setAlert({ message: error.message, type: 'error' })}
+              />
+            ) : (
+              <Box sx={{ 
+                height: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                bgcolor: '#f8fafc'
+              }}>
+                <Typography color="text.secondary">
+                  Upload an IFC file to view the model
+                </Typography>
+              </Box>
+            )}
+          </Box>
+        </Box>
+
+        {/* Right Panel - Analysis Results */}
+        <Box sx={{ 
+          width: '33%',
+          bgcolor: '#f8fafc'
+        }}>
           <ResultsPanel 
             onFileSelect={handleFileSelect}
             activePlan={activePlan}
             selectedFile={selectedFile}
             selectedRegion="ISRAEL"
+            isAnalyzing={isAnalyzing}
+            selectedCodes={selectedCodes}
+            onRunAnalysis={handleRunAnalysis}
           />
-        </Box>
-
-        {/* Right Panel - IFC Viewer */}
-        <Box sx={{ width: '33.33%', overflow: 'hidden' }}>
-          {selectedFile ? (
-            <IFCViewer 
-              file={selectedFile}
-              onError={(error) => setAlert({ message: error.message, type: 'error' })}
-            />
-          ) : (
-            <Box sx={{ 
-              height: '100%', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center',
-              bgcolor: 'grey.100'
-            }}>
-              <Typography variant="body1" color="text.secondary">
-                Upload an IFC file to view the model
-              </Typography>
-            </Box>
-          )}
         </Box>
       </Box>
 
-      {/* Bottom Actions */}
-      <Box sx={{ p: 2, bgcolor: 'grey.100', borderTop: 1, borderColor: 'divider' }}>
+      {/* Bottom Action Bar */}
+      <Box sx={{ 
+        p: 1.5, 
+        borderTop: '1px solid #e2e8f0',
+        bgcolor: '#ffffff',
+        display: 'flex',
+        gap: 2
+      }}>
         <Button
           variant="contained"
           color="primary"
@@ -121,14 +215,13 @@ export function Dashboard() {
         <Button
           variant="outlined"
           color="secondary"
-          sx={{ ml: 2 }}
           onClick={handleRunAnalysis}
           disabled={isAnalyzing || !selectedFile || selectedCodes.length === 0}
         >
           Run Analysis
         </Button>
       </Box>
-      
+
       {alert && (
         <Snackbar
           open={true}

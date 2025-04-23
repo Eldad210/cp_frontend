@@ -14,39 +14,49 @@ export function DashboardHeader({ user, onLogout }: DashboardHeaderProps) {
   const navigate = useNavigate();
 
   return (
-    <AppBar position="static" color="default" elevation={1} sx={{ backgroundColor: 'white' }}>
-      <Toolbar sx={{ py: 1, px: { xs: 2, sm: 3, lg: 4 } }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Building2 color="#2563eb" size={32} />
-          <Typography variant="h5" component="h1" fontWeight="bold" color="text.primary">
-            Construction Plan Analyzer
-          </Typography>
-        </Box>
-        
-        <Box sx={{ ml: 'auto', display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Typography variant="body2" color="text.secondary">
-            Welcome, {user?.name} ({user?.role})
-          </Typography>
-          <Box sx={{ display: 'flex', gap: 2 }}>
-            {/* <Button
-              color="inherit"
-              startIcon={<ChatBubble />}
-              onClick={() => navigate('/chat')}
-            >
-              Chat
-            </Button> */}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={onLogout}
-              sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
-            >
-              <LogOut size={16} />
-              Sign out
-            </Button>
+    <Box sx={{ 
+      borderBottom: 1, 
+      borderColor: '#e2e8f0',
+      bgcolor: '#ffffff',
+      height: '64px',
+      display: 'flex',
+      alignItems: 'center',
+      px: 3
+    }}>
+      <AppBar position="static" color="default" elevation={1} sx={{ backgroundColor: 'white' }}>
+        <Toolbar sx={{ py: 1, px: { xs: 2, sm: 3, lg: 4 } }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Building2 color="#2563eb" size={32} />
+            <Typography variant="h5" component="h1" fontWeight="bold" color="text.primary">
+              Construction Plan Analyzer
+            </Typography>
           </Box>
-        </Box>
-      </Toolbar>
-    </AppBar>
+          
+          <Box sx={{ ml: 'auto', display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Typography variant="body2" color="text.secondary">
+              Welcome, {user?.name} ({user?.role})
+            </Typography>
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              {/* <Button
+                color="inherit"
+                startIcon={<ChatBubble />}
+                onClick={() => navigate('/chat')}
+              >
+                Chat
+              </Button> */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={onLogout}
+                sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
+              >
+                <LogOut size={16} />
+                Sign out
+              </Button>
+            </Box>
+          </Box>
+        </Toolbar>
+      </AppBar>
+    </Box>
   );
 }

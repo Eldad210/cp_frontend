@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { AnalysisResult, Plan } from '../../types';
-import { ChevronDown, ChevronUp, FileSearch, AlertTriangle, AlertCircle, Info, Rocket } from 'lucide-react';
+import { ChevronDown, ChevronUp, AlertTriangle, AlertCircle, Info } from 'lucide-react';
 import { PlanViewer } from '../PlanViewer';
-import { FileUpload } from '../FileUpload';
 import { 
   Box, 
   Paper, 
@@ -10,9 +9,7 @@ import {
   Chip,
   Divider,
   ToggleButton,
-  ToggleButtonGroup,
-  Button,
-  CircularProgress
+  ToggleButtonGroup
 } from '@mui/material';
 
 type SeverityFilter = 'all' | 'error' | 'warning' | 'info';
@@ -40,7 +37,6 @@ export function ResultsPanel({
   const [severityFilter, setSeverityFilter] = useState<SeverityFilter>('error');
 
   const getGroupedResults = (results: AnalysisResult[]) => {
-    // Filter results by severity first
     const filteredResults = severityFilter === 'all' 
       ? results 
       : results.filter(result => result.severity === severityFilter);
@@ -90,129 +86,138 @@ export function ResultsPanel({
   };
 
   return (
-    <Box>
-      <Paper sx={{ p: 2, borderRadius: 2, height: '100%' }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-          <FileSearch size={20} style={{ color: '#3b82f6', marginRight: 8 }} />
-          <Typography variant="h6">Analysis Results</Typography>
-          {selectedRegion && (
-            <Chip 
-              label={`${selectedRegion} Standards`} 
-              sx={{ 
-                ml: 'auto', 
-                bgcolor: 'primary.light', 
-                color: 'primary.contrastText',
-                fontWeight: 500
-              }} 
-              size="small" 
-            />
-          )}
+    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', p: 2 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+        <Typography variant="subtitle1" sx={{ fontWeight: 500, color: '#475569' }}>
+          Analysis Results
+        </Typography>
+        <Box sx={{ 
+          ml: 'auto',
+          px: 2,
+          py: 0.5,
+          bgcolor: '#fff',
+          borderRadius: '16px',
+          border: '1px solid #e2e8f0'
+        }}>
+          <Typography variant="body2" color="text.secondary">
+            ISRAEL Standards
+          </Typography>
         </Box>
-        
-        {activePlan && selectedFile ? (
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <ToggleButtonGroup
-                value={severityFilter}
-                exclusive
-                onChange={handleSeverityChange}
-                aria-label="severity filter"
-                size="small"
-              >
-                <ToggleButton 
-                  value="all" 
-                  aria-label="all issues"
-                  sx={{ 
-                    px: 2,
-                    '&.Mui-selected': {
-                      bgcolor: '#e2e8f0',
-                      '&:hover': {
-                        bgcolor: '#cbd5e1',
-                      },
-                    },
-                  }}
-                >
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Typography variant="body2">All</Typography>
-                    <Chip 
-                      label={getTotalIssueCount('all')} 
-                      size="small" 
-                      sx={{ bgcolor: '#94a3b8', color: 'white' }} 
-                    />
-                  </Box>
-                </ToggleButton>
-                <ToggleButton 
-                  value="error" 
-                  aria-label="errors only"
-                  sx={{ 
-                    px: 2,
-                    '&.Mui-selected': {
-                      bgcolor: '#fee2e2',
-                      '&:hover': {
-                        bgcolor: '#fecaca',
-                      },
-                    },
-                  }}
-                >
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <AlertCircle size={16} color="#ef4444" />
-                    <Typography variant="body2">Errors</Typography>
-                    <Chip 
-                      label={getTotalIssueCount('error')} 
-                      size="small" 
-                      sx={{ bgcolor: '#ef4444', color: 'white' }} 
-                    />
-                  </Box>
-                </ToggleButton>
-                <ToggleButton 
-                  value="warning" 
-                  aria-label="warnings only"
-                  sx={{ 
-                    px: 2,
-                    '&.Mui-selected': {
-                      bgcolor: '#fef3c7',
-                      '&:hover': {
-                        bgcolor: '#fde68a',
-                      },
-                    },
-                  }}
-                >
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <AlertTriangle size={16} color="#f59e0b" />
-                    <Typography variant="body2">Warnings</Typography>
-                    <Chip 
-                      label={getTotalIssueCount('warning')} 
-                      size="small" 
-                      sx={{ bgcolor: '#f59e0b', color: 'white' }} 
-                    />
-                  </Box>
-                </ToggleButton>
-                <ToggleButton 
-                  value="info" 
-                  aria-label="info only"
-                  sx={{ 
-                    px: 2,
-                    '&.Mui-selected': {
-                      bgcolor: '#dbeafe',
-                      '&:hover': {
-                        bgcolor: '#bfdbfe',
-                      },
-                    },
-                  }}
-                >
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Info size={16} color="#3b82f6" />
-                    <Typography variant="body2">Info</Typography>
-                    <Chip 
-                      label={getTotalIssueCount('info')} 
-                      size="small" 
-                      sx={{ bgcolor: '#3b82f6', color: 'white' }} 
-                    />
-                  </Box>
-                </ToggleButton>
-              </ToggleButtonGroup>
-            </Box>
+      </Box>
 
+      <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+        <ToggleButtonGroup
+          value={severityFilter}
+          exclusive
+          onChange={handleSeverityChange}
+          aria-label="severity filter"
+          size="small"
+        >
+          <ToggleButton 
+            value="all" 
+            aria-label="all issues"
+            sx={{ 
+              px: 2,
+              '&.Mui-selected': {
+                bgcolor: '#e2e8f0',
+                '&:hover': {
+                  bgcolor: '#cbd5e1',
+                },
+              },
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Typography variant="body2">All</Typography>
+              <Chip 
+                label={getTotalIssueCount('all')} 
+                size="small" 
+                sx={{ bgcolor: '#94a3b8', color: 'white' }} 
+              />
+            </Box>
+          </ToggleButton>
+          <ToggleButton 
+            value="error" 
+            aria-label="errors only"
+            sx={{ 
+              px: 2,
+              '&.Mui-selected': {
+                bgcolor: '#fee2e2',
+                '&:hover': {
+                  bgcolor: '#fecaca',
+                },
+              },
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <AlertCircle size={16} color="#ef4444" />
+              <Typography variant="body2">Errors</Typography>
+              <Chip 
+                label={getTotalIssueCount('error')} 
+                size="small" 
+                sx={{ bgcolor: '#ef4444', color: 'white' }} 
+              />
+            </Box>
+          </ToggleButton>
+          <ToggleButton 
+            value="warning" 
+            aria-label="warnings only"
+            sx={{ 
+              px: 2,
+              '&.Mui-selected': {
+                bgcolor: '#fef3c7',
+                '&:hover': {
+                  bgcolor: '#fde68a',
+                },
+              },
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <AlertTriangle size={16} color="#f59e0b" />
+              <Typography variant="body2">Warnings</Typography>
+              <Chip 
+                label={getTotalIssueCount('warning')} 
+                size="small" 
+                sx={{ bgcolor: '#f59e0b', color: 'white' }} 
+              />
+            </Box>
+          </ToggleButton>
+          <ToggleButton 
+            value="info" 
+            aria-label="info only"
+            sx={{ 
+              px: 2,
+              '&.Mui-selected': {
+                bgcolor: '#dbeafe',
+                '&:hover': {
+                  bgcolor: '#bfdbfe',
+                },
+              },
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Info size={16} color="#3b82f6" />
+              <Typography variant="body2">Info</Typography>
+              <Chip 
+                label={getTotalIssueCount('info')} 
+                size="small" 
+                sx={{ bgcolor: '#3b82f6', color: 'white' }} 
+              />
+            </Box>
+          </ToggleButton>
+        </ToggleButtonGroup>
+      </Box>
+
+      <Box sx={{ flex: 1, overflow: 'auto' }}>
+        {activePlan?.results && activePlan.results.length > 0 ? (
+          <Box sx={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            gap: 2,
+            bgcolor: '#ffffff',
+            borderRadius: '12px',
+            border: '1px solid #e2e8f0',
+            p: 2
+          }}>
             <PlanViewer file={selectedFile} results={activePlan.results} />
             
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
@@ -307,46 +312,22 @@ export function ResultsPanel({
             </Box>
           </Box>
         ) : (
-          <Box sx={{ textAlign: 'center', py: 4, color: 'text.secondary' }}>
-            <Typography>
-              {selectedRegion
-                ? 'Upload a plan to see analysis results'
-                : 'Select a country to begin analysis'}
+          <Box sx={{ 
+            height: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            bgcolor: '#ffffff',
+            borderRadius: '12px',
+            border: '1px solid #e2e8f0',
+            p: 4
+          }}>
+            <Typography variant="body1" color="text.secondary">
+              {isAnalyzing ? 'Analyzing...' : 'Run analysis to see results'}
             </Typography>
           </Box>
         )}
-      </Paper>
-
-      <Paper sx={{ p: 2, borderRadius: 2, mt: 2 }}>
-        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <Typography variant="h6" gutterBottom>Upload Plans</Typography>
-          <FileUpload onFileSelect={onFileSelect} buttonText={selectedFile ? 'Change File' : 'Upload File'} />
-          
-          {/* <Box sx={{ mt: 2, width: '100%' }}>
-            <Button 
-              variant="contained" 
-              color="primary"
-              fullWidth
-              disabled={!selectedFile || isAnalyzing || selectedCodes.length === 0}
-              onClick={onRunAnalysis}
-              startIcon={isAnalyzing ? <CircularProgress size={16} color="inherit" /> : <Rocket size={16} />}
-              sx={{ textTransform: 'none' }}
-            >
-              {isAnalyzing ? 'Analyzing...' : 'Run Analysis'}
-            </Button>
-            {!selectedFile && (
-              <Typography variant="caption" color="text.secondary" sx={{ display: 'block', textAlign: 'center', mt: 0.5 }}>
-                Upload a file to run analysis
-              </Typography>
-            )}
-            {selectedFile && selectedCodes.length === 0 && (
-              <Typography variant="caption" color="text.secondary" sx={{ display: 'block', textAlign: 'center', mt: 0.5 }}>
-                Select at least one code to analyze
-              </Typography>
-            )}
-          </Box> */}
-        </Box>
-      </Paper>
+      </Box>
     </Box>
   );
 }
