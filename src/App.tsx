@@ -2,7 +2,8 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { LoginForm } from './components/auth/LoginForm';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { Dashboard } from './components/Dashboard';
-import { ValidationCreationPage } from './components/ValidationCreationPage';
+import { RuleAuthoringStudio } from './components/RuleAuthoringStudio';
+
 import { Chat } from './components/Chat';
 import { useAuthStore } from './store/authStore';
 import { Box, CssBaseline } from '@mui/material';
@@ -25,7 +26,7 @@ function App() {
           } />
           <Route path="/create-validation" element={
             <ProtectedRoute>
-              <ValidationCreationPage />
+              <RuleAuthoringStudio />
             </ProtectedRoute>
           } />
           <Route path="/chat" element={<Chat />} />
