@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { IFCViewer } from "./IFCViewer";
 import {
   Box,
   Typography,
@@ -116,6 +117,7 @@ export const RuleAuthoringStudio: React.FC = () => {
   const [feedback, setFeedback] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   // 1. Generate draft code
   const handleGenerate = async () => {
@@ -149,6 +151,7 @@ export const RuleAuthoringStudio: React.FC = () => {
     try {
       const data = fm.uploadResponse; // mock
       setIfcFileId(data.id);
+      setSelectedFile(file);
     } catch (err) {
       console.error(err);
     } finally {
@@ -213,88 +216,105 @@ export const RuleAuthoringStudio: React.FC = () => {
   };
 
   return (
-    <Box sx={{ p: 4, maxWidth: 600, mx: "auto" }}>
-      <Typography variant="h4" gutterBottom>
-        Rule Authoring Studio
-      </Typography>
+    <Box sx={{ display: 'flex', gap: 2, p: 2, height: 'calc(100vh - 48px)' }}>
+      <Box sx={{ flex: 1, overflow: 'auto' }}>
+        <Typography variant="h4" gutterBottom>
+          Rule Authoring Studio
+        </Typography>
 
-      {/* 1. Description */}
-      <Paper sx={{ p: 2, mb: 2 }}>
-        <Typography variant="h6">Rule Description</Typography>
-        <TextField
-          fullWidth multiline rows={3}
-          label="Describe your rule"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          margin="normal"
-        />
-        {error && <Typography color="error">{error}</Typography>}
-        <Button
-          variant="contained" color="primary"
-          onClick={handleGenerate}
-          disabled={loading || !description.trim()}
-        >{loading ? "Generating..." : "Generate Draft"}</Button>
-      </Paper>
-
-      {/* 2. Draft code */}
-      {draftCode && (
+        {/* 1. Description */}
         <Paper sx={{ p: 2, mb: 2 }}>
-          <Typography variant="h6">Draft Rule Code</Typography>
-          <TextField fullWidth multiline rows={8}
-            value={draftCode}
-            InputProps={{ readOnly: true, style: { fontFamily: 'monospace' } }}
+          <Typography variant="h6">Rule Description</Typography>
+          <TextField
+            fullWidth multiline rows={3}
+            label="Describe your rule"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
             margin="normal"
           />
-          <Typography variant="body2" sx={{ fontStyle: 'italic' }}>
-            Preview: {summary}
-          </Typography>
+          {error && <Typography color="error">{error}</Typography>}
+          <Button
+            variant="contained" color="primary"
+            onClick={handleGenerate}
+            disabled={loading || !description.trim()}
+          >{loading ? "Generating..." : "Generate Draft"}</Button>
         </Paper>
-      )}
 
-      {/* 3. Upload & Test */}
-      {draftCode && (
-        <Paper sx={{ p: 2, mb: 2 }}>
-          <Typography variant="h6">Upload IFC to Test</Typography>
-          <Button variant="contained" component="label" color="success">
-            Upload IFC<input type="file" hidden accept=".ifc" onChange={handleUpload} />
-          </Button>
-          <Button sx={{ ml: 2 }}
-            variant="contained" color="success"
-            onClick={handleTest}
-            disabled={loading || !ifcFileId}
-          >{loading ? "Testing..." : "Run Test"}</Button>
-        </Paper>
-      )}
+        {/* 2. Draft code */}
+        {draftCode && (
+          <Paper sx={{ p: 2, mb: 2 }}>
+            <Typography variant="h6">Draft Rule Code</Typography>
+            <TextField fullWidth multiline rows={8}
+              value={draftCode}
+              InputProps={{ readOnly: true, style: { fontFamily: 'monospace' } }}
+              margin="normal"
+            />
+            <Typography variant="body2" sx={{ fontStyle: 'italic' }}>
+              Preview: {summary}
+            </Typography>
+          </Paper>
+        )}
 
-      {/* 4. Results & actions */}
-      {testResults && (
-        <Paper sx={{ p: 2, mb: 2 }}>
-          <Typography variant="h6">Test Results</Typography>
-          <List>
-            {testResults.map((r, i) => (
-              <ListItem key={i}>
-                <ListItemIcon>
-                  {r.ok ? <CheckIcon color="success" /> : <CloseIcon color="error" />}
-                </ListItemIcon>
-                <ListItemText primary={r.message} primaryTypographyProps={{color: r.ok ? 'textPrimary' : 'error'}}/>
-              </ListItem>
-            ))}
-          </List>
-          {testResults.every(r => r.ok) ? (
-            <Button variant="contained" color="secondary" onClick={handleApprove} disabled={loading}>
-              {loading ? "Saving..." : "Approve Rule"}
+        {/* 3. Upload & Test */}
+        {draftCode && (
+          <Paper sx={{ p: 2, mb: 2 }}>
+            <Typography variant="h6">Upload IFC to Test</Typography>
+            <Button variant="contained" component="label" color="success">
+              Upload IFC<input type="file" hidden accept=".ifc" onChange={handleUpload} />
             </Button>
-          ) : (
-            <Box>
-              <Typography variant="subtitle1">Feedback</Typography>
-              <TextField fullWidth multiline rows={2} value={feedback} onChange={e => setFeedback(e.target.value)} margin="normal"/>
-              <Button variant="contained" color="warning" onClick={handleRefine} disabled={loading || !feedback.trim()}>
-                {loading ? "Refining..." : "Refine Rule"}
+            <Button sx={{ ml: 2 }}
+              variant="contained" color="success"
+              onClick={handleTest}
+              disabled={loading || !ifcFileId}
+            >{loading ? "Testing..." : "Run Test"}</Button>
+          </Paper>
+        )}
+
+        {/* 4. Results & actions */}
+        {testResults && (
+          <Paper sx={{ p: 2, mb: 2 }}>
+            <Typography variant="h6">Test Results</Typography>
+            <List>
+              {testResults.map((r, i) => (
+                <ListItem key={i}>
+                  <ListItemIcon>
+                    {r.ok ? <CheckIcon color="success" /> : <CloseIcon color="error" />}
+                  </ListItemIcon>
+                  <ListItemText primary={r.message} primaryTypographyProps={{color: r.ok ? 'textPrimary' : 'error'}}/>
+                </ListItem>
+              ))}
+            </List>
+            {testResults.every(r => r.ok) ? (
+              <Button variant="contained" color="secondary" onClick={handleApprove} disabled={loading}>
+                {loading ? "Saving..." : "Approve Rule"}
               </Button>
-            </Box>
-          )}
-        </Paper>
-      )}
+            ) : (
+              <Box>
+                <Typography variant="subtitle1">Feedback</Typography>
+                <TextField fullWidth multiline rows={2} value={feedback} onChange={e => setFeedback(e.target.value)} margin="normal"/>
+                <Button variant="contained" color="warning" onClick={handleRefine} disabled={loading || !feedback.trim()}>
+                  {loading ? "Refining..." : "Refine Rule"}
+                </Button>
+              </Box>
+            )}
+          </Paper>
+        )}
+      </Box>
+
+      <Box sx={{ width: '50%', display: 'flex', flexDirection: 'column' }}>
+        {selectedFile ? (
+          <IFCViewer 
+            file={selectedFile}
+            onError={(error) => console.error(error)}
+          />
+        ) : (
+          <Paper sx={{ p: 2, height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Typography variant="body1" color="text.secondary">
+              Upload an IFC file to view the model
+            </Typography>
+          </Paper>
+        )}
+      </Box>
     </Box>
   );
 };
