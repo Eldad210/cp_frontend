@@ -4,7 +4,7 @@ import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { Dashboard } from './components/Dashboard';
 import { RuleAuthoringStudio } from './components/RuleAuthoringStudio';
 
-import { Chat } from './components/Chat';
+import { Chat } from './components/notUsed/Chat';
 import { useAuthStore } from './store/authStore';
 import { Box, CssBaseline } from '@mui/material';
 

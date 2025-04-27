@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { AnalysisResult, Plan } from '../../types';
 import { ChevronDown, ChevronUp, AlertTriangle, AlertCircle, Info } from 'lucide-react';
-import { PlanViewer } from '../PlanViewer';
+import { PlanViewer } from '../notUsed/PlanViewer';
 import { 
   Box, 
   Paper, 

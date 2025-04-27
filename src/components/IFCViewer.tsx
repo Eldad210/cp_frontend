@@ -1,5 +1,6 @@
-import React, { useEffect, useRef } from "react";
-import { Box, Typography, Paper, Button } from "@mui/material";
+import React, { useEffect, useRef, useState , Fragment} from "react";
+import { Box, Backdrop, CircularProgress, Button , Grid, Popover, Typography} from "@mui/material";
+import { SnackbarContent } from "./Snackbar";
 import { IfcViewerAPI } from "web-ifc-viewer";
 import { Color } from "three";
 import CleaningServicesIcon from '@mui/icons-material/CleaningServices';
@@ -7,12 +8,31 @@ import CleaningServicesIcon from '@mui/icons-material/CleaningServices';
 interface IFCViewerProps {
   file: File;
   onError?: (error: Error) => void;
-  onLoad?: () => void;
+  onLoad?
+  : () => void;
+}
+
+interface IfcRecord {
+  [key: string]: string;
 }
 
 export const IFCViewer: React.FC<IFCViewerProps> = ({ file, onError, onLoad }) => {
+  // const [ifcLoadingErrorMessage, setIfcLoadingErrorMessage] =
+  // useState<string>();
+  const [popoverOpen, setPopoverOpen] = React.useState(false);
   const viewerContainer = useRef<HTMLDivElement>(null);
+  const [ifcLoadingErrorMessage, setIfcLoadingErrorMessage] =
+      useState<string>();
   const viewer = useRef<IfcViewerAPI | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
+   const [curIfcRecords, setIfcRecords] = React.useState<IfcRecord>();
+
+   const id = popoverOpen ? "simple-popover" : undefined;
+   
+   const handleClose = () => {
+    setPopoverOpen(false);
+  };
 
   const setupViewer = async () => {
     if (!viewerContainer.current) return;
@@ -35,6 +55,10 @@ export const IFCViewer: React.FC<IFCViewerProps> = ({ file, onError, onLoad }) =
     // viewer.current.axes.setAxes();
   };
 
+  const ifcOnLoadError = async (err: React.ChangeEvent<HTMLInputElement>) => {
+    setIfcLoadingErrorMessage(err.toString());
+  };
+
   useEffect(() => {
     setupViewer();
 
@@ -47,26 +71,43 @@ export const IFCViewer: React.FC<IFCViewerProps> = ({ file, onError, onLoad }) =
 
   useEffect(() => {
     const loadIfc = async () => {
-      if (!file || !viewer.current) return;
 
-      try {
-        // Clear existing models
-        const manager = viewer.current.IFC.loader.ifcManager;
-        if (manager.state.models.size > 0) {
-          for (const [modelID] of manager.state.models) {
-            await viewer.current.IFC.closeModel(modelID);
-          }
-        }
 
-        const url = URL.createObjectURL(file);
-        const model = await viewer.current.IFC.loadIfcUrl(url);
-        URL.revokeObjectURL(url);
-
-        onLoad?.();
-      } catch (error) {
-        console.error("Error loading IFC file:", error);
-        onError?.(error instanceof Error ? error : new Error("Failed to load IFC file"));
+      if (file && viewer.current) {
+         setIfcLoadingErrorMessage("");
+         setLoading(true);
+        console.log("loading file");
+       
+        const model = await viewer.current.IFC.loadIfc(file, true, ifcOnLoadError);
+        console.log("build model");
+        await viewer.current.shadowDropper.renderShadow(model.modelID);
+        console.log("render shadow");
+  
+         setIsSnackbarOpen(true);
+         setLoading(false);
+         console.log("done");
+      
       }
+      // if (!file || !viewer.current) return;
+
+      // try {
+      //   // Clear existing models
+      //   const manager = viewer.current.IFC.loader.ifcManager;
+      //   if (manager.state.models.size > 0) {
+      //     for (const [modelID] of manager.state.models) {
+      //       await viewer.current.IFC.closeModel(modelID);
+      //     }
+      //   }
+
+      //   const url = URL.createObjectURL(file);
+      //   const model = await viewer.current.IFC.loadIfcUrl(url);
+      //   URL.revokeObjectURL(url);
+
+      //   onLoad?.();
+      // } catch (error) {
+      //   console.error("Error loading IFC file:", error);
+      //   onError?.(error instanceof Error ? error : new Error("Failed to load IFC file"));
+      // }
     };
 
     setupViewer();
@@ -75,6 +116,44 @@ export const IFCViewer: React.FC<IFCViewerProps> = ({ file, onError, onLoad }) =
 
   const clearModel = async () => {
     setupViewer();
+  };
+
+  const ifcOnDoubleClick = async () => {
+    if (viewer.current) {
+      const result = await viewer.current.IFC.selector.pickIfcItem(true, true);
+      if (result) {
+        const props = await viewer.current.IFC.getProperties(
+          result.modelID,
+          result.id,
+          false
+        );
+        console.log(props);
+        const type = viewer.current.IFC.loader.ifcManager.getIfcType(
+          result.modelID,
+          result.id
+        );
+        // convert props to record
+        if (props) {
+          const ifcRecords: IfcRecord = {};
+          ifcRecords["Entity Type"] = type;
+          ifcRecords["GlobalId"] = props.GlobalId && props.GlobalId?.value;
+          ifcRecords["Name"] = props.Name && props.Name?.value;
+          ifcRecords["ObjectType"] =
+            props.ObjectType && props.ObjectType?.value;
+          ifcRecords["PredefinedType"] =
+            props.PredefinedType && props.PredefinedType?.value;
+          setIfcRecords(ifcRecords);
+        }
+        setPopoverOpen(true);
+      }
+    }
+  };
+
+  const ifcOnRightClick = async () => {
+    if (viewer.current) {
+      viewer.current.clipper.deleteAllPlanes();
+      viewer.current.clipper.createPlane();
+    }
   };
 
   return (
@@ -89,7 +168,10 @@ export const IFCViewer: React.FC<IFCViewerProps> = ({ file, onError, onLoad }) =
         overflow: 'hidden'
       }}>
         <div 
-          ref={viewerContainer} 
+        onDoubleClick={ifcOnDoubleClick}
+        onContextMenu={ifcOnRightClick}
+        onMouseMove={viewer.current && (() => viewer.current.IFC.selector.prePickIfcItem())}
+        ref={viewerContainer} 
           style={{ 
             position: 'absolute',
             top: 0,
@@ -99,6 +181,23 @@ export const IFCViewer: React.FC<IFCViewerProps> = ({ file, onError, onLoad }) =
           }} 
         />
       </Box>
+      
+            <Backdrop
+              sx={{
+                color: '#fff',
+                zIndex: (theme) => theme.zIndex.modal + 1,
+                bgcolor: 'rgba(0,0,0,0.5)'
+              }}
+              open={loading}
+            >
+              <CircularProgress  color="inherit"/>
+            </Backdrop>
+
+              <SnackbarContent
+                    isSnackbarOpen={isSnackbarOpen}
+                    setIsSnackbarOpen={setIsSnackbarOpen}
+                    ifcLoadingErrorMessage={ifcLoadingErrorMessage}
+                  />
       <Box sx={{ 
         display: 'flex', 
         justifyContent: 'space-between', 
@@ -117,7 +216,37 @@ export const IFCViewer: React.FC<IFCViewerProps> = ({ file, onError, onLoad }) =
           Clear
         </Button>
       </Box>
+
+      <Popover
+                id={id}
+                open={popoverOpen}
+                onClose={handleClose}
+                anchorOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+              >
+                <Grid container component={"dl"} spacing={2} sx={{ p: 2 }}>
+                  <Grid item>
+                    {curIfcRecords &&
+                      Object.keys(curIfcRecords).map(
+                        (key) =>
+                          curIfcRecords[key] && (
+                            <Fragment key={key}>
+                              <Typography component="dt" variant="body2">
+                                {key}
+                              </Typography>
+                              <Typography sx={{ pb: 1 }} component={"dd"}>
+                                {curIfcRecords[key]}
+                              </Typography>
+                            </Fragment>
+                          )
+                      )}
+                  </Grid>
+                </Grid>
+              </Popover>
     </Box>
+    
   );
 };
 
