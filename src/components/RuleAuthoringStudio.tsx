@@ -215,6 +215,44 @@ export const RuleAuthoringStudio: React.FC = () => {
     }
   };
 
+  const clearData =  () => {
+    setDescription("");
+    setDraftCode("");
+    setSummary("");
+    setIfcFileId(null);
+    setTestResults(null);
+    setFeedback("");
+    setSelectedFile(null);
+  };
+
+
+
+  // 4c. Save rule
+  const handleSave = async () => {
+    if (!draftCode) return;
+    setLoading(true);
+    try {
+      // const response = await fetch("/api/rules/save", {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify({
+      //     description,
+      //     code: draftCode,
+      //     summary
+      //   }),
+      // });
+      // const data = await response.json();
+      alert('Rule saved successfully!');
+      // Clear all form data after successful save
+      clearData();
+    } catch (err) {
+      console.error(err);
+      setError("Failed to save rule");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Box sx={{ display: 'flex', gap: 2, p: 2, height: 'calc(100vh - 48px)' }}>
       <Box sx={{ flex: 1, overflow: 'auto' }}>
@@ -240,8 +278,8 @@ export const RuleAuthoringStudio: React.FC = () => {
           >{loading ? "Generating..." : "Generate Draft"}</Button>
         </Paper>
 
-        {/* 2. Draft code */}
-        {draftCode && (
+     
+        {/* {draftCode && (
           <Paper sx={{ p: 2, mb: 2 }}>
             <Typography variant="h6">Draft Rule Code</Typography>
             <TextField fullWidth multiline rows={8}
@@ -253,7 +291,7 @@ export const RuleAuthoringStudio: React.FC = () => {
               Preview: {summary}
             </Typography>
           </Paper>
-        )}
+        )} */}
 
         {/* 3. Upload & Test */}
         {draftCode && (
@@ -292,9 +330,14 @@ export const RuleAuthoringStudio: React.FC = () => {
               <Box>
                 <Typography variant="subtitle1">Feedback</Typography>
                 <TextField fullWidth multiline rows={2} value={feedback} onChange={e => setFeedback(e.target.value)} margin="normal"/>
-                <Button variant="contained" color="warning" onClick={handleRefine} disabled={loading || !feedback.trim()}>
-                  {loading ? "Refining..." : "Refine Rule"}
-                </Button>
+                <Box sx={{ display: 'flex', gap: 2 }}>
+                  <Button variant="contained" color="warning" onClick={handleRefine} disabled={loading || !feedback.trim()}>
+                    {loading ? "Refining..." : "Refine Rule"}
+                  </Button>
+                  <Button variant="contained" color="info" onClick={handleSave} disabled={loading}>
+                    {loading ? "Saving..." : "Save Rule"}
+                  </Button>
+                </Box>
               </Box>
             )}
           </Paper>

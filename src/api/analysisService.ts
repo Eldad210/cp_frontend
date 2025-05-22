@@ -35,7 +35,9 @@ export const sendAnalysisRequest = async (
     formData.append('items', JSON.stringify(selectedCodes));
     
     // The API URL from the provided specification
-    const apiUrl = 'https://AnalyserAPI.onrender.com/analyse';
+     const apiUrl = 'https://AnalyserAPI.onrender.com/analyse';
+
+    //  const apiUrl = 'http://localhost:8000/analyse';
     
     const response = await fetch(apiUrl, {
       method: 'POST',
