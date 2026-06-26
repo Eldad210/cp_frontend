@@ -1,8 +1,5 @@
-import { FileUpload } from '../FileUpload';
 import { CodeSelector } from '../CodeSelector';
-import { Button, CircularProgress } from '@mui/material';
-import { Rocket } from 'lucide-react';
-import { Box, Paper, Typography, Grid } from '@mui/material';
+import { Box, Paper, Grid } from '@mui/material';
 
 interface SidePanelProps {
   onFileSelect: (file: File) => void;
@@ -14,10 +11,6 @@ interface SidePanelProps {
 }
 
 export function SidePanel({ 
-  onFileSelect,
-  onRunAnalysis,
-  selectedFile,
-  isAnalyzing = false,
   selectedCodes,
   onCodeSelect
 }: SidePanelProps) {

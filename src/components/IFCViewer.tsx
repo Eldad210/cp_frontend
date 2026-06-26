@@ -8,8 +8,7 @@ import CleaningServicesIcon from '@mui/icons-material/CleaningServices';
 interface IFCViewerProps {
   file: File;
   onError?: (error: Error) => void;
-  onLoad?
-  : () => void;
+  onLoad?: () => void;
 }
 
 interface IfcRecord {
@@ -78,14 +77,21 @@ export const IFCViewer: React.FC<IFCViewerProps> = ({ file, onError, onLoad }) =
          setLoading(true);
         console.log("loading file");
        
-        const model = await viewer.current.IFC.loadIfc(file, true, ifcOnLoadError);
-        console.log("build model");
-        await viewer.current.shadowDropper.renderShadow(model.modelID);
-        console.log("render shadow");
-  
-         setIsSnackbarOpen(true);
-         setLoading(false);
-         console.log("done");
+        try {
+          const model = await viewer.current.IFC.loadIfc(file, true, ifcOnLoadError);
+          console.log("build model");
+          await viewer.current.shadowDropper.renderShadow(model.modelID);
+          console.log("render shadow");
+          onLoad?.();
+        } catch (error) {
+          const normalizedError = error instanceof Error ? error : new Error("Failed to load IFC file");
+          setIfcLoadingErrorMessage(normalizedError.message);
+          onError?.(normalizedError);
+        } finally {
+          setIsSnackbarOpen(true);
+          setLoading(false);
+          console.log("done");
+        }
       
       }
       // if (!file || !viewer.current) return;
@@ -128,7 +134,7 @@ export const IFCViewer: React.FC<IFCViewerProps> = ({ file, onError, onLoad }) =
           false
         );
         console.log(props);
-        const type = viewer.current.IFC.loader.ifcManager.getIfcType(
+        const type = await viewer.current.IFC.loader.ifcManager.getIfcType(
           result.modelID,
           result.id
         );
@@ -170,7 +176,7 @@ export const IFCViewer: React.FC<IFCViewerProps> = ({ file, onError, onLoad }) =
         <div 
         onDoubleClick={ifcOnDoubleClick}
         onContextMenu={ifcOnRightClick}
-        onMouseMove={viewer.current && (() => viewer.current.IFC.selector.prePickIfcItem())}
+        onMouseMove={viewer.current ? () => viewer.current?.IFC.selector.prePickIfcItem() : undefined}
         ref={viewerContainer} 
           style={{ 
             position: 'absolute',

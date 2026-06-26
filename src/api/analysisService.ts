@@ -1,4 +1,5 @@
 import { useAuthStore } from "@/store/authStore";
+import { apiUrl } from "@/config/api";
 
 export interface AnalysisResponse {
   success: boolean;
@@ -34,12 +35,7 @@ export const sendAnalysisRequest = async (
     // Use the selected codes for analysis
     formData.append('items', JSON.stringify(selectedCodes));
     
-    // The API URL from the provided specification
-     const apiUrl = 'https://AnalyserAPI.onrender.com/analyse';
-
-    //  const apiUrl = 'http://localhost:8000/analyse';
-    
-    const response = await fetch(apiUrl, {
+    const response = await fetch(apiUrl('/analyse'), {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`
@@ -93,17 +89,13 @@ export const getCodeList = async (
       throw new Error('Authentication token not found. Please log in again.');
     }
 
-    // Build query parameters
     const params = new URLSearchParams();
-    if (filters?.codeNum) params.append('codeNum', filters.codeNum.join(','));
-    if (filters?.category) params.append('category', filters.category.join(','));
-    if (filters?.countryCode) params.append('countryCode', filters.countryCode.join(','));
-    if (filters?.language) params.append('language', filters.language.join(','));
-   
+    filters?.codeNum?.forEach((codeNum) => params.append('codeNum', codeNum));
+    filters?.category?.forEach((category) => params.append('category', category));
+    filters?.countryCode?.forEach((countryCode) => params.append('countryCode', countryCode));
+    filters?.language?.forEach((language) => params.append('language', language));
     
-    const apiUrl = `https://AnalyserAPI.onrender.com/codeList?${params.toString()}`;
-    
-    const response = await fetch(apiUrl, {
+    const response = await fetch(apiUrl(`/codeList?${params.toString()}`), {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`

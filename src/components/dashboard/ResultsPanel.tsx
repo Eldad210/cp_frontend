@@ -25,13 +25,9 @@ interface ResultsPanelProps {
 }
 
 export function ResultsPanel({ 
-  onFileSelect, 
   activePlan, 
   selectedFile, 
-  selectedRegion, 
-  isAnalyzing = false, 
-  selectedCodes, 
-  onRunAnalysis 
+  isAnalyzing = false
 }: ResultsPanelProps) {
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
   const [severityFilter, setSeverityFilter] = useState<SeverityFilter>('error');
@@ -59,7 +55,7 @@ export function ResultsPanel({
   };
 
   const handleSeverityChange = (
-    event: React.MouseEvent<HTMLElement>,
+    _event: React.MouseEvent<HTMLElement>,
     newSeverity: SeverityFilter | null,
   ) => {
     if (newSeverity !== null) {

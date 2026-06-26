@@ -279,19 +279,13 @@ export const RuleAuthoringStudio: React.FC = () => {
         </Paper>
 
      
-        {/* {draftCode && (
+        {draftCode && summary && (
           <Paper sx={{ p: 2, mb: 2 }}>
-            <Typography variant="h6">Draft Rule Code</Typography>
-            <TextField fullWidth multiline rows={8}
-              value={draftCode}
-              InputProps={{ readOnly: true, style: { fontFamily: 'monospace' } }}
-              margin="normal"
-            />
             <Typography variant="body2" sx={{ fontStyle: 'italic' }}>
               Preview: {summary}
             </Typography>
           </Paper>
-        )} */}
+        )}
 
         {/* 3. Upload & Test */}
         {draftCode && (
