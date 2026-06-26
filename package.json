@@ -6,8 +6,7 @@
   "scripts": {
     "build:dev": "vite build --mode development",
     "dev": "vite",
-     "build": "vite build && npm run copy-wasm",
-    "copy-wasm": "copy public\\*.wasm dist\\",
+    "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint .",
     "serve:dist": "serve dist"
