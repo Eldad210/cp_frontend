@@ -10,11 +10,12 @@ import { Box, CssBaseline } from '@mui/material';
 
 function App() {
   const isAuthenticated = useAuthStore(state => state.isAuthenticated);
+  const routerBasename = import.meta.env.VITE_ROUTER_BASENAME || "/";
 
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
       <CssBaseline />
-      <Router>
+      <Router basename={routerBasename}>
         <Routes>
           <Route path="/login" element={
             isAuthenticated ? <Navigate to="/dashboard" replace /> : <LoginForm />

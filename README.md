@@ -51,6 +51,7 @@ npm run dev
 
 - Firebase Hosting is configured in `firebase.json`.
 - The API URL is controlled by `VITE_API_BASE_URL`.
+- Static hosting under a sub-path is controlled by `VITE_BASE_PATH` and `VITE_ROUTER_BASENAME`.
 - Firebase client config is controlled by `VITE_FIREBASE_*` values, with current project defaults kept for compatibility.
 
 Before deploying, run:
@@ -58,3 +59,16 @@ Before deploying, run:
 ```powershell
 npm run build
 ```
+
+## GitHub Pages build
+
+```powershell
+$env:VITE_BASE_PATH="/cp_frontend/"
+$env:VITE_ROUTER_BASENAME="/cp_frontend"
+npm run build
+Copy-Item dist\index.html dist\404.html -Force
+```
+
+Expected URL:
+
+https://eldad210.github.io/cp_frontend/
