@@ -1,21 +1,33 @@
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { Box, Typography, Paper, CircularProgress, Checkbox } from '@mui/material';
-import { getCodeList, CodeListResponse } from '@/api/analysisService';
+import { getCodeList } from '@/api/analysisService';
+import { useTranslation } from '@/i18n/LanguageProvider';
+import { getCategoryLabel, getRuleText } from '@/i18n/ruleText';
 
 interface CodeSelectorProps {
   selectedCodes: Array<{ countryCode: string; codeNum: string }>;
   onCodeSelect: (codes: Array<{ countryCode: string; codeNum: string }>) => void;
 }
 
+type CodeItem = {
+  countryCode: string;
+  codeNum: string;
+  description: string;
+  name: string;
+  category: string | string[];
+  categoryDescription?: string | string[];
+};
+
 export function CodeSelector({ 
   selectedCodes,
   onCodeSelect 
 }: CodeSelectorProps) {
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
-  const [codes, setCodes] = useState<CodeListResponse['results']>([]);
+  const [codes, setCodes] = useState<CodeItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { language, t } = useTranslation();
 
   useEffect(() => {
     const fetchCodes = async () => {
@@ -25,7 +37,7 @@ export function CodeSelector({
       try {
         const response = await getCodeList({
           countryCode: ['IL'],
-          language: ['EN']
+          language: [language.toUpperCase()]
         });
         
         if (response.success && response.results) {
@@ -39,7 +51,7 @@ export function CodeSelector({
           onCodeSelect(allCodes);
           
           // Group codes by category and set initial expanded state
-          const categories = [...new Set(response.results.map(code => code.category))];
+          const categories = [...new Set(response.results.map(code => getCategoryKey(code.category)))];
           const initialExpandedState = categories.reduce(
             (acc, category) => {
               acc[category] = false;
@@ -49,17 +61,17 @@ export function CodeSelector({
           );
           setExpandedCategories(initialExpandedState);
         } else {
-          setError(response.message || 'Failed to fetch codes');
+          setError(response.message || t('codes.loadError'));
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch codes');
+        setError(err instanceof Error ? err.message : t('codes.loadError'));
       } finally {
         setLoading(false);
       }
     };
 
     fetchCodes();
-  }, []); // Only fetch once on mount
+  }, [language, onCodeSelect, t]);
 
   const toggleCategory = (category: string) => {
     setExpandedCategories(prev => ({
@@ -68,14 +80,27 @@ export function CodeSelector({
     }));
   };
 
-  type CodeItem = {
-    countryCode: string;
-    codeNum: string;
-    description: string;
-    name: string;
-    category: string;
-    categoryDescription?: string;
+  const getCategoryKey = (category: string | string[]) => {
+    if (Array.isArray(category)) {
+      return category[0] || 'general';
+    }
+    return category || 'general';
   };
+
+  const normalizeCategoryDescription = (description?: string | string[]) => {
+    if (Array.isArray(description)) {
+      return description.join(', ');
+    }
+    return description;
+  };
+
+  const getDisplayName = (code: CodeItem) => (
+    getRuleText(language, code.codeNum)?.name || code.name
+  );
+
+  const getDisplayDescription = (code: CodeItem) => (
+    getRuleText(language, code.codeNum)?.description || code.description
+  );
 
   const handleCodeSelect = (code: CodeItem) => {
     const isSelected = selectedCodes.some(
@@ -101,16 +126,14 @@ export function CodeSelector({
   };
 
   const getGroupedCodes = () => {
-    if (!codes) return {};
-    
     return codes.reduce((groups, code) => {
-      const category = code.category || 'Uncategorized';
+      const category = getCategoryKey(code.category);
       if (!groups[category]) {
         groups[category] = [];
       }
       groups[category].push(code);
       return groups;
-    }, {} as Record<string, typeof codes>);
+    }, {} as Record<string, CodeItem[]>);
   };
 
   const groupedCodes = getGroupedCodes();
@@ -119,12 +142,12 @@ export function CodeSelector({
     <Box sx={{ 
       width: '100%',
       backgroundColor: '#ffffff',
-      borderRadius: '12px',
-      boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
+      borderRadius: '8px',
+      boxShadow: 'none',
       overflow: 'hidden'
     }}>
       <Box sx={{ 
-        p: 3,
+        p: 2,
         maxHeight: '75vh',
         overflow: 'auto',
         '&::-webkit-scrollbar': {
@@ -151,90 +174,101 @@ export function CodeSelector({
             fontSize: '1.125rem'
           }}
         >
-          Codes
+          {t('codes.title')}
         </Typography>
         
         {loading ? (
-          <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
-            <CircularProgress size={28} sx={{ color: '#2563eb' }} />
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1, py: 6 }}>
+            <CircularProgress size={28} sx={{ color: '#0f766e' }} />
+            <Typography variant="body2" color="text.secondary">{t('codes.loading')}</Typography>
           </Box>
         ) : error ? (
           <Typography color="error" sx={{ py: 4, textAlign: 'center' }}>
             {error}
           </Typography>
+        ) : Object.keys(groupedCodes).length === 0 ? (
+          <Typography color="text.secondary" sx={{ py: 4, textAlign: 'center' }}>
+            {t('codes.empty')}
+          </Typography>
         ) : (
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            {Object.entries(groupedCodes).map(([category, categoryCodes]) => (
-              <Paper
-                key={category}
-                elevation={0}
-                sx={{
-                  border: '1px solid #e2e8f0',
-                  borderRadius: '10px',
-                  overflow: 'hidden',
-                  transition: 'all 0.2s ease-in-out',
-                  '&:hover': {
-                    borderColor: '#cbd5e1',
-                  }
-                }}
-              >
-                <Box
+            {Object.entries(groupedCodes).map(([category, categoryCodes]) => {
+              const categoryDescription = categoryCodes[0]
+                ? getRuleText(language, categoryCodes[0].codeNum)?.categoryDescription
+                  || getCategoryLabel(language, category, normalizeCategoryDescription(categoryCodes[0].categoryDescription))
+                : category;
+
+              return (
+                <Paper
+                  key={category}
+                  elevation={0}
                   sx={{
-                    px: 2.5,
-                    py: 2,
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    cursor: 'pointer',
-                    backgroundColor: '#f8fafc',
-                    borderBottom: expandedCategories[category] ? '1px solid #e2e8f0' : 'none',
+                    border: '1px solid #dbe5e1',
+                    borderRadius: '8px',
+                    overflow: 'hidden',
                     transition: 'all 0.2s ease-in-out',
                     '&:hover': {
-                      backgroundColor: '#f1f5f9',
+                      borderColor: '#bfd4ce',
                     }
                   }}
-                  onClick={() => toggleCategory(category)}
                 >
-                  <Typography 
-                    variant="body1" 
-                    sx={{ 
-                      fontWeight: 600, 
-                      color: '#334155',
-                      fontSize: '0.9375rem'
+                  <Box
+                    sx={{
+                      px: 2,
+                      py: 1.5,
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      cursor: 'pointer',
+                      backgroundColor: '#f8fafc',
+                      borderBottom: expandedCategories[category] ? '1px solid #dbe5e1' : 'none',
+                      transition: 'all 0.2s ease-in-out',
+                      '&:hover': {
+                        backgroundColor: '#f0fdfa',
+                      }
                     }}
+                    onClick={() => toggleCategory(category)}
                   >
-                    {categoryCodes[0]?.categoryDescription || category}
-                  </Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                    <Box
+                    <Typography
+                      variant="body1"
                       sx={{
-                        fontSize: '0.75rem',
-                        fontWeight: 600,
-                        backgroundColor: '#e2e8f0',
-                        color: '#475569',
-                        px: 1.5,
-                        py: 0.5,
-                        borderRadius: '6px',
-                        minWidth: '24px',
-                        textAlign: 'center'
+                        fontWeight: 700,
+                        color: '#334155',
+                        fontSize: '0.9375rem'
                       }}
                     >
-                      {categoryCodes.length}
+                      {categoryDescription}
+                    </Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25 }}>
+                      <Box
+                        sx={{
+                          fontSize: '0.75rem',
+                          fontWeight: 700,
+                          backgroundColor: '#e2e8f0',
+                          color: '#475569',
+                          px: 1,
+                          py: 0.35,
+                          borderRadius: '6px',
+                          minWidth: '24px',
+                          textAlign: 'center'
+                        }}
+                      >
+                        {categoryCodes.length}
+                      </Box>
+                      {expandedCategories[category] ? (
+                        <ChevronUp size={16} color="#64748b" />
+                      ) : (
+                        <ChevronDown size={16} color="#64748b" />
+                      )}
                     </Box>
-                    {expandedCategories[category] ? (
-                      <ChevronUp size={16} color="#64748b" />
-                    ) : (
-                      <ChevronDown size={16} color="#64748b" />
-                    )}
                   </Box>
-                </Box>
-                {expandedCategories[category] && (
-                  <Box sx={{ p: 2.5 }}>
-                    {categoryCodes.map(code => (
+                  {expandedCategories[category] && (
+                    <Box sx={{ p: 1.5 }}>
+                      {categoryCodes.map(code => (
                       <Box
                         key={`${code.countryCode}-${code.codeNum}`}
                         sx={{
-                          mb: 2,
+                          mb: 1,
                           '&:last-child': { mb: 0 }
                         }}
                       >
@@ -244,7 +278,7 @@ export function CodeSelector({
                             alignItems: 'flex-start',
                             gap: 1.5,
                             cursor: 'pointer',
-                            p: 1.5,
+                            p: 1.25,
                             borderRadius: '8px',
                             transition: 'all 0.2s ease-in-out',
                             '&:hover': {
@@ -264,10 +298,10 @@ export function CodeSelector({
                             sx={{
                               color: '#94a3b8',
                               '&.Mui-checked': {
-                                color: '#2563eb',
+                                color: '#0f766e',
                               },
                               '&:hover': {
-                                backgroundColor: 'rgba(37, 99, 235, 0.04)',
+                                backgroundColor: 'rgba(15, 118, 110, 0.06)',
                               }
                             }}
                           />
@@ -281,7 +315,7 @@ export function CodeSelector({
                                 lineHeight: 1.4
                               }}
                             >
-                              {code.name}
+                              {getDisplayName(code)}
                             </Typography>
                             <Typography 
                               sx={{ 
@@ -290,16 +324,17 @@ export function CodeSelector({
                                 lineHeight: 1.4
                               }}
                             >
-                              {code.description}
+                              {getDisplayDescription(code)}
                             </Typography>
                           </Box>
                         </Box>
                       </Box>
-                    ))}
-                  </Box>
-                )}
-              </Paper>
-            ))}
+                      ))}
+                    </Box>
+                  )}
+                </Paper>
+              );
+            })}
           </Box>
         )}
       </Box>

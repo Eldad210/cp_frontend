@@ -4,15 +4,15 @@ import { createTheme } from '@mui/material/styles';
 export const theme = createTheme({
   palette: {
     primary: {
-      main: '#3b82f6',
-      light: '#60a5fa',
-      dark: '#2563eb',
+      main: '#0f766e',
+      light: '#14b8a6',
+      dark: '#115e59',
       contrastText: '#ffffff',
     },
     secondary: {
-      main: '#6b7280',
-      light: '#9ca3af',
-      dark: '#4b5563',
+      main: '#475569',
+      light: '#64748b',
+      dark: '#334155',
       contrastText: '#ffffff',
     },
     error: {
@@ -26,9 +26,9 @@ export const theme = createTheme({
       dark: '#d97706',
     },
     info: {
-      main: '#3b82f6',
+      main: '#2563eb',
       light: '#60a5fa',
-      dark: '#2563eb',
+      dark: '#1d4ed8',
     },
     success: {
       main: '#10b981',
@@ -36,7 +36,7 @@ export const theme = createTheme({
       dark: '#059669',
     },
     background: {
-      default: '#f9fafb',
+      default: '#f4f7f6',
       paper: '#ffffff',
     },
     text: {
@@ -46,7 +46,7 @@ export const theme = createTheme({
     },
   },
   typography: {
-    fontFamily: '"Inter", "Helvetica", "Arial", sans-serif',
+    fontFamily: '"Heebo", "Inter", "Segoe UI", "Helvetica", "Arial", sans-serif',
     h1: {
       fontWeight: 700,
       fontSize: '2.25rem',
@@ -81,6 +81,7 @@ export const theme = createTheme({
     button: {
       textTransform: 'none',
       fontWeight: 500,
+      letterSpacing: 0,
     },
     subtitle1: {
       fontSize: '1rem',
@@ -108,9 +109,9 @@ export const theme = createTheme({
           },
         },
         containedPrimary: {
-          backgroundColor: '#3b82f6',
+          backgroundColor: '#0f766e',
           '&:hover': {
-            backgroundColor: '#2563eb',
+            backgroundColor: '#115e59',
           },
         },
         outlined: {
@@ -126,7 +127,7 @@ export const theme = createTheme({
     MuiPaper: {
       styleOverrides: {
         root: {
-          boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
+          boxShadow: '0 1px 2px 0 rgb(15 23 42 / 0.08)',
         },
         rounded: {
           borderRadius: 8,
@@ -136,7 +137,7 @@ export const theme = createTheme({
     MuiAppBar: {
       styleOverrides: {
         root: {
-          boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
+          boxShadow: '0 1px 2px 0 rgb(15 23 42 / 0.08)',
         },
       },
     },
@@ -144,7 +145,7 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: 8,
-          boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
+          boxShadow: '0 1px 2px 0 rgb(15 23 42 / 0.08)',
         },
       },
     },

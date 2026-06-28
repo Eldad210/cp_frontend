@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { AnalysisResult, Plan } from '../../types';
-import { ChevronDown, ChevronUp, AlertTriangle, AlertCircle, Info } from 'lucide-react';
+import { ChevronDown, ChevronUp, AlertTriangle, AlertCircle, CheckCircle2, Info } from 'lucide-react';
 import { PlanViewer } from '../notUsed/PlanViewer';
 import { 
   Box, 
@@ -11,6 +11,7 @@ import {
   ToggleButton,
   ToggleButtonGroup
 } from '@mui/material';
+import { useTranslation } from '@/i18n/LanguageProvider';
 
 type SeverityFilter = 'all' | 'error' | 'warning' | 'info';
 
@@ -31,6 +32,7 @@ export function ResultsPanel({
 }: ResultsPanelProps) {
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
   const [severityFilter, setSeverityFilter] = useState<SeverityFilter>('error');
+  const { t } = useTranslation();
 
   const getGroupedResults = (results: AnalysisResult[]) => {
     const filteredResults = severityFilter === 'all' 
@@ -81,22 +83,41 @@ export function ResultsPanel({
       : activePlan.results.filter(result => result.severity === severity).length;
   };
 
+  const getSeverityLabel = (severity: string) => {
+    if (severity === 'error') return t('severity.error');
+    if (severity === 'warning') return t('severity.warning');
+    return t('severity.info');
+  };
+
+  const getCategoryLabel = (category: AnalysisResult['category']) => {
+    if (category === 'safety') return t('category.safety');
+    if (category === 'accessibility') return t('category.accessibility');
+    if (category === 'structural') return t('category.structural');
+    if (category === 'energy') return t('category.energy');
+    return t('category.general');
+  };
+
+  const currentResults = activePlan?.results ?? [];
+  const groupedResults = getGroupedResults(currentResults);
+  const hasResults = currentResults.length > 0;
+  const hasFilteredResults = Object.keys(groupedResults).length > 0;
+
   return (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', p: 2 }}>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-        <Typography variant="subtitle1" sx={{ fontWeight: 500, color: '#475569' }}>
-          Analysis Results
+        <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#334155' }}>
+          {t('results.title')}
         </Typography>
         <Box sx={{ 
-          ml: 'auto',
+          marginInlineStart: 'auto',
           px: 2,
           py: 0.5,
           bgcolor: '#fff',
-          borderRadius: '16px',
+          borderRadius: '8px',
           border: '1px solid #e2e8f0'
         }}>
           <Typography variant="body2" color="text.secondary">
-            ISRAEL Standards
+            {t('results.standard')}
           </Typography>
         </Box>
       </Box>
@@ -108,6 +129,7 @@ export function ResultsPanel({
           onChange={handleSeverityChange}
           aria-label="severity filter"
           size="small"
+          sx={{ flexWrap: 'wrap' }}
         >
           <ToggleButton 
             value="all" 
@@ -123,7 +145,7 @@ export function ResultsPanel({
             }}
           >
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Typography variant="body2">All</Typography>
+              <Typography variant="body2">{t('results.all')}</Typography>
               <Chip 
                 label={getTotalIssueCount('all')} 
                 size="small" 
@@ -146,7 +168,7 @@ export function ResultsPanel({
           >
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <AlertCircle size={16} color="#ef4444" />
-              <Typography variant="body2">Errors</Typography>
+              <Typography variant="body2">{t('results.errors')}</Typography>
               <Chip 
                 label={getTotalIssueCount('error')} 
                 size="small" 
@@ -169,7 +191,7 @@ export function ResultsPanel({
           >
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <AlertTriangle size={16} color="#f59e0b" />
-              <Typography variant="body2">Warnings</Typography>
+              <Typography variant="body2">{t('results.warnings')}</Typography>
               <Chip 
                 label={getTotalIssueCount('warning')} 
                 size="small" 
@@ -192,7 +214,7 @@ export function ResultsPanel({
           >
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <Info size={16} color="#3b82f6" />
-              <Typography variant="body2">Info</Typography>
+              <Typography variant="body2">{t('results.info')}</Typography>
               <Chip 
                 label={getTotalIssueCount('info')} 
                 size="small" 
@@ -204,28 +226,29 @@ export function ResultsPanel({
       </Box>
 
       <Box sx={{ flex: 1, overflow: 'auto' }}>
-        {activePlan?.results && activePlan.results.length > 0 ? (
+        {hasResults ? (
           <Box sx={{ 
             display: 'flex', 
             flexDirection: 'column', 
             gap: 2,
             bgcolor: '#ffffff',
-            borderRadius: '12px',
+            borderRadius: '8px',
             border: '1px solid #e2e8f0',
             p: 2
           }}>
-            <PlanViewer file={selectedFile} results={activePlan.results} />
+            <PlanViewer file={selectedFile} results={currentResults} />
             
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-              {Object.entries(getGroupedResults(activePlan.results)).map(([category, results]) => (
+            {hasFilteredResults ? (
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+              {Object.entries(groupedResults).map(([category, results]) => (
                 <Paper 
                   key={category} 
                   variant="outlined" 
-                  sx={{ overflow: 'hidden', borderRadius: 1 }}
+                  sx={{ overflow: 'hidden', borderRadius: '8px' }}
                 >
                   <Box 
                     sx={{
-                      bgcolor: 'primary.light',
+                      bgcolor: '#0f766e',
                       px: 1.5, 
                       py: 1, 
                       display: 'flex',
@@ -245,14 +268,14 @@ export function ResultsPanel({
                         textTransform: 'capitalize'
                       }}
                     >
-                      {category}
+                      {getCategoryLabel(category as AnalysisResult['category'])}
                     </Typography>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                       <Chip 
-                        label={`${results.length} issue${results.length !== 1 ? 's' : ''}`}
+                        label={`${results.length} ${results.length === 1 ? t('results.issueSingular') : t('results.issuePlural')}`}
                         size="small"
                         sx={{ 
-                          bgcolor: 'primary.dark', 
+                          bgcolor: '#115e59', 
                           color: 'white',
                           fontWeight: 500
                         }}
@@ -284,7 +307,7 @@ export function ResultsPanel({
                                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
                                   <Typography variant="subtitle2">{result.code}</Typography>
                                   <Chip 
-                                    label={result.severity}
+                                    label={getSeverityLabel(result.severity)}
                                     size="small"
                                     sx={{ 
                                       bgcolor: `${getSeverityColor(result.severity)}20`,
@@ -305,21 +328,31 @@ export function ResultsPanel({
                   )}
                 </Paper>
               ))}
-            </Box>
+              </Box>
+            ) : (
+              <Box sx={{ py: 4, textAlign: 'center', color: '#64748b' }}>
+                <Typography variant="body2">{t('results.noFiltered')}</Typography>
+              </Box>
+            )}
           </Box>
         ) : (
           <Box sx={{ 
             height: '100%',
             display: 'flex',
+            flexDirection: 'column',
+            gap: 1.5,
             alignItems: 'center',
             justifyContent: 'center',
             bgcolor: '#ffffff',
-            borderRadius: '12px',
+            borderRadius: '8px',
             border: '1px solid #e2e8f0',
             p: 4
           }}>
+            {activePlan && !isAnalyzing && (
+              <CheckCircle2 size={34} color="#059669" />
+            )}
             <Typography variant="body1" color="text.secondary">
-              {isAnalyzing ? 'Analyzing...' : 'Run analysis to see results'}
+              {isAnalyzing ? t('results.analyzing') : activePlan ? t('results.allClear') : t('results.empty')}
             </Typography>
           </Box>
         )}

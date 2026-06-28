@@ -9,6 +9,8 @@ import { Box, Snackbar, Alert, Button, Typography } from '@mui/material';
 import { sendAnalysisRequest } from '@/api/analysisService';
 import { useNavigate } from 'react-router-dom';
 import { IFCViewer } from "./IFCViewer";
+import { FileCheck2, PlayCircle, PlusCircle, UploadCloud } from 'lucide-react';
+import { useTranslation } from '@/i18n/LanguageProvider';
 
 export function Dashboard() {
   const [activePlan, setActivePlan] = useState<Plan | null>(null);
@@ -18,6 +20,7 @@ export function Dashboard() {
   const [alert, setAlert] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
   const { user, logout } = useAuthStore();
   const navigate = useNavigate();
+  const { direction, language, t } = useTranslation();
 
   const handleFileSelect = (file: File) => {
     setSelectedFile(file);
@@ -28,26 +31,27 @@ export function Dashboard() {
       return;
     }
 
-    // Set analyzing state and show info alert
     setIsAnalyzing(true);
-    setAlert({ message: 'Analyzing file...', type: 'info' });
+    setAlert({ message: t('dashboard.analyzingFile'), type: 'info' });
     
     try {
-      // Call the actual API service with selected codes
-      const response = await sendAnalysisRequest(selectedFile, selectedCodes);
+      const response = await sendAnalysisRequest(
+        selectedFile,
+        selectedCodes,
+        language === 'he' ? 'HE' : 'EN',
+      );
       
       if (response.success && response.results) {
-        // Create a plan with the API response results
         const newPlan = createAnalyzedPlan(selectedFile, 'ISRAEL', response.results);
         setActivePlan(newPlan);
-        setAlert({ message: 'Analysis completed successfully', type: 'success' });
+        setAlert({ message: t('dashboard.analysisComplete'), type: 'success' });
       } else {
-        setAlert({ message: response.message || 'Analysis failed', type: 'error' });
+        setAlert({ message: response.message || t('dashboard.analysisFailed'), type: 'error' });
       }
     } catch (error) {
       console.error('Error during analysis:', error);
       setAlert({ 
-        message: error instanceof Error ? error.message : 'Unknown error occurred during analysis', 
+        message: error instanceof Error ? error.message : t('dashboard.unknownAnalysisError'), 
         type: 'error' 
       });
     } finally {
@@ -60,14 +64,20 @@ export function Dashboard() {
   };
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh', bgcolor: '#f1f5f9' }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh', bgcolor: '#eef3f1', direction }}>
       <DashboardHeader user={user} onLogout={logout} />
       
-      <Box sx={{ display: 'flex', flex: 1, height: 'calc(100vh - 64px)', overflow: 'hidden' }}>
-        {/* Left Panel - Codes */}
+      <Box sx={{
+        display: 'flex',
+        flexDirection: direction === 'rtl' ? 'row-reverse' : 'row',
+        flex: 1,
+        height: 'calc(100vh - 64px)',
+        overflow: 'hidden',
+      }}>
         <Box sx={{ 
-          width: '320px', 
-          borderRight: '1px solid #e2e8f0',
+          width: '330px',
+          borderRight: direction === 'ltr' ? '1px solid #dbe5e1' : 'none',
+          borderLeft: direction === 'rtl' ? '1px solid #dbe5e1' : 'none',
           bgcolor: '#ffffff'
         }}>
           <SidePanel 
@@ -80,44 +90,43 @@ export function Dashboard() {
           />
         </Box>
 
-        {/* Middle Panel - IFC Viewer */}
         <Box sx={{ 
           flex: 1,
-          borderRight: '1px solid #e2e8f0',
+          borderRight: direction === 'ltr' ? '1px solid #dbe5e1' : 'none',
+          borderLeft: direction === 'rtl' ? '1px solid #dbe5e1' : 'none',
           bgcolor: '#ffffff',
           display: 'flex',
           flexDirection: 'column'
         }}>
-          {/* Upload Section - Always at top */}
-          <Box sx={{ p: 3, borderBottom: '1px solid #e2e8f0' }}>
+          <Box sx={{ p: 2.5, borderBottom: '1px solid #dbe5e1', bgcolor: '#fbfdfc' }}>
             <Box 
               component="label"
               sx={{ 
                 width: '100%',
                 display: 'flex',
-                flexDirection: 'column',
+                flexDirection: { xs: 'column', md: 'row' },
                 alignItems: 'center',
-                justifyContent: 'center',
+                justifyContent: 'space-between',
                 bgcolor: '#ffffff',
-                borderRadius: '12px',
-                border: '2px dashed #e2e8f0',
-                p: 4,
-                gap: 1.5,
+                borderRadius: '8px',
+                border: '1px dashed #9fb9b2',
+                p: 2.5,
+                gap: 2,
                 cursor: 'pointer',
                 transition: 'all 0.2s ease-in-out',
                 '&:hover': {
-                  borderColor: '#3b82f6',
-                  bgcolor: '#f8fafc'
+                  borderColor: '#0f766e',
+                  bgcolor: '#f7fbfa'
                 }
               }}
               onDragOver={(e) => {
                 e.preventDefault();
-                e.currentTarget.style.borderColor = '#3b82f6';
-                e.currentTarget.style.backgroundColor = '#f8fafc';
+                e.currentTarget.style.borderColor = '#0f766e';
+                e.currentTarget.style.backgroundColor = '#f7fbfa';
               }}
               onDragLeave={(e) => {
                 e.preventDefault();
-                e.currentTarget.style.borderColor = '#e2e8f0';
+                e.currentTarget.style.borderColor = '#9fb9b2';
                 e.currentTarget.style.backgroundColor = '#ffffff';
               }}
               onDrop={(e) => {
@@ -128,23 +137,31 @@ export function Dashboard() {
                 }
               }}
             >
-              <Typography variant="h6">
-                {selectedFile ? 'Change IFC File' : 'Upload Plans'}
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, minWidth: 0 }}>
+                <Box sx={{
+                  width: 42,
+                  height: 42,
+                  borderRadius: '8px',
+                  display: 'grid',
+                  placeItems: 'center',
+                  bgcolor: selectedFile ? '#ecfdf5' : '#eff6ff',
+                  border: selectedFile ? '1px solid #bbf7d0' : '1px solid #bfdbfe',
+                  flexShrink: 0,
+                }}>
+                  {selectedFile ? <FileCheck2 size={22} color="#059669" /> : <UploadCloud size={22} color="#2563eb" />}
+                </Box>
+                <Box sx={{ minWidth: 0 }}>
+                  <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#0f172a' }}>
+                    {selectedFile ? t('upload.change') : t('upload.title')}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ overflowWrap: 'anywhere' }}>
+                    {selectedFile ? `${t('upload.currentFile')}: ${selectedFile.name}` : t('upload.instructions')}
+                  </Typography>
+                </Box>
+              </Box>
+              <Typography variant="caption" color="text.secondary" sx={{ flexShrink: 0 }}>
+                {t('upload.format')}
               </Typography>
-              {selectedFile ? (
-                <Typography variant="body2" color="text.secondary" align="center">
-                  Current file: {selectedFile.name}
-                </Typography>
-              ) : (
-                <>
-                  <Typography variant="body2" color="text.secondary" align="center">
-                    Drag 'n' drop your IFC model here, or click to select file
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    IFC format only (max. 50MB)
-                  </Typography>
-                </>
-              )}
               <input
                 type="file"
                 hidden
@@ -157,7 +174,6 @@ export function Dashboard() {
             </Box>
           </Box>
 
-          {/* IFC Viewer */}
           <Box sx={{ flex: 1, minHeight: 0 }}>
             {selectedFile ? (
               <IFCViewer 
@@ -170,19 +186,20 @@ export function Dashboard() {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                bgcolor: '#f8fafc'
+                bgcolor: '#f8fafc',
+                color: '#64748b',
               }}>
-                <Typography color="text.secondary">
-                  Upload an IFC file to view the model
+                <Typography color="text.secondary" sx={{ fontWeight: 500 }}>
+                  {t('viewer.empty')}
                 </Typography>
               </Box>
             )}
           </Box>
         </Box>
 
-        {/* Right Panel - Analysis Results */}
         <Box sx={{ 
-          width: '33%',
+          width: '35%',
+          minWidth: '380px',
           bgcolor: '#f8fafc'
         }}>
           <ResultsPanel 
@@ -197,29 +214,41 @@ export function Dashboard() {
         </Box>
       </Box>
 
-      {/* Bottom Action Bar */}
       <Box sx={{ 
-        p: 1.5, 
-        borderTop: '1px solid #e2e8f0',
+        p: 1.25, 
+        borderTop: '1px solid #dbe5e1',
         bgcolor: '#ffffff',
         display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
         gap: 2
       }}>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => navigate('/create-validation')}
-        >
-          Create Validation
-        </Button>
-        <Button
-          variant="outlined"
-          color="secondary"
-          onClick={handleRunAnalysis}
-          disabled={isAnalyzing || !selectedFile || selectedCodes.length === 0}
-        >
-          Run Analysis
-        </Button>
+        <Typography variant="body2" color="text.secondary" sx={{ px: 1 }}>
+          {t('dashboard.ready')}
+        </Typography>
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <Button
+            variant="outlined"
+            color="secondary"
+            onClick={() => navigate('/create-validation')}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+              <PlusCircle size={16} />
+              {t('dashboard.createValidation')}
+            </Box>
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleRunAnalysis}
+            disabled={isAnalyzing || !selectedFile || selectedCodes.length === 0}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+              <PlayCircle size={16} />
+              {isAnalyzing ? t('dashboard.analyzingFile') : t('dashboard.runAnalysis')}
+            </Box>
+          </Button>
+        </Box>
       </Box>
 
       {alert && (

@@ -13,6 +13,9 @@ import {
 } from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
+import { useNavigate } from "react-router-dom";
+import { LanguageSwitcher } from "./LanguageSwitcher";
+import { useTranslation } from "@/i18n/LanguageProvider";
 
 // --- Sample API payloads and responses as mock data (fm) ---
 export const fm = {
@@ -118,6 +121,8 @@ export const RuleAuthoringStudio: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const navigate = useNavigate();
+  const { t } = useTranslation();
 
   // 1. Generate draft code
   const handleGenerate = async () => {
@@ -137,7 +142,7 @@ export const RuleAuthoringStudio: React.FC = () => {
       setTestResults(null);
       setFeedback("");
     } catch (err: any) {
-      setError(err.message || "Failed to generate draft");
+      setError(err.message || t('ruleStudio.failedGenerate'));
     } finally {
       setLoading(false);
     }
@@ -185,7 +190,7 @@ export const RuleAuthoringStudio: React.FC = () => {
     setLoading(true);
     try {
       const body = fm.createRuleResponse; // mock
-      alert(`Rule ${body.id} approved and saved!`);
+      alert(`${t('ruleStudio.saved')}: ${body.id}`);
       setDescription("");
       setDraftCode("");
       setSummary("");
@@ -209,7 +214,7 @@ export const RuleAuthoringStudio: React.FC = () => {
       setTestResults(null);
       setFeedback("");
     } catch (err: any) {
-      setError(err.message || "Failed to refine draft");
+      setError(err.message || t('ruleStudio.failedRefine'));
     } finally {
       setLoading(false);
     }
@@ -242,30 +247,38 @@ export const RuleAuthoringStudio: React.FC = () => {
       //   }),
       // });
       // const data = await response.json();
-      alert('Rule saved successfully!');
+      alert(t('ruleStudio.saved'));
       // Clear all form data after successful save
       clearData();
     } catch (err) {
       console.error(err);
-      setError("Failed to save rule");
+      setError(t('ruleStudio.failedSave'));
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Box sx={{ display: 'flex', gap: 2, p: 2, height: 'calc(100vh - 48px)' }}>
+    <Box sx={{ display: 'flex', gap: 2, p: 2, height: '100vh', bgcolor: '#eef3f1' }}>
       <Box sx={{ flex: 1, overflow: 'auto' }}>
-        <Typography variant="h4" gutterBottom>
-          Rule Authoring Studio
-        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+          <Button variant="outlined" onClick={() => navigate('/dashboard')}>
+            {t('ruleStudio.back')}
+          </Button>
+          <Typography variant="h5" sx={{ fontWeight: 700, color: '#0f172a' }}>
+            {t('ruleStudio.title')}
+          </Typography>
+          <Box sx={{ marginInlineStart: 'auto' }}>
+            <LanguageSwitcher />
+          </Box>
+        </Box>
 
         {/* 1. Description */}
-        <Paper sx={{ p: 2, mb: 2 }}>
-          <Typography variant="h6">Rule Description</Typography>
+        <Paper sx={{ p: 2, mb: 2, borderRadius: '8px' }}>
+          <Typography variant="h6">{t('ruleStudio.descriptionTitle')}</Typography>
           <TextField
             fullWidth multiline rows={3}
-            label="Describe your rule"
+            label={t('ruleStudio.descriptionLabel')}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             margin="normal"
@@ -275,37 +288,37 @@ export const RuleAuthoringStudio: React.FC = () => {
             variant="contained" color="primary"
             onClick={handleGenerate}
             disabled={loading || !description.trim()}
-          >{loading ? "Generating..." : "Generate Draft"}</Button>
+          >{loading ? t('ruleStudio.generating') : t('ruleStudio.generate')}</Button>
         </Paper>
 
      
         {draftCode && summary && (
-          <Paper sx={{ p: 2, mb: 2 }}>
+          <Paper sx={{ p: 2, mb: 2, borderRadius: '8px' }}>
             <Typography variant="body2" sx={{ fontStyle: 'italic' }}>
-              Preview: {summary}
+              {t('ruleStudio.preview')}: {summary}
             </Typography>
           </Paper>
         )}
 
         {/* 3. Upload & Test */}
         {draftCode && (
-          <Paper sx={{ p: 2, mb: 2 }}>
-            <Typography variant="h6">Upload IFC to Test</Typography>
+          <Paper sx={{ p: 2, mb: 2, borderRadius: '8px' }}>
+            <Typography variant="h6">{t('ruleStudio.uploadTitle')}</Typography>
             <Button variant="contained" component="label" color="success">
-              Upload IFC<input type="file" hidden accept=".ifc" onChange={handleUpload} />
+              {t('ruleStudio.upload')}<input type="file" hidden accept=".ifc" onChange={handleUpload} />
             </Button>
             <Button sx={{ ml: 2 }}
               variant="contained" color="success"
               onClick={handleTest}
               disabled={loading || !ifcFileId}
-            >{loading ? "Testing..." : "Run Test"}</Button>
+            >{loading ? t('ruleStudio.testing') : t('ruleStudio.runTest')}</Button>
           </Paper>
         )}
 
         {/* 4. Results & actions */}
         {testResults && (
-          <Paper sx={{ p: 2, mb: 2 }}>
-            <Typography variant="h6">Test Results</Typography>
+          <Paper sx={{ p: 2, mb: 2, borderRadius: '8px' }}>
+            <Typography variant="h6">{t('ruleStudio.results')}</Typography>
             <List>
               {testResults.map((r, i) => (
                 <ListItem key={i}>
@@ -318,18 +331,18 @@ export const RuleAuthoringStudio: React.FC = () => {
             </List>
             {testResults.every(r => r.ok) ? (
               <Button variant="contained" color="secondary" onClick={handleApprove} disabled={loading}>
-                {loading ? "Saving..." : "Approve Rule"}
+                {loading ? t('ruleStudio.saving') : t('ruleStudio.approve')}
               </Button>
             ) : (
               <Box>
-                <Typography variant="subtitle1">Feedback</Typography>
+                <Typography variant="subtitle1">{t('ruleStudio.feedback')}</Typography>
                 <TextField fullWidth multiline rows={2} value={feedback} onChange={e => setFeedback(e.target.value)} margin="normal"/>
                 <Box sx={{ display: 'flex', gap: 2 }}>
                   <Button variant="contained" color="warning" onClick={handleRefine} disabled={loading || !feedback.trim()}>
-                    {loading ? "Refining..." : "Refine Rule"}
+                    {loading ? t('ruleStudio.refining') : t('ruleStudio.refine')}
                   </Button>
                   <Button variant="contained" color="info" onClick={handleSave} disabled={loading}>
-                    {loading ? "Saving..." : "Save Rule"}
+                    {loading ? t('ruleStudio.saving') : t('ruleStudio.save')}
                   </Button>
                 </Box>
               </Box>
@@ -345,9 +358,9 @@ export const RuleAuthoringStudio: React.FC = () => {
             onError={(error) => console.error(error)}
           />
         ) : (
-          <Paper sx={{ p: 2, height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Paper sx={{ p: 2, height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '8px' }}>
             <Typography variant="body1" color="text.secondary">
-              Upload an IFC file to view the model
+              {t('ruleStudio.viewerEmpty')}
             </Typography>
           </Paper>
         )}

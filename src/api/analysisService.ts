@@ -18,7 +18,8 @@ export interface AnalysisResponse {
 
 export const sendAnalysisRequest = async (
   file: File,
-  selectedCodes: Array<{ countryCode: string; codeNum: string }>
+  selectedCodes: Array<{ countryCode: string; codeNum: string }>,
+  language: 'HE' | 'EN' = 'EN'
 ): Promise<AnalysisResponse> => {
   try {
     // Get the Firebase token from the auth store
@@ -34,6 +35,7 @@ export const sendAnalysisRequest = async (
     
     // Use the selected codes for analysis
     formData.append('items', JSON.stringify(selectedCodes));
+    formData.append('language', language);
     
     const response = await fetch(apiUrl('/analyse'), {
       method: 'POST',
@@ -69,8 +71,8 @@ export interface CodeListResponse {
     codeNum: string;
     description: string;
     name: string;
-    category: string;
-    categoryDescription?: string;
+    category: string | string[];
+    categoryDescription?: string | string[];
   }>;
 }
 

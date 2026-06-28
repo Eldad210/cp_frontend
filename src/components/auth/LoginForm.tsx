@@ -3,8 +3,10 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import { Button } from '../ui/button';
-import { Lock, Mail, LogIn } from 'lucide-react';
+import { Building2, Lock, Mail, LogIn } from 'lucide-react';
 import { Paper, Box, Typography, TextField, InputAdornment, CircularProgress, Alert } from '@mui/material';
+import { LanguageSwitcher } from '../LanguageSwitcher';
+import { useTranslation } from '@/i18n/LanguageProvider';
 
 export function LoginForm() {
   const [email, setEmail] = useState('');
@@ -13,6 +15,16 @@ export function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const login = useAuthStore(state => state.login);
   const navigate = useNavigate();
+  const { direction, t } = useTranslation();
+
+  const localizeLoginError = (message: string) => {
+    if (message === 'User not found') return t('auth.errorUserNotFound');
+    if (message === 'Invalid password') return t('auth.errorWrongPassword');
+    if (message === 'Invalid credentials') return t('auth.errorInvalidCredential');
+    if (message === 'Login failed') return t('auth.errorLoginFailed');
+    if (message === 'An unexpected error occurred') return t('auth.errorDefault');
+    return message;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,9 +36,9 @@ export function LoginForm() {
       navigate('/dashboard');
     } catch (err) {
       if (err instanceof Error) {
-        setError(err.message);
+        setError(localizeLoginError(err.message));
       } else {
-        setError('An unexpected error occurred');
+        setError(t('auth.errorDefault'));
       }
       setIsLoading(false);
     }
@@ -39,31 +51,33 @@ export function LoginForm() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'linear-gradient(to bottom right, #EEF2FF, #E0E7FF)',
-        padding: '8px',
+        bgcolor: '#f4f7f6',
+        backgroundImage: 'linear-gradient(180deg, #ffffff 0%, #f4f7f6 42%, #eef6f3 100%)',
+        padding: { xs: 2, sm: 3 },
         animation: 'fadeIn 0.5s ease-out',
+        direction,
         '@keyframes fadeIn': {
           '0%': { opacity: 0 },
           '100%': { opacity: 1 }
         }
       }}
     >
+      <Box sx={{ position: 'fixed', top: 20, insetInlineEnd: 20 }}>
+        <LanguageSwitcher />
+      </Box>
       <Box 
         component={Paper} 
-        elevation={6}
+        elevation={0}
         sx={{ 
-          maxWidth: '450px',
+          maxWidth: '460px',
           width: '100%',
-          borderRadius: '12px',
+          borderRadius: '8px',
           overflow: 'hidden',
-          transition: 'all 0.3s ease',
-          '&:hover': {
-            transform: 'translateY(-5px)',
-            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
-          }
+          border: '1px solid #dbe5e1',
+          boxShadow: '0 18px 50px -34px rgba(15, 23, 42, 0.45)',
         }}
       >
-        <Box sx={{ backgroundColor: 'white', padding: '20px', borderTopLeftRadius: '12px', borderTopRightRadius: '12px' }}>
+        <Box sx={{ backgroundColor: 'white', padding: { xs: 3, sm: 4 } }}>
           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 2 }}>
             <Box 
               sx={{ 
@@ -73,18 +87,17 @@ export function LoginForm() {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                borderRadius: '50%',
-                backgroundColor: '#EEF2FF',
+                borderRadius: '8px',
+                backgroundColor: '#e6f4f1',
+                border: '1px solid #c8e3dc',
                 mb: 2,
-                transition: 'all 0.5s ease',
-                '&:hover': {
-                  transform: 'rotate(12deg) scale(1.05)',
-                  backgroundColor: 'rgba(63, 81, 181, 0.15)'
-                }
               }}
             >
-              <Lock size={28} color="#3b82f6" />
+              <Building2 size={28} color="#0f766e" />
             </Box>
+            <Typography variant="overline" sx={{ color: '#0f766e', fontWeight: 700, letterSpacing: 0 }}>
+              {t('app.name')}
+            </Typography>
             <Typography 
               variant="h4" 
               component="h1" 
@@ -92,13 +105,14 @@ export function LoginForm() {
                 fontWeight: 700, 
                 color: 'text.primary',
                 mb: 0.5,
-                fontSize: '1.75rem'
+                fontSize: '1.75rem',
+                textAlign: 'center'
               }}
             >
-              Sign in
+              {t('login.title')}
             </Typography>
-            <Typography variant="body1" color="text.secondary">
-              Access the Construction Plan Analyzer
+            <Typography variant="body1" color="text.secondary" sx={{ textAlign: 'center' }}>
+              {t('login.subtitle')}
             </Typography>
           </Box>
           
@@ -122,8 +136,8 @@ export function LoginForm() {
             
             <Box sx={{ marginBottom: '16px' }}>
               <Box sx={{ marginBottom: '12px' }}>
-                <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, ml: 0.5 }}>
-                  Email address
+                <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5 }}>
+                  {t('login.emailLabel')}
                 </Typography>
                 <TextField
                   fullWidth
@@ -131,7 +145,7 @@ export function LoginForm() {
                   name="email"
                   type="email"
                   required
-                  placeholder="Enter your email"
+                  placeholder={t('login.emailPlaceholder')}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   InputProps={{
@@ -154,8 +168,8 @@ export function LoginForm() {
               </Box>
               
               <Box>
-                <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, ml: 0.5 }}>
-                  Password
+                <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5 }}>
+                  {t('login.passwordLabel')}
                 </Typography>
                 <TextField
                   fullWidth
@@ -163,7 +177,7 @@ export function LoginForm() {
                   name="password"
                   type="password"
                   required
-                  placeholder="Enter your password"
+                  placeholder={t('login.passwordPlaceholder')}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   InputProps={{
@@ -197,27 +211,25 @@ export function LoginForm() {
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center',
-                  backgroundColor: '#3b82f6',
+                  backgroundColor: '#0f766e',
                   '&:hover': {
-                    backgroundColor: '#2563eb',
-                    transform: 'translateY(-2px)',
-                    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)'
+                    backgroundColor: '#115e59',
                   },
                   color: 'white',
                   borderRadius: '8px',
-                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+                  boxShadow: 'none',
                   transition: 'all 0.2s ease'
                 }}
               >
                 {isLoading ? (
-                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <CircularProgress size={20} thickness={4} sx={{ color: 'white', mr: 1.5 }} />
-                    Signing in...
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <CircularProgress size={20} thickness={4} sx={{ color: 'white' }} />
+                    {t('login.loading')}
                   </Box>
                 ) : (
-                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <LogIn size={18} style={{ marginRight: 6 }} />
-                    Sign in
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <LogIn size={18} />
+                    {t('login.submit')}
                   </Box>
                 )}
               </Button>
@@ -225,7 +237,7 @@ export function LoginForm() {
             
             <Box sx={{ textAlign: 'center', mt: 2 }}>
               <Typography variant="caption" color="text.secondary">
-                By signing in, you agree to the Civil Planner Terms of Service and Privacy Policy
+                {t('login.footer')}
               </Typography>
             </Box>
           </form>

@@ -4,6 +4,7 @@ import { SnackbarContent } from "./Snackbar";
 import { IfcViewerAPI } from "web-ifc-viewer";
 import { Color } from "three";
 import CleaningServicesIcon from '@mui/icons-material/CleaningServices';
+import { useTranslation } from "@/i18n/LanguageProvider";
 
 interface IFCViewerProps {
   file: File;
@@ -16,6 +17,7 @@ interface IfcRecord {
 }
 
 export const IFCViewer: React.FC<IFCViewerProps> = ({ file, onError, onLoad }) => {
+  const { t } = useTranslation();
   // const [ifcLoadingErrorMessage, setIfcLoadingErrorMessage] =
   // useState<string>();
   const [popoverOpen, setPopoverOpen] = React.useState(false);
@@ -141,12 +143,12 @@ export const IFCViewer: React.FC<IFCViewerProps> = ({ file, onError, onLoad }) =
         // convert props to record
         if (props) {
           const ifcRecords: IfcRecord = {};
-          ifcRecords["Entity Type"] = type;
-          ifcRecords["GlobalId"] = props.GlobalId && props.GlobalId?.value;
-          ifcRecords["Name"] = props.Name && props.Name?.value;
-          ifcRecords["ObjectType"] =
+          ifcRecords[t('viewer.entityType')] = type;
+          ifcRecords[t('viewer.globalId')] = props.GlobalId && props.GlobalId?.value;
+          ifcRecords[t('viewer.name')] = props.Name && props.Name?.value;
+          ifcRecords[t('viewer.objectType')] =
             props.ObjectType && props.ObjectType?.value;
-          ifcRecords["PredefinedType"] =
+          ifcRecords[t('viewer.predefinedType')] =
             props.PredefinedType && props.PredefinedType?.value;
           setIfcRecords(ifcRecords);
         }
@@ -219,7 +221,7 @@ export const IFCViewer: React.FC<IFCViewerProps> = ({ file, onError, onLoad }) =
           onClick={clearModel}
           startIcon={<CleaningServicesIcon />}
         >
-          Clear
+          {t('viewer.clear')}
         </Button>
       </Box>
 

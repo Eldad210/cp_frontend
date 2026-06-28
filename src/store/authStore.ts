@@ -55,8 +55,6 @@ export const useAuthStore = create<AuthState>((set) => {
           role: 'engineer' // Default role - you might want to store this in a database
         };
 
-        console.log(token);
-
         set({
           user,
           token: token,

@@ -1,11 +1,13 @@
 import React from "react";
 import { Alert, Snackbar } from "@mui/material";
+import { useTranslation } from "@/i18n/LanguageProvider";
 
 export const SnackbarContent: React.FC<{
   isSnackbarOpen: boolean;
   setIsSnackbarOpen: (open: boolean) => void;
   ifcLoadingErrorMessage: string | undefined;
 }> = (props) => {
+  const { t } = useTranslation();
   const handleClose = (
     _event?: React.SyntheticEvent | Event,
     reason?: string
@@ -29,7 +31,7 @@ export const SnackbarContent: React.FC<{
             severity="error"
             sx={{ width: "100%" }}
           >
-            Error loading the IFC File. Check the console for more information.
+            {t('viewer.loadingError')}
           </Alert>
         ) : (
           <Alert
@@ -37,7 +39,7 @@ export const SnackbarContent: React.FC<{
             severity="success"
             sx={{ width: "100%" }}
           >
-            IFC File loaded successfully!
+            {t('viewer.loadingSuccess')}
           </Alert>
         )}
       </Snackbar>
