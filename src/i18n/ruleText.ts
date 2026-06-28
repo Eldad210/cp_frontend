@@ -48,6 +48,21 @@ const localizedRules: Record<Language, Record<string, RuleText>> = {
       description: 'בדיקת שיפוע מרבי והפרש גובה מרבי במהלך כבש.',
       categoryDescription: 'נגישות',
     },
+    '9': {
+      name: 'רוחב דלת נגישה',
+      description: 'בדיקת רוחב חופשי מינימלי בדלתות מזוהות.',
+      categoryDescription: 'נגישות',
+    },
+    '10': {
+      name: 'דלת סמוכה למדרגות',
+      description: 'התראה לבדיקה ידנית של משטח אופקי לפני מדרגות סמוכות לדלת.',
+      categoryDescription: 'נגישות ובטיחות',
+    },
+    '11': {
+      name: 'מעקה או מסעד סמוך לכבש',
+      description: 'בדיקה אם לכל כבש מזוהה קיים אלמנט מעקה סמוך במודל.',
+      categoryDescription: 'נגישות',
+    },
   },
   en: {},
 };
@@ -76,4 +91,3 @@ export function getRuleText(language: Language, codeNum: string): RuleText | und
 export function getCategoryLabel(language: Language, category: string, fallback?: string) {
   return categoryLabels[language][category] ?? fallback ?? category;
 }
-
