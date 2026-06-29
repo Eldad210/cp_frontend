@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AnalysisResult, Plan } from '../../types';
 import { ChevronDown, ChevronUp, AlertTriangle, AlertCircle, CheckCircle2, Info } from 'lucide-react';
 import { PlanViewer } from '../notUsed/PlanViewer';
@@ -31,8 +31,21 @@ export function ResultsPanel({
   isAnalyzing = false
 }: ResultsPanelProps) {
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
-  const [severityFilter, setSeverityFilter] = useState<SeverityFilter>('error');
+  const [severityFilter, setSeverityFilter] = useState<SeverityFilter>('all');
   const { t } = useTranslation();
+
+  useEffect(() => {
+    if (!activePlan?.results?.length) {
+      return;
+    }
+
+    const categories = activePlan.results.reduce((nextExpanded, result) => ({
+      ...nextExpanded,
+      [result.category]: true,
+    }), {} as Record<string, boolean>);
+
+    setExpandedCategories(categories);
+  }, [activePlan?.id, activePlan?.results]);
 
   const getGroupedResults = (results: AnalysisResult[]) => {
     const filteredResults = severityFilter === 'all' 

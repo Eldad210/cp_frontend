@@ -45,6 +45,7 @@ export const translations = {
     'dashboard.unknownAnalysisError': 'אירעה שגיאה לא צפויה בזמן הבדיקה',
     'dashboard.backendNotReady': 'שרת הניתוח עדיין לא מוכן להרצת בדיקות. יש לפרוס את הבקאנד החדש ב-Render לפני העלאת IFC לניתוח.',
     'dashboard.backendOutdated': 'שרת הניתוח עדיין לא מעודכן לגרסת החוקים החדשה. יש לפרוס את הבקאנד החדש ב-Render לפני הרצת בדיקות 7-11.',
+    'dashboard.localFallbackComplete': 'שרת הניתוח לא זמין כרגע, לכן הופק דוח בדיקה ראשוני מקומי בדפדפן.',
     'dashboard.ready': 'מוכן לבדיקה',
 
     'upload.title': 'העלאת מודל IFC',
@@ -160,6 +161,7 @@ export const translations = {
     'dashboard.unknownAnalysisError': 'Unknown error occurred during analysis',
     'dashboard.backendNotReady': 'The analysis server is not ready. Deploy the new backend on Render before uploading IFC files for analysis.',
     'dashboard.backendOutdated': 'The analysis server is not updated to the new rule engine yet. Deploy the new backend on Render before running checks 7-11.',
+    'dashboard.localFallbackComplete': 'The analysis server is unavailable, so a preliminary local browser report was generated.',
     'dashboard.ready': 'Ready to analyze',
 
     'upload.title': 'Upload IFC model',

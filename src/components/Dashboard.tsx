@@ -7,6 +7,7 @@ import { ResultsPanel } from './dashboard/ResultsPanel';
 import { createAnalyzedPlan } from './dashboard/analysisUtils';
 import { Box, Snackbar, Alert, Button, Typography } from '@mui/material';
 import { checkAnalysisServerReadiness, sendAnalysisRequest } from '@/api/analysisService';
+import { runLocalIfcAnalysis } from '@/api/localIfcAnalysis';
 import { useNavigate } from 'react-router-dom';
 import { IFCViewer } from "./IFCViewer";
 import { FileCheck2, PlayCircle, PlusCircle, UploadCloud } from 'lucide-react';
@@ -43,6 +44,28 @@ export function Dashboard() {
     )
   );
 
+  const runLocalFallbackAnalysis = async () => {
+    if (!selectedFile) {
+      return false;
+    }
+
+    const response = await runLocalIfcAnalysis(
+      selectedFile,
+      selectedCodes,
+      language === 'he' ? 'HE' : 'EN',
+    );
+
+    if (response.success && response.results) {
+      const newPlan = createAnalyzedPlan(selectedFile, 'ISRAEL', response.results);
+      setActivePlan(newPlan);
+      setAlert({ message: t('dashboard.localFallbackComplete'), type: 'info' });
+      return true;
+    }
+
+    setAlert({ message: response.message || t('dashboard.analysisFailed'), type: 'error' });
+    return false;
+  };
+
   const handleRunAnalysis = async () => {
     if (!selectedFile || selectedCodes.length === 0) {
       return;
@@ -54,7 +77,7 @@ export function Dashboard() {
     try {
       const serverStatus = await checkAnalysisServerReadiness();
       if (!serverStatus.ready) {
-        setAlert({ message: t('dashboard.backendNotReady'), type: 'error' });
+        await runLocalFallbackAnalysis();
         return;
       }
 
@@ -66,7 +89,7 @@ export function Dashboard() {
       
       if (response.success && response.results) {
         if (hasUnsupportedCodeResult(response.results)) {
-          setAlert({ message: t('dashboard.backendOutdated'), type: 'error' });
+          await runLocalFallbackAnalysis();
           return;
         }
 

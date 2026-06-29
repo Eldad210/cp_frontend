@@ -31,6 +31,11 @@ export const convertApiResultsToAnalysisResults = (apiResults: any[]): AnalysisR
 // Helper function to guess category from code
 const getCategoryFromCode = (code: string): 'safety' | 'accessibility' | 'structural' | 'energy' | 'general' => {
   const lowerCode = code.toLowerCase();
+  const accessibilityCodeNums = new Set(['6', '7', '8', '9', '10', '11']);
+
+  if (accessibilityCodeNums.has(lowerCode)) {
+    return 'accessibility';
+  }
   
   if (lowerCode.includes('safety') || lowerCode.includes('fire') || lowerCode.includes('emergency')) {
     return 'safety';
