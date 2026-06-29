@@ -46,7 +46,21 @@ export const sendAnalysisRequest = async (
     });
     
     if (!response.ok) {
-      throw new Error(`Error: ${response.status} ${response.statusText}`);
+      let errorMessage = `Error: ${response.status} ${response.statusText}`;
+      try {
+        const errorData = await response.json();
+        const detail = errorData?.detail;
+        if (typeof detail === 'string') {
+          errorMessage = detail;
+        } else if (Array.isArray(detail)) {
+          errorMessage = detail
+            .map((item) => item?.msg || JSON.stringify(item))
+            .join(', ');
+        }
+      } catch {
+        // Keep the HTTP status message when the server does not return JSON.
+      }
+      throw new Error(errorMessage);
     }
     
     const data = await response.json();

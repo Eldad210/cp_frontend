@@ -19,6 +19,8 @@ type CodeItem = {
   categoryDescription?: string | string[];
 };
 
+const DEFAULT_SELECTED_CODE_NUMS = new Set(['6', '7', '8', '9', '10', '11']);
+
 export function CodeSelector({ 
   selectedCodes,
   onCodeSelect 
@@ -43,12 +45,15 @@ export function CodeSelector({
         if (response.success && response.results) {
           setCodes(response.results);
           
-          // Select all codes by default
-          const allCodes = response.results.map(code => ({
+          const defaultCodes = response.results.filter(code =>
+            DEFAULT_SELECTED_CODE_NUMS.has(String(code.codeNum))
+          );
+          const codesToSelect = defaultCodes.length > 0 ? defaultCodes : response.results;
+          const selectedByDefault = codesToSelect.map(code => ({
             countryCode: code.countryCode,
             codeNum: code.codeNum
           }));
-          onCodeSelect(allCodes);
+          onCodeSelect(selectedByDefault);
           
           // Group codes by category and set initial expanded state
           const categories = [...new Set(response.results.map(code => getCategoryKey(code.category)))];
