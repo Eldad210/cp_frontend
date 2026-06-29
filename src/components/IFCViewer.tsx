@@ -30,7 +30,7 @@ export const IFCViewer: React.FC<IFCViewerProps> = ({ file, onError, onLoad }) =
    const [curIfcRecords, setIfcRecords] = React.useState<IfcRecord>();
 
   const id = popoverOpen ? "simple-popover" : undefined;
-  const wasmPath = import.meta.env.BASE_URL || "/";
+  const wasmPath = `${import.meta.env.BASE_URL || "/"}ifcjs/`;
    
    const handleClose = () => {
     setPopoverOpen(false);
