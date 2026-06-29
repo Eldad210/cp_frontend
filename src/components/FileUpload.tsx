@@ -1,9 +1,10 @@
 
-import { useCallback } from 'react';
-import { useDropzone } from 'react-dropzone';
+import { useCallback, useState } from 'react';
+import { FileRejection, useDropzone } from 'react-dropzone';
 import { Upload } from 'lucide-react';
 import { Box, Typography, Paper, Button as MuiButton } from '@mui/material';
 import { useTranslation } from '@/i18n/LanguageProvider';
+import { MAX_IFC_FILE_SIZE_BYTES } from '@/utils/ifcFileValidation';
 
 interface FileUploadProps {
   onFileSelect: (file: File) => void;
@@ -12,17 +13,27 @@ interface FileUploadProps {
 
 export function FileUpload({ onFileSelect ,buttonText}: FileUploadProps) {
   const { t } = useTranslation();
+  const [error, setError] = useState<string | null>(null);
+
   const onDrop = useCallback((acceptedFiles: File[]) => {
+    setError(null);
     if (acceptedFiles.length > 0) {
       onFileSelect(acceptedFiles[0]);
     }
   }, [onFileSelect]);
 
+  const onDropRejected = useCallback((fileRejections: FileRejection[]) => {
+    const firstError = fileRejections[0]?.errors[0]?.code;
+    setError(firstError === 'file-too-large' ? t('upload.errorSize') : t('upload.errorType'));
+  }, [t]);
+
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
+    onDropRejected,
     accept: {
       'application/octet-stream': ['.ifc'],
     },
+    maxSize: MAX_IFC_FILE_SIZE_BYTES,
     maxFiles: 1,
   });
 
@@ -61,6 +72,11 @@ export function FileUpload({ onFileSelect ,buttonText}: FileUploadProps) {
         <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, fontSize: '0.75rem' }}>
           {t('upload.format')}
         </Typography>
+        {error && (
+          <Typography color="error" variant="caption" sx={{ mt: 0.75, fontSize: '0.75rem' }}>
+            {error}
+          </Typography>
+        )}
         <MuiButton 
           variant="outlined" 
           color="primary"

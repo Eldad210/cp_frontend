@@ -16,6 +16,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { useNavigate } from "react-router-dom";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { useTranslation } from "@/i18n/LanguageProvider";
+import { isIfcFile, isWithinIfcFileSizeLimit } from "@/utils/ifcFileValidation";
 
 // --- Sample API payloads and responses as mock data (fm) ---
 export const fm = {
@@ -152,7 +153,20 @@ export const RuleAuthoringStudio: React.FC = () => {
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    e.target.value = "";
+
+    if (!isIfcFile(file)) {
+      setError(t('upload.errorType'));
+      return;
+    }
+
+    if (!isWithinIfcFileSizeLimit(file)) {
+      setError(t('upload.errorSize'));
+      return;
+    }
+
     setLoading(true);
+    setError(null);
     try {
       const data = fm.uploadResponse; // mock
       setIfcFileId(data.id);

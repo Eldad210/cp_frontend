@@ -49,7 +49,9 @@ export const translations = {
     'upload.change': 'החלפת קובץ IFC',
     'upload.currentFile': 'קובץ נוכחי',
     'upload.instructions': 'גרור לכאן מודל IFC או לחץ לבחירת קובץ',
-    'upload.format': 'קובץ IFC בלבד, עד 50MB',
+    'upload.format': 'קובץ IFC בלבד, עד 200MB',
+    'upload.errorType': 'ניתן להעלות קובץ IFC בלבד.',
+    'upload.errorSize': 'קובץ ה-IFC גדול מדי. ניתן להעלות קבצים עד 200MB.',
     'upload.dragActive': 'שחרר כאן את הקובץ',
     'upload.button': 'בחירת קובץ',
 
@@ -160,7 +162,9 @@ export const translations = {
     'upload.change': 'Change IFC file',
     'upload.currentFile': 'Current file',
     'upload.instructions': 'Drag your IFC model here or click to select a file',
-    'upload.format': 'IFC format only, up to 50MB',
+    'upload.format': 'IFC format only, up to 200MB',
+    'upload.errorType': 'Only IFC files can be uploaded.',
+    'upload.errorSize': 'The IFC file is too large. Files up to 200MB are supported.',
     'upload.dragActive': 'Drop the file here',
     'upload.button': 'Select file',
 

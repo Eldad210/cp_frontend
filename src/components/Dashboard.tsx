@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { IFCViewer } from "./IFCViewer";
 import { FileCheck2, PlayCircle, PlusCircle, UploadCloud } from 'lucide-react';
 import { useTranslation } from '@/i18n/LanguageProvider';
+import { isIfcFile, isWithinIfcFileSizeLimit } from '@/utils/ifcFileValidation';
 
 export function Dashboard() {
   const [activePlan, setActivePlan] = useState<Plan | null>(null);
@@ -23,6 +24,16 @@ export function Dashboard() {
   const { direction, language, t } = useTranslation();
 
   const handleFileSelect = (file: File) => {
+    if (!isIfcFile(file)) {
+      setAlert({ message: t('upload.errorType'), type: 'error' });
+      return;
+    }
+
+    if (!isWithinIfcFileSizeLimit(file)) {
+      setAlert({ message: t('upload.errorSize'), type: 'error' });
+      return;
+    }
+
     setSelectedFile(file);
   };
 
@@ -132,7 +143,7 @@ export function Dashboard() {
               onDrop={(e) => {
                 e.preventDefault();
                 const file = e.dataTransfer.files[0];
-                if (file && file.name.endsWith('.ifc')) {
+                if (file) {
                   handleFileSelect(file);
                 }
               }}
@@ -169,6 +180,7 @@ export function Dashboard() {
                 onChange={(e) => {
                   const file = e.target.files?.[0];
                   if (file) handleFileSelect(file);
+                  e.target.value = '';
                 }}
               />
             </Box>
