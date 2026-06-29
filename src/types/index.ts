@@ -6,7 +6,7 @@ export interface AnalysisResult {
   description: string;
   location: string;
   recommendation: string;
-  category: 'safety' | 'accessibility' | 'structural' | 'energy' | 'general';
+  category: 'safety' | 'accessibility' | 'structural' | 'energy' | 'building' | 'general';
 }
 
 export interface Plan {

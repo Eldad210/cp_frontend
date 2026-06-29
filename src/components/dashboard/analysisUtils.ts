@@ -29,9 +29,14 @@ export const convertApiResultsToAnalysisResults = (apiResults: any[]): AnalysisR
 };
 
 // Helper function to guess category from code
-const getCategoryFromCode = (code: string): 'safety' | 'accessibility' | 'structural' | 'energy' | 'general' => {
+const getCategoryFromCode = (code: string): 'safety' | 'accessibility' | 'structural' | 'energy' | 'building' | 'general' => {
   const lowerCode = code.toLowerCase();
+  const buildingCodeNums = new Set(['1', '2', '3', '4', '5']);
   const accessibilityCodeNums = new Set(['6', '7', '8', '9', '10', '11']);
+
+  if (buildingCodeNums.has(lowerCode)) {
+    return 'building';
+  }
 
   if (accessibilityCodeNums.has(lowerCode)) {
     return 'accessibility';

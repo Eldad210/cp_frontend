@@ -107,6 +107,7 @@ export function ResultsPanel({
     if (category === 'accessibility') return t('category.accessibility');
     if (category === 'structural') return t('category.structural');
     if (category === 'energy') return t('category.energy');
+    if (category === 'building') return t('category.building');
     return t('category.general');
   };
 
