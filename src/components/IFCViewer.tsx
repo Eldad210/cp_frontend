@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState , Fragment} from "react";
+import React, { useCallback, useEffect, useRef, useState , Fragment} from "react";
 import { Box, Backdrop, CircularProgress, Button , Grid, Popover, Typography} from "@mui/material";
 import { SnackbarContent } from "./Snackbar";
 import { IfcViewerAPI } from "web-ifc-viewer";
@@ -29,13 +29,14 @@ export const IFCViewer: React.FC<IFCViewerProps> = ({ file, onError, onLoad }) =
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
    const [curIfcRecords, setIfcRecords] = React.useState<IfcRecord>();
 
-   const id = popoverOpen ? "simple-popover" : undefined;
+  const id = popoverOpen ? "simple-popover" : undefined;
+  const wasmPath = import.meta.env.BASE_URL || "/";
    
    const handleClose = () => {
     setPopoverOpen(false);
   };
 
-  const setupViewer = async () => {
+  const setupViewer = useCallback(async () => {
     if (!viewerContainer.current) return;
 
     // Clean up previous viewer if it exists
@@ -49,26 +50,25 @@ export const IFCViewer: React.FC<IFCViewerProps> = ({ file, onError, onLoad }) =
       backgroundColor: new Color(0xffffff)
     });
 
-    // Set WASM path before any IFC operations
-    viewer.current.IFC.setWasmPath("node_modules/web-ifc/");
+    await viewer.current.IFC.setWasmPath(wasmPath);
 
     // viewer.current.grid.setGrid();
     // viewer.current.axes.setAxes();
-  };
+  }, [wasmPath]);
 
-  const ifcOnLoadError = async (err: React.ChangeEvent<HTMLInputElement>) => {
-    setIfcLoadingErrorMessage(err.toString());
+  const ifcOnLoadError = async (err: unknown) => {
+    setIfcLoadingErrorMessage(String(err));
   };
 
   useEffect(() => {
-    setupViewer();
+    void setupViewer();
 
     return () => {
       if (viewer.current) {
         viewer.current.dispose();
       }
     };
-  }, []);
+  }, [setupViewer]);
 
   useEffect(() => {
     const loadIfc = async () => {
@@ -81,6 +81,9 @@ export const IFCViewer: React.FC<IFCViewerProps> = ({ file, onError, onLoad }) =
        
         try {
           const model = await viewer.current.IFC.loadIfc(file, true, ifcOnLoadError);
+          if (!model) {
+            throw new Error("IFC viewer could not parse the model");
+          }
           console.log("build model");
           await viewer.current.shadowDropper.renderShadow(model.modelID);
           console.log("render shadow");
@@ -118,9 +121,8 @@ export const IFCViewer: React.FC<IFCViewerProps> = ({ file, onError, onLoad }) =
       // }
     };
 
-    setupViewer();
-    loadIfc();
-  }, [file]);
+    void setupViewer().then(loadIfc);
+  }, [file, setupViewer]);
 
   const clearModel = async () => {
     setupViewer();
