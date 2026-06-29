@@ -43,6 +43,7 @@ export const translations = {
     'dashboard.analysisComplete': 'הבדיקה הושלמה בהצלחה',
     'dashboard.analysisFailed': 'הבדיקה נכשלה',
     'dashboard.unknownAnalysisError': 'אירעה שגיאה לא צפויה בזמן הבדיקה',
+    'dashboard.backendOutdated': 'שרת הניתוח עדיין לא מעודכן לגרסת החוקים החדשה. יש לפרוס את הבקאנד החדש ב-Render לפני הרצת בדיקות 7-11.',
     'dashboard.ready': 'מוכן לבדיקה',
 
     'upload.title': 'העלאת מודל IFC',
@@ -156,6 +157,7 @@ export const translations = {
     'dashboard.analysisComplete': 'Analysis completed successfully',
     'dashboard.analysisFailed': 'Analysis failed',
     'dashboard.unknownAnalysisError': 'Unknown error occurred during analysis',
+    'dashboard.backendOutdated': 'The analysis server is not updated to the new rule engine yet. Deploy the new backend on Render before running checks 7-11.',
     'dashboard.ready': 'Ready to analyze',
 
     'upload.title': 'Upload IFC model',

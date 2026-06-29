@@ -37,6 +37,12 @@ export function Dashboard() {
     setSelectedFile(file);
   };
 
+  const hasUnsupportedCodeResult = (results: NonNullable<Awaited<ReturnType<typeof sendAnalysisRequest>>['results']>) => (
+    results.some((item) =>
+      item.issues?.some((issue) => issue.message.toLowerCase().includes('codenum is not recognized'))
+    )
+  );
+
   const handleRunAnalysis = async () => {
     if (!selectedFile || selectedCodes.length === 0) {
       return;
@@ -53,6 +59,11 @@ export function Dashboard() {
       );
       
       if (response.success && response.results) {
+        if (hasUnsupportedCodeResult(response.results)) {
+          setAlert({ message: t('dashboard.backendOutdated'), type: 'error' });
+          return;
+        }
+
         const newPlan = createAnalyzedPlan(selectedFile, 'ISRAEL', response.results);
         setActivePlan(newPlan);
         setAlert({ message: t('dashboard.analysisComplete'), type: 'success' });
