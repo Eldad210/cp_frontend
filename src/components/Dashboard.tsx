@@ -6,7 +6,7 @@ import { SidePanel } from './dashboard/SidePanel';
 import { ResultsPanel } from './dashboard/ResultsPanel';
 import { createAnalyzedPlan } from './dashboard/analysisUtils';
 import { Box, Snackbar, Alert, Button, Typography } from '@mui/material';
-import { sendAnalysisRequest } from '@/api/analysisService';
+import { checkAnalysisServerReadiness, sendAnalysisRequest } from '@/api/analysisService';
 import { useNavigate } from 'react-router-dom';
 import { IFCViewer } from "./IFCViewer";
 import { FileCheck2, PlayCircle, PlusCircle, UploadCloud } from 'lucide-react';
@@ -52,6 +52,12 @@ export function Dashboard() {
     setAlert({ message: t('dashboard.analyzingFile'), type: 'info' });
     
     try {
+      const serverStatus = await checkAnalysisServerReadiness();
+      if (!serverStatus.ready) {
+        setAlert({ message: t('dashboard.backendNotReady'), type: 'error' });
+        return;
+      }
+
       const response = await sendAnalysisRequest(
         selectedFile,
         selectedCodes,

@@ -1,6 +1,14 @@
 import { useAuthStore } from "@/store/authStore";
 import { apiUrl } from "@/config/api";
 
+const ANALYSIS_TIMEOUT_MS = 180_000;
+
+export interface AnalysisServerStatus {
+  ready: boolean;
+  status?: number;
+  message?: string;
+}
+
 export interface AnalysisResponse {
   success: boolean;
   message?: string;
@@ -15,6 +23,32 @@ export interface AnalysisResponse {
     }>;
   }>;
 }
+
+export const checkAnalysisServerReadiness = async (): Promise<AnalysisServerStatus> => {
+  try {
+    const response = await fetch(apiUrl('/health'), { method: 'GET' });
+
+    if (!response.ok) {
+      return {
+        ready: false,
+        status: response.status,
+        message: `Analysis server health check failed with status ${response.status}`,
+      };
+    }
+
+    const data = await response.json();
+    return {
+      ready: data.status === 'ok',
+      status: response.status,
+      message: data.firebaseError || undefined,
+    };
+  } catch (error) {
+    return {
+      ready: false,
+      message: error instanceof Error ? error.message : 'Analysis server is unavailable',
+    };
+  }
+};
 
 export const sendAnalysisRequest = async (
   file: File,
@@ -36,14 +70,18 @@ export const sendAnalysisRequest = async (
     // Use the selected codes for analysis
     formData.append('items', JSON.stringify(selectedCodes));
     formData.append('language', language);
+
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(() => controller.abort(), ANALYSIS_TIMEOUT_MS);
     
     const response = await fetch(apiUrl('/analyse'), {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`
       },
-      body: formData
-    });
+      body: formData,
+      signal: controller.signal,
+    }).finally(() => window.clearTimeout(timeoutId));
     
     if (!response.ok) {
       let errorMessage = `Error: ${response.status} ${response.statusText}`;
@@ -72,7 +110,9 @@ export const sendAnalysisRequest = async (
     console.error('Analysis request failed:', error);
     return {
       success: false,
-      message: error instanceof Error ? error.message : 'Unknown error occurred'
+      message: error instanceof DOMException && error.name === 'AbortError'
+        ? 'Analysis timed out. Try a smaller file or fewer selected checks.'
+        : error instanceof Error ? error.message : 'Unknown error occurred'
     };
   }
 };
